@@ -1,6 +1,7 @@
 package com.example.weatherapp
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -11,13 +12,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.lifecycleScope
+import com.example.weatherapp.remote.RetrofitHelper
 import com.example.weatherapp.ui.theme.WeatherAppTheme
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContent {
+       setContent {
             WeatherAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Greeting(
@@ -27,6 +32,29 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+
+       lifecycleScope.launch  {
+           try {
+               val response = RetrofitHelper.service.getCurrentWeather(
+                   lat = 34.34,
+                   lon = 10.99,
+                   units = "metric",
+                   language = "en",
+                   apiKey = BuildConfig.apiKeySafe
+               )
+
+               if (response.isSuccessful) {
+                   val weatherData = response.body()
+                   Log.d("TAG", weatherData.toString())
+               } else {
+                   Log.e("TAG", "Response Error: ${response.errorBody()?.string()}")
+               }
+           } catch (e: Exception) {
+               Log.e("TAG", "Exception: ${e.message}")
+           }
+        }
+
+
     }
 }
 
