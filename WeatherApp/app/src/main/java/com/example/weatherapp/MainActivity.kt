@@ -1,75 +1,100 @@
 package com.example.weatherapp
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.lifecycleScope
-import com.example.weatherapp.remote.RetrofitHelper
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModelProvider
+import com.example.weatherapp.data.models.CurrentResponseApi
+import com.example.weatherapp.data.remote.RetrofitHelper
+import com.example.weatherapp.data.remote.WeatherRemoteDataSourceImpl
+import com.example.weatherapp.data.repository.WeatherRepositoryImpl
 import com.example.weatherapp.ui.theme.WeatherAppTheme
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import com.example.weatherapp.viewmodel.CurrentWeatherFactory
+import com.example.weatherapp.viewmodel.HomeScreenViewModel
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-       setContent {
+        setContent {
             WeatherAppTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+
+                Greeting(
+                    viewModel =
+                    ViewModelProvider(
+                        this,
+                        CurrentWeatherFactory(
+                                repo = WeatherRepositoryImpl.getInstance(
+                                    WeatherRemoteDataSourceImpl(
+                                        RetrofitHelper.service)
+                                )
+                        )
+                    ).get(HomeScreenViewModel::class.java)
+                )
+
             }
         }
 
-       lifecycleScope.launch  {
-           try {
-               val response = RetrofitHelper.service.getCurrentWeather(
-                   lat = 34.34,
-                   lon = 10.99,
-                   units = "metric",
-                   language = "en",
-                   apiKey = BuildConfig.apiKeySafe
-               )
-
-               if (response.isSuccessful) {
-                   val weatherData = response.body()
-                   Log.d("TAG", weatherData.toString())
-               } else {
-                   Log.e("TAG", "Response Error: ${response.errorBody()?.string()}")
-               }
-           } catch (e: Exception) {
-               Log.e("TAG", "Exception: ${e.message}")
-           }
-        }
-
 
     }
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
+fun Greeting(modifier: Modifier = Modifier, viewModel: HomeScreenViewModel) {
+    // Observe the state from the ViewModel
+    val weatherData = viewModel.currentWeatherData.value
+
+    // Trigger API call when the composable is first launched
+    LaunchedEffect(Unit) {
+        viewModel.loadCurrentWeather(44.34, 10.99, "metric", "en")
+    }
+
+    // Display the weather data
+    if (weatherData != null) {
+        WeatherContent(weatherData, modifier)
+    } else {
+        Text(text = "Loading...", modifier = modifier.padding(16.dp))
+    }
 }
 
-@Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
-    WeatherAppTheme {
-        Greeting("Android")
-    }
+fun WeatherContent(weatherData: CurrentResponseApi, modifier: Modifier = Modifier) {
+   Column {
+       Text(
+           text = "Temperature: ${weatherData.main?.temp}°C",
+           modifier = modifier.padding(16.dp)
+       )
+       Spacer(modifier = Modifier.size(5.dp))
+       Text(
+           text = "Temperature: ${weatherData.main?.humidity}Pha",
+           modifier = modifier.padding(16.dp)
+       )
+       Spacer(modifier = Modifier.size(5.dp))
+       Text(
+           text = "Temperature: ${weatherData.main?.pressure} ppp",
+           modifier = modifier.padding(16.dp)
+       )
+       Spacer(modifier = Modifier.size(5.dp))
+       Text(
+           text = "Temperature: ${weatherData.weather?.get(0)?.description} wather",
+           modifier = modifier.padding(16.dp)
+       )
+       Spacer(modifier = Modifier.size(5.dp))
+       Text(
+           text = "Date: ${weatherData.timezone}  ",
+           modifier = modifier.padding(16.dp)
+       )
+   }
+
 }

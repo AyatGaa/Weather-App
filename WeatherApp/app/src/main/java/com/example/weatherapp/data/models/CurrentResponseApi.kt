@@ -1,4 +1,4 @@
-package com.example.weatherapp.models
+package com.example.weatherapp.data.models
 
 
 import com.google.gson.annotations.SerializedName
@@ -33,6 +33,7 @@ data class CurrentResponseApi(
     @SerializedName("wind")
     val wind: Wind?
 ) {
+
     data class Clouds(
         @SerializedName("all")
         val all: Int?

@@ -1,6 +1,6 @@
-package com.example.weatherapp.remote
+package com.example.weatherapp.data.remote
 
-import com.example.weatherapp.models.CurrentResponseApi
+import com.example.weatherapp.data.models.CurrentResponseApi
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
