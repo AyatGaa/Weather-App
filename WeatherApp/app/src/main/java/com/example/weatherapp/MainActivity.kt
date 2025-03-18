@@ -18,6 +18,7 @@ import com.example.weatherapp.data.models.CurrentResponseApi
 import com.example.weatherapp.data.remote.RetrofitHelper
 import com.example.weatherapp.data.remote.WeatherRemoteDataSourceImpl
 import com.example.weatherapp.data.repository.WeatherRepositoryImpl
+import com.example.weatherapp.screens.HomeScreenPreview
 import com.example.weatherapp.ui.theme.WeatherAppTheme
 import com.example.weatherapp.viewmodel.CurrentWeatherFactory
 import com.example.weatherapp.viewmodel.HomeScreenViewModel
@@ -29,20 +30,20 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             WeatherAppTheme {
+                HomeScreenPreview()
 
-                Greeting(
+          /*      Greeting(
                     viewModel =
                     ViewModelProvider(
                         this,
                         CurrentWeatherFactory(
-                                repo = WeatherRepositoryImpl.getInstance(
-                                    WeatherRemoteDataSourceImpl(
-                                        RetrofitHelper.service)
-                                )
+                            repo = WeatherRepositoryImpl.getInstance(
+                                WeatherRemoteDataSourceImpl(
+                                    RetrofitHelper.service)
+                            )
                         )
                     ).get(HomeScreenViewModel::class.java)
-                )
-
+                )*/
             }
         }
 
