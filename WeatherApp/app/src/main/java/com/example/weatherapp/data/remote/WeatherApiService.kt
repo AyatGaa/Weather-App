@@ -1,5 +1,7 @@
 package com.example.weatherapp.data.remote
 
+import ForecastResponseApi
+import com.example.weatherapp.BuildConfig
 import com.example.weatherapp.data.models.CurrentResponseApi
 import retrofit2.Response
 import retrofit2.http.GET
@@ -11,19 +13,17 @@ interface WeatherApiService {
        suspend fun getCurrentWeather(
             @Query("lat") lat :Double,
             @Query("lon") lon:Double,
-            @Query("units") units :String,
             @Query("lang") language:String,
-            @Query("appid") apiKey:String
+            @Query("appid") apiKey:String  = BuildConfig.apiKeySafe
         ): Response<CurrentResponseApi>
 
-      /* @GET("data/2.5/forecast")
+      @GET("data/2.5/forecast")
        suspend fun getForecastWeather(
             @Query("lat") lat :Double,
             @Query("lon") lon:Double,
-            @Query("units") units :String,
             @Query("lang") language:String,
-            @Query("appid") apiKey:String
-        ): Response<CurrentResponseApi>*/
+            @Query("appid") apiKey:String = BuildConfig.apiKeySafe
+        ): Response<ForecastResponseApi>
 
 
 

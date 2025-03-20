@@ -1,8 +1,11 @@
 package com.example.weatherapp.screens
 
+import ForecastItem
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,17 +16,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.Favorite
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material3.Badge
-import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -31,19 +30,20 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.saveable.rememberSaveable
+
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.weatherapp.R
@@ -53,16 +53,73 @@ import com.example.weatherapp.ui.theme.DarkBlue1
 import com.example.weatherapp.ui.theme.DarkBlue2
 import com.example.weatherapp.ui.theme.White
 import com.example.weatherapp.ui.theme.Yellow
+import com.example.weatherapp.viewmodel.HomeScreenViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.bumptech.glide.Glide
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
+import com.bumptech.glide.integration.compose.rememberGlidePreloadingData
+import com.example.weatherapp.data.models.CurrentResponseApi
+import com.example.weatherapp.data.models.ResponseState
+import com.example.weatherapp.utils.timeZoneConversion
+import com.example.weatherapp.utils.timeZoneConversionToHourly
 
-@Preview(showBackground = true)
-@Composable
-fun HomeScreenPreview() {
-    HomeScreen()
-}
+//
+//@Preview(showBackground = true)
+//@Composable
+//fun HomeScreenPreview() {
+//    HomeScreen()
+//}
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(viewModel: HomeScreenViewModel) {
     var currentScreen by remember { mutableStateOf<ScreenRoute>(ScreenRoute.Home) }
+    val uiState by viewModel.currentWeatherData.collectAsStateWithLifecycle()
+
+    val hourlyForecast by viewModel.hourlyWeatherData.collectAsStateWithLifecycle()
+    val dailyForecast by viewModel.dailyWeatherData.collectAsStateWithLifecycle()
+
+
+    val message by viewModel.mutableMessage.collectAsStateWithLifecycle("")
+    var weather by remember { mutableStateOf<CurrentResponseApi?>(null) }
+    var hourly by remember { mutableStateOf<List<ForecastItem>?>(null) }
+    var daily by remember { mutableStateOf<List<ForecastItem>?>(null) }
+
+//        viewModel.loadCurrentWeather(44.34, 10.99, "metric", "en")
+
+    when (uiState) {
+
+        is ResponseState.Loading -> {
+            LoadingIndicator()
+        }
+
+        is ResponseState.Success -> {
+            weather = (uiState as ResponseState.Success).data
+            hourly = when (hourlyForecast) {
+                is ResponseState.Success -> (hourlyForecast as ResponseState.Success<List<ForecastItem>>).data
+                else -> emptyList()
+            }
+
+            daily = when (dailyForecast) {
+                is ResponseState.Success -> (dailyForecast as ResponseState.Success<List<ForecastItem>>).data
+                else -> emptyList()
+            }
+            Log.d("TAG", "HomeScreen: ${daily}")
+            Log.d("TAG", "HomeScreen: ${hourly}")
+        }
+
+        is ResponseState.Failure -> {
+            Text(
+                text = "Sorry, something went wrong can not load data",
+                fontSize = 24.sp,
+                color = White,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .wrapContentSize(),
+            )
+        }
+    }
+
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -72,44 +129,63 @@ fun HomeScreen() {
                 currentScreen = currentScreen,
                 onItemClick = { screen -> currentScreen = screen }
             )
-        }
-    ) { innerPadding ->
+        },
+
+        ) { innerPadding ->
         LazyColumn(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxHeight()
                 .padding(innerPadding)
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            // Top Section
-            item {
-                TopSection()
-            }
+            weather?.let { weatherData ->
 
-            // Weather Details
-            item {
-                WeatherDetails()
-            }
+                // Top Section
+                item {
+                    TopSection(weatherData)
+                }
+
+                // Weather Details
+                item {
+                    WeatherDetails(weatherData)
+                }
 
 
-            // Hourly Forecast
-            item {
-                HourlyForecast()
-            }
-            // Daily Forecast
-            item {
-                DailyForecast()
+                // Hourly Forecast
+                item {
+                    HourlyForecast(hourly)
+                }
+                // Daily Forecast
+                item {
+                    DailyForecast(daily)
+                }
             }
         }
     }
 }
 
+@Composable
+fun LoadingIndicator() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(White)
+            .wrapContentSize(Alignment.Center)
+            .background(White),
+
+
+        ) {
+        CircularProgressIndicator()
+    }
+}
+
 
 @Composable
-fun BottomNavigationBar(   currentScreen: ScreenRoute,
-                           onItemClick: (ScreenRoute) -> Unit) {
-
-
+fun BottomNavigationBar(
+    currentScreen: ScreenRoute,
+    onItemClick: (ScreenRoute) -> Unit
+) {
     val items = listOf(
         ScreenRoute.Home,
         ScreenRoute.Favorites,
@@ -117,78 +193,78 @@ fun BottomNavigationBar(   currentScreen: ScreenRoute,
         ScreenRoute.Settings
     )
 
-        NavigationBar(
-            modifier = Modifier.background(White).shadow(4.dp)
-        ) {
-            items.forEachIndexed  {index, item ->
-                NavigationBarItem(
-                    selected = currentScreen ==item ,
-                    onClick = {  onItemClick(item) },
-                    icon = {   Icon(
-                        imageVector =item.icon ,
+    NavigationBar(
+        modifier = Modifier
+            .background(White)
+            .shadow(4.dp)
+    ) {
+        items.forEachIndexed { index, item ->
+            NavigationBarItem(
+                selected = currentScreen == item,
+                onClick = { onItemClick(item) },
+                icon = {
+                    Icon(
+                        imageVector = item.icon,
                         modifier = Modifier.size(24.dp),
                         contentDescription = item.title
-                    ) },
-                    label = { Text(
+                    )
+                },
+                label = {
+                    Text(
                         text = item.title
-                    )}
+                    )
+                }
 
-                )
-            }
+            )
         }
-    
+    }
+
 }
 
 @Composable
-fun DailyForecast() {
-    val dailyForecasts = listOf(
-        "13/3 Today 15° 24°",
-        "13/3 Today 15° 24°",
-        "13/3 Today 15° 24°",
-        "13/3 Today 15° 24°",
-        "13/3 Today 15° 24°",
-        "13/3 Today 15° 24°",
-        "13/3 Today 15° 24°",
-    )
-
+fun DailyForecast(daily: List<ForecastItem>?) {
     Column(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
+            .padding(horizontal = 0.dp) // Keeps it aligned with other UI elements
     ) {
-
         Text(
             text = "Next 5 Days",
             fontWeight = FontWeight.ExtraBold,
-            style = MaterialTheme.typography.headlineMedium,
             color = White,
             fontSize = 24.sp,
         )
         Spacer(modifier = Modifier.height(8.dp))
-    }
 
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxHeight()
-            .height(400.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        items(dailyForecasts.size) { forecast ->
-            DailyForecastItem(
-                date = "15/2",
-                icon = R.drawable.water_drop,
-                temp = "23",
-                measurement = "°C"
-            )
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(400.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            daily?.let {
+                items(it.size) { idx ->
+                    val forecast = it[idx]
+                    DailyForecastItem(
+                        date = timeZoneConversionToHourly(forecast.timestamp, "dd/MM\t\tEEEE"),
+                        icon = "https://openweathermap.org/img/wn/${forecast.weather[0].icon}@4x.png",
+                        temp = "${forecast.main.temp}",
+                        measurement = "K"
+                    )
+                }
+            }
         }
     }
 }
 
+
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun DailyForecastItem(date: String, icon: Int, temp: String, measurement: String) {
+fun DailyForecastItem(date: String, icon: String, temp: String, measurement: String) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(80.dp)
+            .height(60.dp)
             .shadow(4.dp, shape = RoundedCornerShape(8.dp))
             .clip(RoundedCornerShape(8.dp)),
         shape = RoundedCornerShape(8.dp),
@@ -197,50 +273,61 @@ fun DailyForecastItem(date: String, icon: Int, temp: String, measurement: String
             modifier = Modifier
                 .background(White)
                 .fillMaxWidth()
-                .padding(28.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-
-            ) {
+                .padding(horizontal = 16.dp, vertical = 8.dp), // Reduced padding
+            verticalAlignment = Alignment.CenterVertically, // Align items vertically
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
             // Date
             Text(
                 text = date,
-                fontSize = 16.sp,
-                color = DarkBlue2
-            )
-            Text(
-                text = "Today",
-                fontSize = 16.sp,
+                fontSize = 14.sp,
                 color = DarkBlue2
             )
 
-            // Icon
-            Icon(
-                painter = painterResource(id = icon),
-                contentDescription = date,
-                modifier = Modifier.size(24.dp)
-            )
+            // Icon (Ensure it stays centered)
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .shadow(8.dp, shape = CircleShape) // Apply shadow
+                    .clip(CircleShape)
+                    .background(Color.Gray.copy(alpha = 0.3f)),
+                contentAlignment = Alignment.Center,
+            ) {
+                GlideImage(
+                    contentDescription = "Weather Icon",
+                    modifier = Modifier.size(40.dp),
+                    model = icon,
+                )
+            }
 
             // Temperature and Measurement
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
                 Text(
                     text = temp,
-                    color = DarkBlue1
+                    color = DarkBlue1,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 14.sp,
                 )
                 Text(
                     text = measurement,
-                    color = DarkBlue1
+                    color = DarkBlue1,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 12.sp,
                 )
             }
         }
     }
 }
 
-@Composable
-fun HourlyForecast() {
-    val hourlyTemps = listOf("26°", "26°", "26°", "26°", "26°")
 
+@Composable
+fun HourlyForecast(hourly: List<ForecastItem>?) {
 
     Column(
+        modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.SpaceBetween,
     ) {
         Text(
@@ -253,24 +340,39 @@ fun HourlyForecast() {
         Spacer(modifier = Modifier.height(8.dp))
 
         LazyRow(
+
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp), // Ensure it has a defined width
             horizontalArrangement = Arrangement.spacedBy(8.dp),
 
             ) {
-            items(hourlyTemps.size) {
-                HourlyForecastItem("now", R.drawable.water_drop, "23", "oC")
+            hourly?.let {
+
+                items(it.size) { idx ->
+                    val forecast = it[idx]
+                    HourlyForecastItem(
+                        time = timeZoneConversionToHourly(forecast.timestamp),
+                        icon = "https://openweathermap.org/img/wn/${forecast.weather[0].icon}@2x.png", // Avoid index errors
+                        temp = "${forecast.main.temp}",
+                        measurement = "K"
+                    )
+                }
             }
         }
     }
 }
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun HourlyForecastItem(time: String, icon: Int, temp: String, measurement: String) {
+fun HourlyForecastItem(time: String, icon: String, temp: String, measurement: String = " K") {
     Card(
         modifier = Modifier
             .width(80.dp)
             .height(100.dp)
             .shadow(4.dp, shape = RoundedCornerShape(8.dp))
-            .clip(RoundedCornerShape(8.dp)),
+            .clip(RoundedCornerShape(8.dp))
+            .wrapContentSize(Alignment.Center, true),
         shape = RoundedCornerShape(8.dp),
 
         ) {
@@ -278,36 +380,48 @@ fun HourlyForecastItem(time: String, icon: Int, temp: String, measurement: Strin
             modifier = Modifier
                 .background(White)
                 .width(80.dp)
-                .height(100.dp),
+                .height(120.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
 
             Text(
                 text = time,
-                fontSize = 16.sp,
+                fontSize = 14.sp,
                 color = DarkBlue2,
-                fontWeight = FontWeight.SemiBold,
                 modifier = Modifier
-                    .padding(bottom = 8.dp)
             )
-
-            Icon(
-                painter = painterResource(id = icon),
-                contentDescription = time,
+            Box(
                 modifier = Modifier
-                    .size(24.dp)
-                    .padding(bottom = 8.dp)
-            )
+                    .size(40.dp)
+                    .shadow(8.dp, shape = CircleShape) // Apply shadow
+                    .clip(CircleShape)
+                    .background(Color.Yellow.copy(alpha = 0.4f)),
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
+                contentAlignment = Alignment.Center,
+            ) {
+
+                GlideImage(
+                    contentDescription = "Weather Icon",
+                    modifier = Modifier
+                        .size(40.dp),
+                    model = icon,
+                )
+            }
+
+
+            Row {
                 Text(
                     text = temp,
-                    color = DarkBlue1
+                    fontSize = 12.sp,
+                    color = DarkBlue2,
+                    fontWeight = FontWeight.SemiBold,
                 )
                 Text(
                     text = measurement,
-                    color = DarkBlue1
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = DarkBlue2,
                 )
             }
         }
@@ -315,7 +429,7 @@ fun HourlyForecastItem(time: String, icon: Int, temp: String, measurement: Strin
 }
 
 @Composable
-fun TopSection() {
+fun TopSection(weather: CurrentResponseApi) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -326,32 +440,33 @@ fun TopSection() {
         ) {
         //location
         Text(
-            text = "Egypt",
+            text = "${weather.name}",
             fontWeight = FontWeight.Bold,
-            fontSize = 28.sp,
+            fontSize = 32.sp,
             color = White
         )
 
-
+        val date = weather.dt?.let { timeZoneConversion(it) }
         //data and time
         Text(
-            text = "Thu’s mar 22 15 PM",
-            fontWeight = FontWeight.Bold,
-            fontSize = 14.sp,
-            color = White
+            text = "$date",
+            fontSize = 16.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = Yellow
         )
 
 
         Row {
             Text(
-                text = "${26}",
+                text = "${weather.main?.temp}",
                 fontWeight = FontWeight.Bold,
-                fontSize = 48.sp,
+                fontSize = 64.sp,
                 color = White
             )
             //temp type K, C, F
+
             Text(
-                text = "°C",
+                text = "${weather.sys.}",
                 fontWeight = FontWeight.Bold,
                 fontSize = 42.sp,
                 color = White
@@ -359,32 +474,36 @@ fun TopSection() {
         }
 
 
-        //icon
-        //"https://openweathermap.org/img/wn/${weatherData.weather[0].icon}@4x.png"
-        Image(
-            painter = painterResource(id = R.drawable.cloud),
-
-            contentDescription = "Weather Icon",
-            modifier = Modifier
-                .size(120.dp)
-        )
+        /*   //icon
+           //"https://openweathermap.org/img/wn/${weatherData.weather[0].icon}@4x.png"
+           GlideImage(
+               contentDescription = "Weather Icon",
+               modifier = Modifier
+                   .size(120.dp),
+               model = "https://openweathermap.org/img/wn/${weatherData.weather[0].icon}@4x.png",
+           )*/
 
         Text(
-            text = "Cloudy",
-            color = White
-        )
+            text = "${weather.weather?.get(0)?.description}",
+            fontWeight = FontWeight.SemiBold,
+            color = Yellow,
+            fontSize = 18.sp,
+
+            )
         Text(
-            text = "Clouds: 123 %",
-            color = White
-        )
+            text = "Clouds: ${weather.clouds?.all}%",
+            fontWeight = FontWeight.SemiBold,
+            color = Yellow,
+            fontSize = 18.sp,
+
+            )
 
     }
 }
 
 
-@Preview(showBackground = true)
 @Composable
-fun WeatherDetails() {
+fun WeatherDetails(weather: CurrentResponseApi) {
     Column(
         modifier = Modifier
             .padding(0.dp)
@@ -410,9 +529,24 @@ fun WeatherDetails() {
 
     ) {
 
-        DetailedWeatherItem(label = "Pressure", value = "55", "hPa", icon = R.drawable.barometer)
-        DetailedWeatherItem(label = "Humidity", value = "89", "%", icon = R.drawable.water_drop)
-        DetailedWeatherItem(label = "Wind", value = "55", "Km/h", icon = R.drawable.wind)
+        DetailedWeatherItem(
+            label = "Pressure",
+            value = "${weather.main?.pressure}",
+            "hPa",
+            icon = R.drawable.barometer
+        )
+        DetailedWeatherItem(
+            label = "Humidity",
+            value = "${weather.main?.humidity}",
+            "%",
+            icon = R.drawable.water_drop
+        )
+        DetailedWeatherItem(
+            label = "Wind",
+            value = "${weather.wind?.deg}",
+            "Km/h",
+            icon = R.drawable.wind
+        )
 
     }
 

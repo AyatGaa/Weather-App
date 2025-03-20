@@ -50,10 +50,15 @@ android {
 }
 
 dependencies {
+//Scoped API
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose-android:2.8.7")
 
     //retrofit
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+//Glide
+    implementation("com.github.bumptech.glide:compose:1.0.0-beta01")
+
 
 
 
@@ -65,6 +70,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.lifecycle.runtime.compose.android)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
