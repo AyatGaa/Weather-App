@@ -232,7 +232,7 @@ fun DailyForecast(daily: List<ForecastItem>?) {
             text = "Next 5 Days",
             fontWeight = FontWeight.ExtraBold,
             color = White,
-            fontSize = 24.sp,
+            fontSize = 22.sp,
         )
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -333,9 +333,8 @@ fun HourlyForecast(hourly: List<ForecastItem>?) {
         Text(
             text = "Hourly Details",
             fontWeight = FontWeight.ExtraBold,
-            style = MaterialTheme.typography.headlineMedium,
-            color = White,
-            fontSize = 24.sp,
+             color = White,
+            fontSize = 22.sp,
         )
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -466,9 +465,9 @@ fun TopSection(weather: CurrentResponseApi) {
             //temp type K, C, F
 
             Text(
-                text = "${weather.sys.}",
+                text = " K",
                 fontWeight = FontWeight.Bold,
-                fontSize = 42.sp,
+                fontSize = 38.sp,
                 color = White
             )
         }
@@ -487,14 +486,14 @@ fun TopSection(weather: CurrentResponseApi) {
             text = "${weather.weather?.get(0)?.description}",
             fontWeight = FontWeight.SemiBold,
             color = Yellow,
-            fontSize = 18.sp,
+            fontSize = 16.sp,
 
             )
         Text(
             text = "Clouds: ${weather.clouds?.all}%",
             fontWeight = FontWeight.SemiBold,
             color = Yellow,
-            fontSize = 18.sp,
+            fontSize = 16.sp,
 
             )
 
@@ -513,7 +512,7 @@ fun WeatherDetails(weather: CurrentResponseApi) {
             text = "Weather Details",
             fontWeight = FontWeight.ExtraBold,
             color = White,
-            fontSize = 24.sp,
+            fontSize = 22.sp,
 
             )
     }
@@ -532,19 +531,19 @@ fun WeatherDetails(weather: CurrentResponseApi) {
         DetailedWeatherItem(
             label = "Pressure",
             value = "${weather.main?.pressure}",
-            "hPa",
+            " hPa",
             icon = R.drawable.barometer
         )
         DetailedWeatherItem(
             label = "Humidity",
             value = "${weather.main?.humidity}",
-            "%",
+            " %",
             icon = R.drawable.water_drop
         )
         DetailedWeatherItem(
             label = "Wind",
             value = "${weather.wind?.deg}",
-            "Km/h",
+            " Km/h",
             icon = R.drawable.wind
         )
 
