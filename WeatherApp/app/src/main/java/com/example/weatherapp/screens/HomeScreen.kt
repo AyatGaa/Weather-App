@@ -1,7 +1,16 @@
 package com.example.weatherapp.screens
 
 import ForecastItem
+import android.Manifest
+import android.app.Activity
+import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Build
 import android.util.Log
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -30,6 +39,8 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
@@ -42,6 +53,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -61,6 +73,7 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.rememberGlidePreloadingData
 import com.example.weatherapp.data.models.CurrentResponseApi
 import com.example.weatherapp.data.models.ResponseState
+import com.example.weatherapp.utils.location.hasLocationPermission
 import com.example.weatherapp.utils.timeZoneConversion
 import com.example.weatherapp.utils.timeZoneConversionToHourly
 
@@ -71,8 +84,22 @@ import com.example.weatherapp.utils.timeZoneConversionToHourly
 //    HomeScreen()
 //}
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreen(viewModel: HomeScreenViewModel) {
+
+    val c =LocalContext.current
+    RequestLocationPermission(
+        onPermissionGranted = {
+            viewModel.fetchLocation()
+        },
+        onPermissionDenied = {
+            Toast.makeText(c, "Location permission denied!", Toast.LENGTH_LONG).show()
+        }
+    )
+
+
+
     var currentScreen by remember { mutableStateOf<ScreenRoute>(ScreenRoute.Home) }
     val uiState by viewModel.currentWeatherData.collectAsStateWithLifecycle()
 
@@ -85,7 +112,18 @@ fun HomeScreen(viewModel: HomeScreenViewModel) {
     var hourly by remember { mutableStateOf<List<ForecastItem>?>(null) }
     var daily by remember { mutableStateOf<List<ForecastItem>?>(null) }
 
-//        viewModel.loadCurrentWeather(44.34, 10.99, "metric", "en")
+
+    val location by viewModel.currentLocation.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.fetchLocation()
+
+    }
+
+    location?.let { loc ->
+        Log.i("TAG", "HomeScreen:  ${loc.latitude}, Lon: ${loc.longitude}")
+        Text("Lat: ${loc.latitude}, Lon: ${loc.longitude}")
+    }
 
     when (uiState) {
 
@@ -599,6 +637,34 @@ fun DetailedWeatherItem(label: String, value: String, measurement: String, icon:
                     color = DarkBlue1
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun RequestLocationPermission(
+    onPermissionGranted: () -> Unit,
+    onPermissionDenied: () -> Unit
+) {
+    val context = LocalContext.current
+    val activity = context as? Activity
+
+    val requestPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            onPermissionGranted()
+        } else {
+            onPermissionDenied()
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        if (!context.hasLocationPermission())
+        {
+            requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+        } else {
+            onPermissionGranted()
         }
     }
 }
