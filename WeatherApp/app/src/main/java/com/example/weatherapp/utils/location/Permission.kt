@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import androidx.compose.ui.tooling.data.ContextCache
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 
 
@@ -17,3 +18,6 @@ fun Context.hasLocationPermission(): Boolean {
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED
 }
+
+
+

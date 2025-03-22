@@ -13,9 +13,11 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.Priority
 import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.launch
+import kotlin.time.Duration
 
 class DefaultLocationClient(
 
@@ -23,8 +25,8 @@ class DefaultLocationClient(
     private val fusedLocationProviderClient: FusedLocationProviderClient
 ) : LocationClient {
     @SuppressLint("MissingPermission")
-    override fun getCurrentLocation(): Flow<Location> {
-        return callbackFlow {
+    override fun getCurrentLocation():  Flow<Location>  {
+        return callbackFlow{
             if (!context.hasLocationPermission()) {
                 throw LocationClient.LocationException("Missing location permission")
             }
@@ -35,22 +37,26 @@ class DefaultLocationClient(
                 locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
 
             if (!isNetworkEnabled && !isGpsEnabled) {
+
                 throw LocationClient.LocationException("GPS is disables")
             }
-            //fetch location
 
-            val request = LocationRequest.Builder(0)
+            //fetch location
+            val request = LocationRequest.Builder(1000)//to delay request
                 .apply {
+                    Log.e("TAG", "getCurrentLocation: after set interval", )
                     setPriority(Priority.PRIORITY_HIGH_ACCURACY)
+                    Log.e("TAG", "222getCurrentLocation: after set interval", )
+
                 }.build()
 
+            //depounce
             val locationCallback = object : LocationCallback() {
                 override fun onLocationResult(result: LocationResult) {
                     super.onLocationResult(result)
-
                     result.lastLocation?.let { location ->
                         Log.i("TAG", "onLocationResult: ${result.lastLocation.toString()}")
-                      launch { send(location) }
+                        launch { send(location)  }
                     }
                 }
             }

@@ -10,6 +10,6 @@ interface WeatherRepository {
 
     suspend fun getCurrentWeather(lat:Double, lon:Double, lang:String): Flow<CurrentResponseApi>
     suspend fun getForecastWeather(lat:Double, lon:Double, lang:String): Flow<ForecastResponseApi>
-    suspend fun getCurrentLocation(): Flow<Location>
+
 
 }

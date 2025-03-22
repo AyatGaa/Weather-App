@@ -9,19 +9,17 @@ import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
 
 class WeatherRepositoryImpl(
-    private val remoteDataSource: WeatherRemoteDataSource,
-    private val locationClient: LocationClient
+    private val remoteDataSource: WeatherRemoteDataSource
 )  : WeatherRepository {
 
 
     companion object {
         private var INSTANCE: WeatherRepositoryImpl? = null
         fun getInstance(
-            remoteDataSource: WeatherRemoteDataSource,
-            locationClient: LocationClient
+            remoteDataSource: WeatherRemoteDataSource
          ): WeatherRepository {
             return INSTANCE ?: synchronized(this) {
-                val inst = WeatherRepositoryImpl(remoteDataSource,locationClient)
+                val inst = WeatherRepositoryImpl(remoteDataSource)
                 INSTANCE = inst
                 inst
             }
@@ -38,10 +36,6 @@ class WeatherRepositoryImpl(
         lang: String
     ): Flow<ForecastResponseApi> {
         return remoteDataSource.forecastWeather(lat,lon,lang)
-    }
-
-    override suspend fun getCurrentLocation(): Flow<Location> {
-        return locationClient.getCurrentLocation()
     }
 
 }
