@@ -158,9 +158,6 @@ fun HomeScreen(viewModel: HomeScreenViewModel, onNavigateTo:()->Unit) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         containerColor = BabyBlue,
-        bottomBar = {
-            BottomNavigationBar(navController )
-        }
 
         ) { innerPadding ->
 
