@@ -53,6 +53,8 @@ import com.example.weatherapp.homescreen.view.uicomponent.Failure
 import com.example.weatherapp.homescreen.view.uicomponent.HourlyForecast
 import com.example.weatherapp.ui.theme.component.LoadingIndicator
 import com.example.weatherapp.homescreen.view.uicomponent.WeatherDetails
+import com.example.weatherapp.screens.MainHeader
+import com.example.weatherapp.screens.TopAppBar
 import com.example.weatherapp.utils.location.DefaultLocationClient
 import com.example.weatherapp.utils.location.LocationClient
 import com.example.weatherapp.utils.location.hasLocationPermission
@@ -123,9 +125,9 @@ fun HomeScreen(viewModel: HomeScreenViewModel, onNavigateTo:()->Unit) {
 
 
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().padding(top = 32.dp),
         containerColor = BabyBlue,
-
+        topBar = { TopAppBar("Home")}
         ) { innerPadding ->
 
         when (uiState) {
@@ -164,8 +166,8 @@ fun HomeScreen(viewModel: HomeScreenViewModel, onNavigateTo:()->Unit) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxHeight()
-                .padding(innerPadding)
-                .padding(16.dp),
+                .padding(innerPadding),
+             //   .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
 

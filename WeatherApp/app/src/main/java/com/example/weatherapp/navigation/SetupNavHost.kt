@@ -22,6 +22,6 @@ fun SetupNavHost(navController: NavHostController, homeViewModel: HomeScreenView
         composable(ScreenRoute.Home.route) { HomeScreen(homeViewModel){} }
         composable(ScreenRoute.Favorites.route) { Favourite(){} }
         composable(ScreenRoute.Alerts.route) { Alert(){} }
-        composable(ScreenRoute.Settings.route) { Setting(){} }
+        composable(ScreenRoute.Settings.route) { Setting()  }
     }
 }
