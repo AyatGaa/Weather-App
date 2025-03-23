@@ -1,20 +1,22 @@
 package com.example.weatherapp.data.repository
 
 import ForecastResponseApi
+import android.location.Location
 import com.example.weatherapp.data.models.CurrentResponseApi
 import com.example.weatherapp.data.remote.WeatherRemoteDataSource
+import com.example.weatherapp.utils.location.LocationClient
 import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
 
 class WeatherRepositoryImpl(
-    private val remoteDataSource: WeatherRemoteDataSource,
+    private val remoteDataSource: WeatherRemoteDataSource
 )  : WeatherRepository {
 
 
     companion object {
         private var INSTANCE: WeatherRepositoryImpl? = null
         fun getInstance(
-            remoteDataSource: WeatherRemoteDataSource,
+            remoteDataSource: WeatherRemoteDataSource
          ): WeatherRepository {
             return INSTANCE ?: synchronized(this) {
                 val inst = WeatherRepositoryImpl(remoteDataSource)

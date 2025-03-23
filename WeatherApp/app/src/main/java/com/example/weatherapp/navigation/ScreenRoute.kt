@@ -1,18 +1,16 @@
 package com.example.weatherapp.navigation
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Favorite
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Notifications
-import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.ui.graphics.vector.ImageVector
-import com.example.weatherapp.R
-
-sealed class ScreenRoute(val route: String, val title: String, val icon: ImageVector ){
+sealed class ScreenRoute(val route: String) {
+    data object Home : ScreenRoute(NavRoutes.HOME_SCREEN)
+    data object Favorites : ScreenRoute(NavRoutes.FAVORITE_SCREEN)
+    data object Alerts : ScreenRoute(NavRoutes.ALERT_SCREEN)
+    data object Settings : ScreenRoute(NavRoutes.SETTING_SCREEN)
+}
 
 
-     object Home : ScreenRoute("home", "Home", Icons.Outlined.Home)
-    object Favorites : ScreenRoute("favorites", "Favorites", Icons.Outlined.Favorite)
-    object Alerts : ScreenRoute("alerts", "Alerts",Icons.Outlined.Notifications)
-    object Settings : ScreenRoute("settings", "Settings",  Icons.Outlined.Settings)
+object NavRoutes {
+    const val HOME_SCREEN = "Home"
+    const val FAVORITE_SCREEN = "Favorite"
+    const val SETTING_SCREEN = "Setting"
+    const val ALERT_SCREEN = "Alert"
 }
