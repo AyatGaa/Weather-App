@@ -1,4 +1,4 @@
-package com.example.weatherapp.uicomponent
+package com.example.weatherapp.homescreen.view.uicomponent
 
 import ForecastItem
 import androidx.compose.foundation.background

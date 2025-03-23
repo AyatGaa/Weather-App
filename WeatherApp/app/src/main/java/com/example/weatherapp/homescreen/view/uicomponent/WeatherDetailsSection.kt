@@ -1,4 +1,4 @@
-package com.example.weatherapp.uicomponent
+package com.example.weatherapp.homescreen.view.uicomponent
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

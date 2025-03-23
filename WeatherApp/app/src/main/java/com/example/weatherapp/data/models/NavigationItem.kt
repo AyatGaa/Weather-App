@@ -1,3 +1,10 @@
 package com.example.weatherapp.data.models
 
-data class NavigationItem()
+import androidx.compose.ui.graphics.vector.ImageVector
+
+data class NavigationItem(
+    val title: String,
+    val route: String,
+    val selected: ImageVector,
+    val unSelected: ImageVector
+)

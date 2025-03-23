@@ -1,4 +1,4 @@
-package com.example.weatherapp.viewmodel
+package com.example.weatherapp.homescreen.viewmodel
 
 import ForecastItem
 import ForecastResponseApi

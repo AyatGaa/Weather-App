@@ -1,4 +1,4 @@
-package com.example.weatherapp.uicomponent
+package com.example.weatherapp.ui.theme.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
