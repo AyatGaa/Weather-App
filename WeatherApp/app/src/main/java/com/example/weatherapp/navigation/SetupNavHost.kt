@@ -9,12 +9,15 @@ import androidx.navigation.compose.composable
 import com.example.weatherapp.screens.Alert
 import com.example.weatherapp.screens.Favourite
 import com.example.weatherapp.homescreen.view.HomeScreen
-import com.example.weatherapp.screens.Setting
+import com.example.weatherapp.setting.Setting
 import com.example.weatherapp.homescreen.viewmodel.HomeScreenViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun SetupNavHost(navController: NavHostController, homeViewModel: HomeScreenViewModel) {
+fun SetupNavHost(
+    navController: NavHostController,
+    homeViewModel: HomeScreenViewModel,
+ ) {
     NavHost(
         navController = navController,
         startDestination = ScreenRoute.Home.route
@@ -22,6 +25,6 @@ fun SetupNavHost(navController: NavHostController, homeViewModel: HomeScreenView
         composable(ScreenRoute.Home.route) { HomeScreen(homeViewModel){} }
         composable(ScreenRoute.Favorites.route) { Favourite(){} }
         composable(ScreenRoute.Alerts.route) { Alert(){} }
-        composable(ScreenRoute.Settings.route) { Setting()  }
+        composable(ScreenRoute.Settings.route) { Setting( )   }
     }
 }

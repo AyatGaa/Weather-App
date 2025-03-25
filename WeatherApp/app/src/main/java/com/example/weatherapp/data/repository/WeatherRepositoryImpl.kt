@@ -26,16 +26,17 @@ class WeatherRepositoryImpl(
         }
     }
 
-    override suspend fun getCurrentWeather(lat: Double, lon: Double, lang: String) :Flow<CurrentResponseApi>{
-       return remoteDataSource.currentWeather(lat,lon,lang)
+    override suspend fun getCurrentWeather(lat: Double, lon: Double, lang: String, units:String) :Flow<CurrentResponseApi>{
+       return remoteDataSource.currentWeather(lat,lon,lang,units)
     }
 
     override suspend fun getForecastWeather(
         lat: Double,
         lon: Double,
-        lang: String
+        lang: String,
+        units:String
     ): Flow<ForecastResponseApi> {
-        return remoteDataSource.forecastWeather(lat,lon,lang)
+        return remoteDataSource.forecastWeather(lat,lon,lang,units)
     }
 
 }

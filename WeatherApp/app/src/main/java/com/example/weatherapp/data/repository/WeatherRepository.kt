@@ -8,8 +8,8 @@ import retrofit2.Response
 
 interface WeatherRepository {
 
-    suspend fun getCurrentWeather(lat:Double, lon:Double, lang:String): Flow<CurrentResponseApi>
-    suspend fun getForecastWeather(lat:Double, lon:Double, lang:String): Flow<ForecastResponseApi>
+    suspend fun getCurrentWeather(lat:Double, lon:Double, lang:String,  units:String): Flow<CurrentResponseApi>
+    suspend fun getForecastWeather(lat:Double, lon:Double, lang:String, units:String): Flow<ForecastResponseApi>
 
 
 }

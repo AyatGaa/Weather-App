@@ -7,6 +7,6 @@ import retrofit2.Response
 
 interface WeatherRemoteDataSource {
 
-    suspend fun currentWeather(lat:Double, lon:Double, lang:String): Flow<CurrentResponseApi>
-    suspend fun forecastWeather(lat:Double, lon:Double, lang:String): Flow<ForecastResponseApi>
+    suspend fun currentWeather(lat:Double, lon:Double, lang:String, units:String): Flow<CurrentResponseApi>
+    suspend fun forecastWeather(lat:Double, lon:Double, lang:String, units:String): Flow<ForecastResponseApi>
 }

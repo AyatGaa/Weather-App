@@ -2,12 +2,11 @@ package com.example.weatherapp
 
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -24,6 +23,8 @@ import com.example.weatherapp.navigation.SetupNavHost
 import com.example.weatherapp.homescreen.viewmodel.CurrentWeatherFactory
 import com.example.weatherapp.homescreen.viewmodel.HomeScreenViewModel
 
+import com.example.weatherapp.utils.SharedObject
+
 class MainActivity : ComponentActivity() {
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -31,8 +32,11 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            Log.w("TAG", "onCreate: share init", )
+            SharedObject.init(this)
 
-            val viewModel = ViewModelProvider(
+
+            val viewModelHome = ViewModelProvider(
                 this,
                 CurrentWeatherFactory(
                     repo = WeatherRepositoryImpl.getInstance(
@@ -42,6 +46,7 @@ class MainActivity : ComponentActivity() {
                     )
                 )
             )[HomeScreenViewModel::class.java]
+
 
             val navController = rememberNavController()
             Scaffold(
@@ -55,7 +60,7 @@ class MainActivity : ComponentActivity() {
                 Row   (modifier = Modifier
                     .fillMaxSize()
                    ) {
-                    SetupNavHost(navController = navController, viewModel)
+                    SetupNavHost(navController = navController, viewModelHome)
                 }
 
             }

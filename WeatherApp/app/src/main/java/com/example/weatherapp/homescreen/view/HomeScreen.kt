@@ -24,14 +24,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.setValue
-
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -39,72 +36,82 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat.startActivities
-import com.example.weatherapp.navigation.ScreenRoute
-import com.example.weatherapp.ui.theme.BabyBlue
-import com.example.weatherapp.ui.theme.White
-import com.example.weatherapp.ui.theme.Yellow
-import com.example.weatherapp.homescreen.viewmodel.HomeScreenViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.compose.rememberNavController
 import com.example.weatherapp.data.models.CurrentResponseApi
 import com.example.weatherapp.data.models.ResponseState
 import com.example.weatherapp.homescreen.view.uicomponent.DailyForecast
 import com.example.weatherapp.homescreen.view.uicomponent.Failure
 import com.example.weatherapp.homescreen.view.uicomponent.HourlyForecast
-import com.example.weatherapp.ui.theme.component.LoadingIndicator
 import com.example.weatherapp.homescreen.view.uicomponent.WeatherDetails
-import com.example.weatherapp.screens.MainHeader
-import com.example.weatherapp.screens.TopAppBar
+import com.example.weatherapp.homescreen.viewmodel.HomeScreenViewModel
+ import com.example.weatherapp.ui.theme.BabyBlue
+import com.example.weatherapp.ui.theme.White
+import com.example.weatherapp.ui.theme.Yellow
+import com.example.weatherapp.ui.theme.component.LoadingIndicator
+import com.example.weatherapp.ui.theme.component.TopAppBar
+import com.example.weatherapp.utils.getTempUnit
 import com.example.weatherapp.utils.location.DefaultLocationClient
 import com.example.weatherapp.utils.location.LocationClient
 import com.example.weatherapp.utils.location.hasLocationPermission
 import com.example.weatherapp.utils.timeZoneConversion
 import com.google.android.gms.location.LocationServices
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.launch
 
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun HomeScreen(viewModel: HomeScreenViewModel, onNavigateTo:()->Unit) {
+fun HomeScreen(viewModel: HomeScreenViewModel, onNavigateTo: () -> Unit) {
 
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
-    var currentScreen by remember { mutableStateOf<ScreenRoute>(ScreenRoute.Home) }
+
     val uiState by viewModel.currentWeatherData.collectAsStateWithLifecycle()
     val hourlyForecast by viewModel.hourlyWeatherData.collectAsStateWithLifecycle()
     val dailyForecast by viewModel.dailyWeatherData.collectAsStateWithLifecycle()
 
+    val lang by viewModel.lang.collectAsStateWithLifecycle()
+    val units by viewModel.unit.collectAsStateWithLifecycle()
+
     val locationClient: LocationClient =
         DefaultLocationClient(context, LocationServices.getFusedLocationProviderClient(context))
 
+    LaunchedEffect(lang) {
+      try {
+          locationClient.getCurrentLocation()
+              .collect { location ->
+                  Log.w("TAG", "Updated Language: $lang")
+                  Log.w("TAG", "Updated UNITS: $units")
+                  viewModel.loadForecastWeather(location.latitude, location.longitude, lang, units)
+                  viewModel.loadCurrentWeather(location.latitude, location.longitude, lang, units)
+              }
+      }catch (e:Exception){
 
+          Log.i("TAG", "HomeScreenEX: Can no get location")
+      }
+
+
+    }
 
     RequestLocationPermission(
         onPermissionGranted = {
             scope.launch {
                 locationClient.getCurrentLocation()
-                    .retry { e ->
-                        if (e is LocationClient.LocationException) {
-                            enableLocationService(context)
-                            delay(2000)
-                            return@retry true // gammed
-                        }
-                        false
-                    }
-
-                    .catch { e ->
-                        Log.e("TAG", "Error Fetching Location: ${e.message}")
-
-                    }.collect { location ->
-                        Log.w(
-                            "TAG",
-                            "Home Location Fetched: ${location.latitude}, ${location.longitude}"
+                    .collect { location ->
+                        Log.w("TAG", "Home Location: ${location.latitude}, ${location.longitude}")
+                        Log.w("TAG", "API Call with lang: $lang")
+                        Log.w("TAG", "API Call with UNITS: $units")
+                        viewModel.loadForecastWeather(
+                            location.latitude,
+                            location.longitude,
+                            lang,
+                            units
                         )
-                        viewModel.loadForecastWeather(location.latitude, location.longitude, "en")
-                        viewModel.loadCurrentWeather(location.latitude, location.longitude, "en")
+                        viewModel.loadCurrentWeather(
+                            location.latitude,
+                            location.longitude,
+                            lang,
+                            units
+                        )
                     }
             }
         },
@@ -114,36 +121,29 @@ fun HomeScreen(viewModel: HomeScreenViewModel, onNavigateTo:()->Unit) {
         }
     )
 
-
-    val message by viewModel.mutableMessage.collectAsStateWithLifecycle("")
     var weather by remember { mutableStateOf<CurrentResponseApi?>(null) }
     var hourly by remember { mutableStateOf<List<ForecastItem>?>(null) }
     var daily by remember { mutableStateOf<List<ForecastItem>?>(null) }
 
-    val navController = rememberNavController()
-    var selectedIndex by rememberSaveable { mutableIntStateOf(0) }
-
 
     Scaffold(
-        modifier = Modifier.fillMaxSize().padding(top = 32.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(top = 32.dp),
         containerColor = BabyBlue,
-        topBar = { TopAppBar("Home")}
-        ) { innerPadding ->
+        topBar = { TopAppBar("Home") }
+    ) { innerPadding ->
 
         when (uiState) {
             is ResponseState.Loading -> LoadingIndicator()
-
             is ResponseState.Success -> {
                 weather = (uiState as ResponseState.Success).data
             }
 
-
             is ResponseState.Failure -> Failure("Can not Reload Data")
         }
         when (hourlyForecast) {
-
             is ResponseState.Loading -> LoadingIndicator()
-
             is ResponseState.Success -> {
                 Log.i("TAG", "HomeScreen: success")
                 hourly = (hourlyForecast as ResponseState.Success).data
@@ -167,12 +167,11 @@ fun HomeScreen(viewModel: HomeScreenViewModel, onNavigateTo:()->Unit) {
             modifier = Modifier
                 .fillMaxHeight()
                 .padding(innerPadding),
-             //   .padding(16.dp),
+            //   .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
 
             weather?.let { weatherData ->
-
                 // Top Section
                 item {
                     Log.d("TAG", "HomeScreen: waether compose")
@@ -228,15 +227,15 @@ fun TopSection(weather: CurrentResponseApi) {
 
         Row {
             Text(
-                text = "${weather.main?.temp}",
+                text = "${weather.main?.temp?.toInt()}",
                 fontWeight = FontWeight.Bold,
                 fontSize = 64.sp,
                 color = White
             )
             //temp type K, C, F
-
+            val measure = getTempUnit()
             Text(
-                text = " K",
+                text = measure,
                 fontWeight = FontWeight.Bold,
                 fontSize = 38.sp,
                 color = White
@@ -245,14 +244,14 @@ fun TopSection(weather: CurrentResponseApi) {
 
 
         /*   //icon
-           //"https://openweathermap.org/img/wn/${weatherData.weather[0].icon}@4x.png"
-           GlideImage(
-               contentDescription = "Weather Icon",
-               modifier = Modifier
-                   .size(120.dp),
-               model = "https://openweathermap.org/img/wn/${weatherData.weather[0].icon}@4x.png",
-           )*/
 
+            GlideImage(
+
+                contentDescription = "Weather Icon",
+                modifier = Modifier.fillMaxSize(),
+                model = getWeatherIcon(weather.weather?.get(0)?.icon.toString()),
+            )
+ */
         Text(
             text = "${weather.weather?.get(0)?.description}",
             fontWeight = FontWeight.SemiBold,

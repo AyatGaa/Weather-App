@@ -14,6 +14,7 @@ interface WeatherApiService {
             @Query("lat") lat :Double,
             @Query("lon") lon:Double,
             @Query("lang") language:String,
+            @Query("units") units:String,
             @Query("appid") apiKey:String  = BuildConfig.apiKeySafe
         ): Response<CurrentResponseApi>
 
@@ -22,6 +23,7 @@ interface WeatherApiService {
             @Query("lat") lat :Double,
             @Query("lon") lon:Double,
             @Query("lang") language:String,
+            @Query("units") units:String,
             @Query("appid") apiKey:String = BuildConfig.apiKeySafe
         ): Response<ForecastResponseApi>
 
