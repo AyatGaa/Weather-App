@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.weatherapp.favorite.FavoriteScreenViewModel
 import com.example.weatherapp.screens.Alert
 import com.example.weatherapp.screens.Favourite
 import com.example.weatherapp.homescreen.view.HomeScreen
@@ -18,13 +19,14 @@ import com.example.weatherapp.setting.uicomponent.MapScreen
 fun SetupNavHost(
     navController: NavHostController,
     homeViewModel: HomeScreenViewModel,
+    favoriteViewModel: FavoriteScreenViewModel,
  ) {
     NavHost(
         navController = navController,
         startDestination = ScreenRoute.Home.route
     ) {
         composable(ScreenRoute.Home.route) { HomeScreen(homeViewModel){} }
-        composable(ScreenRoute.Favorites.route) { Favourite(){} }
+        composable(ScreenRoute.Favorites.route) { Favourite(favoriteViewModel)  }
         composable(ScreenRoute.Alerts.route) { Alert(){} }
         composable(ScreenRoute.Settings.route) { Setting( )   }
      }
