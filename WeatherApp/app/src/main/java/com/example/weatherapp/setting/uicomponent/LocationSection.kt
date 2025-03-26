@@ -14,6 +14,7 @@ import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonColors
 import androidx.compose.material3.Text
@@ -24,14 +25,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
+import com.example.weatherapp.ui.theme.BabyBlue
 import com.example.weatherapp.ui.theme.DarkBlue2
 import com.example.weatherapp.ui.theme.Gray
+import com.example.weatherapp.ui.theme.White
 import com.example.weatherapp.utils.SharedObject
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -52,7 +54,7 @@ fun LocationSection( ) {
     }
 
 
-     var showMapDialog by remember { mutableStateOf(false) } // Control map dialog visibility
+     var showMapDialog by remember { mutableStateOf(false) }
     var selectedLocation by remember { mutableStateOf<LatLng?>(null) }
 
     Column(
@@ -75,7 +77,7 @@ fun LocationSection( ) {
                             selectedLoc = text
                             SharedObject.saveString("loc", selectedLoc)
                             if (selectedLoc == "Map") {
-                                showMapDialog = true // Open map dialog
+                                showMapDialog = true
                             }
 
                             Toast.makeText(
@@ -119,7 +121,7 @@ fun LocationSection( ) {
                 selectedLocation = latLng
                SharedObject.saveString("lat","${ latLng.latitude }" )
                SharedObject.saveString("lon","${latLng.longitude}")
-                showMapDialog = false // Close dialog after selecting location
+                showMapDialog = false //to close dialog
             }
         )
     }
@@ -130,7 +132,11 @@ fun MapDialog(
     onDismiss: () -> Unit,
     onLocationSelected: (LatLng) -> Unit
 ) {
-    var selectedLocation by remember { mutableStateOf(LatLng(40.9971, 29.1007)) }
+    var selectedLocation by remember {
+        mutableStateOf(
+            LatLng( SharedObject.getString("lat","0").toDouble(),
+                    SharedObject.getString("lon","0").toDouble())) }
+
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(selectedLocation, 15f)
     }
@@ -139,12 +145,15 @@ fun MapDialog(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.White)
+                .background(BabyBlue)
         ) {
-            Text("Select Location", modifier = Modifier.padding(16.dp))
+
+            Text("Select Location", modifier = Modifier
+                .padding(16.dp)
+            )
 
             GoogleMap(
-                modifier = Modifier.weight(1f), // Take most space in dialog
+                modifier = Modifier.weight(1f),
                 cameraPositionState = cameraPositionState,
                 onMapClick = { latLng ->
                     selectedLocation = latLng
@@ -154,11 +163,17 @@ fun MapDialog(
             ) {
                 Marker(
                     state = MarkerState(position = selectedLocation),
-                    title = "Selected Location"
+                    title = "Here"
                 )
             }
 
             Button(
+                colors = ButtonColors(
+                    contentColor = White,
+                    containerColor = DarkBlue2,
+                    disabledContentColor = DarkBlue2,
+                    disabledContainerColor = DarkBlue2
+                ),
                 onClick = {
                     onLocationSelected(selectedLocation)
                     onDismiss()
@@ -167,14 +182,15 @@ fun MapDialog(
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
-                Text("Confirm Location")
+                Text(
+                    text= "Confirm Location")
             }
         }
     }
 }
 
 
-
+//unused
 @Composable
 fun MapScreen(navController: NavController, onLocationSelected: (LatLng) -> Unit){
 

@@ -1,7 +1,6 @@
 package com.example.weatherapp.setting
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -11,16 +10,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.example.weatherapp.setting.uicomponent.LanguageSection
 import com.example.weatherapp.setting.uicomponent.LocationSection
 import com.example.weatherapp.setting.uicomponent.UnitsSection
 import com.example.weatherapp.ui.theme.BabyBlue
 import com.example.weatherapp.ui.theme.component.TopAppBar
- import com.google.android.gms.maps.model.CameraPosition
-import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.compose.GoogleMap
-import com.google.maps.android.compose.rememberCameraPositionState
 
 @Composable
 fun Setting( ) {
