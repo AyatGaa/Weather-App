@@ -44,17 +44,20 @@ import com.example.weatherapp.homescreen.view.uicomponent.Failure
 import com.example.weatherapp.homescreen.view.uicomponent.HourlyForecast
 import com.example.weatherapp.homescreen.view.uicomponent.WeatherDetails
 import com.example.weatherapp.homescreen.viewmodel.HomeScreenViewModel
- import com.example.weatherapp.ui.theme.BabyBlue
+import com.example.weatherapp.ui.theme.BabyBlue
 import com.example.weatherapp.ui.theme.White
 import com.example.weatherapp.ui.theme.Yellow
 import com.example.weatherapp.ui.theme.component.LoadingIndicator
 import com.example.weatherapp.ui.theme.component.TopAppBar
+import com.example.weatherapp.utils.SharedObject
 import com.example.weatherapp.utils.getTempUnit
 import com.example.weatherapp.utils.location.DefaultLocationClient
 import com.example.weatherapp.utils.location.LocationClient
 import com.example.weatherapp.utils.location.hasLocationPermission
 import com.example.weatherapp.utils.timeZoneConversion
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.model.LatLng
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
 
@@ -69,37 +72,67 @@ fun HomeScreen(viewModel: HomeScreenViewModel, onNavigateTo: () -> Unit) {
     val hourlyForecast by viewModel.hourlyWeatherData.collectAsStateWithLifecycle()
     val dailyForecast by viewModel.dailyWeatherData.collectAsStateWithLifecycle()
 
-    val lang by viewModel.lang.collectAsStateWithLifecycle()
-    val units by viewModel.unit.collectAsStateWithLifecycle()
+    val lang by viewModel.lang
+    val units by viewModel.unit
+
+    val lat by viewModel.mapLat
+    val lon by viewModel.mapLon
 
     val locationClient: LocationClient =
         DefaultLocationClient(context, LocationServices.getFusedLocationProviderClient(context))
-
-    LaunchedEffect(lang) {
-      try {
-          locationClient.getCurrentLocation()
-              .collect { location ->
-                  Log.w("TAG", "Updated Language: $lang")
-                  Log.w("TAG", "Updated UNITS: $units")
-                  viewModel.loadForecastWeather(location.latitude, location.longitude, lang, units)
-                  viewModel.loadCurrentWeather(location.latitude, location.longitude, lang, units)
-              }
-      }catch (e:Exception){
-
-          Log.i("TAG", "HomeScreenEX: Can no get location")
-      }
-
-
-    }
 
     RequestLocationPermission(
         onPermissionGranted = {
             scope.launch {
                 locationClient.getCurrentLocation()
                     .collect { location ->
-                        Log.w("TAG", "Home Location: ${location.latitude}, ${location.longitude}")
-                        Log.w("TAG", "API Call with lang: $lang")
-                        Log.w("TAG", "API Call with UNITS: $units")
+                        Log.w(
+                            "TAG",
+                            "RequestLocationPermission= Home Location: ${location.latitude}, ${location.longitude}"
+                        )
+                        Log.w("TAG", "RequestLocationPermission =API Call with lang: $lang")
+                        Log.w("TAG", "RequestLocationPermission =API Call with UNITS: $units")
+                        if (SharedObject.getString("loc", "GPS") == "Map") {
+                            viewModel.loadForecastWeather(lat, lon, lang, units)
+                            viewModel.loadCurrentWeather(lat, lon, lang, units)
+                        } else {
+                            viewModel.loadForecastWeather(
+                                location.latitude,
+                                location.longitude,
+                                lang,
+                                units
+                            )
+                            viewModel.loadCurrentWeather(
+                                location.latitude,
+                                location.longitude,
+                                lang,
+                                units
+                            )
+                        }
+                    }
+            }
+        },
+        onPermissionDenied = {
+            enableLocationService(context)
+            Toast.makeText(context, "Location permission denied!", Toast.LENGTH_LONG).show()
+        }
+    )
+
+    LaunchedEffect(lang) {
+        try {
+            locationClient.getCurrentLocation()
+                .catch { e ->
+                    Toast.makeText(context, "Turn On location Please", Toast.LENGTH_LONG).show()
+                    enableLocationService(context)
+                }
+                .collect { location ->
+                    Log.w("TAG", "LaunchedEffect Updated,, Language: $lang")
+                    Log.w("TAG", "LaunchedEffect Updated,, UNITS: $units")
+                    if (SharedObject.getString("loc", "GPS") == "Map") {
+                        viewModel.loadForecastWeather(lat, lon, lang, units)
+                        viewModel.loadCurrentWeather(lat, lon, lang, units)
+                    } else {
+
                         viewModel.loadForecastWeather(
                             location.latitude,
                             location.longitude,
@@ -112,14 +145,14 @@ fun HomeScreen(viewModel: HomeScreenViewModel, onNavigateTo: () -> Unit) {
                             lang,
                             units
                         )
+
                     }
-            }
-        },
-        onPermissionDenied = {
-            enableLocationService(context)
-            Toast.makeText(context, "Location permission denied!", Toast.LENGTH_LONG).show()
+                }
+        } catch (e: Exception) {
+            Log.i("TAG", "HomeScreenEX: Can no get location")
         }
-    )
+    }
+
 
     var weather by remember { mutableStateOf<CurrentResponseApi?>(null) }
     var hourly by remember { mutableStateOf<List<ForecastItem>?>(null) }
@@ -272,7 +305,6 @@ fun TopSection(weather: CurrentResponseApi) {
 
 
 fun enableLocationService(context: Context) {
-    Toast.makeText(context, "Turn on location", Toast.LENGTH_LONG).show()
     val intent = arrayOf(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
     startActivities(context, intent)
 }
@@ -296,8 +328,9 @@ fun RequestLocationPermission(
 
     LaunchedEffect(Unit) {
         if (!context.hasLocationPermission()) {
-            //enableLocationService(context)
             requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+            requestPermissionLauncher.launch(Manifest.permission.ACCESS_COARSE_LOCATION)
+            //   enableLocationService(context)
         } else {
             onPermissionGranted()
         }

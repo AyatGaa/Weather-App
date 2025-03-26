@@ -21,7 +21,7 @@ class DefaultLocationClient(
     override suspend fun getCurrentLocation(): Flow<Location> {
         return callbackFlow {
             if (!context.hasLocationPermission()) {
-                close(LocationClient.LocationException("Missing location permission"))
+                 throw LocationClient.LocationException("Missing location permission")
 
             }
 
@@ -30,7 +30,7 @@ class DefaultLocationClient(
             val isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
 
             if (!isGpsEnabled && !isNetworkEnabled) {
-                close(LocationClient.LocationException("GPS is disabled"))
+                throw LocationClient.LocationException("GPS is disabled")
 
             }
 

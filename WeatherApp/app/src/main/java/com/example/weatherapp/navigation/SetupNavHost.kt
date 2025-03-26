@@ -11,6 +11,7 @@ import com.example.weatherapp.screens.Favourite
 import com.example.weatherapp.homescreen.view.HomeScreen
 import com.example.weatherapp.setting.Setting
 import com.example.weatherapp.homescreen.viewmodel.HomeScreenViewModel
+import com.example.weatherapp.setting.uicomponent.MapScreen
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -26,5 +27,5 @@ fun SetupNavHost(
         composable(ScreenRoute.Favorites.route) { Favourite(){} }
         composable(ScreenRoute.Alerts.route) { Alert(){} }
         composable(ScreenRoute.Settings.route) { Setting( )   }
-    }
+     }
 }
