@@ -46,29 +46,24 @@ import com.example.weatherapp.ui.theme.Yellow
 
 val navigationItems = listOf(
     NavigationItem(
-
-        id=0,
         title = "Home",
         selected = R.drawable.home_fill,
         unSelected =  R.drawable.home_outline,
         route = ScreenRoute.Home
     ),
     NavigationItem(
-        id=1,
         title = "Alert",
         selected =  R.drawable.alert_fill,
         unSelected =  R.drawable.alert_outline,
         route = ScreenRoute.Alerts
     ),
     NavigationItem(
-        id=2,
         title = "Favorite",
         selected =R.drawable.fav_fill,
         unSelected = R.drawable.fav_outline,
         route = ScreenRoute.Favorites(0.0,0.0)
     ),
     NavigationItem(
-        id =3,
         title = "Setting",
         selected = R.drawable.setting_fill,
         unSelected =R.drawable.setting_outline,
@@ -78,7 +73,6 @@ val navigationItems = listOf(
 
 @Composable
 fun BottomNavigationBar(navController: NavController) {
-  //  val navController = rememberNavController()
     val navStackBackEntry by navController.currentBackStackEntryAsState()
     val currentDestination3 = navStackBackEntry?.destination
     Row(
@@ -113,9 +107,7 @@ fun AddItem(
     onNavigateItem:()->Unit
 ) {
 
-//    val selected = currentDestination?.hierarchy?.any { it.id == item.id  } == true
     val selected = isRouteSelected(item.route, currentDestination)
-
      val container = if (selected) Yellow else White
 
     val background = if (selected) DarkBlue2.copy(alpha = 0.3f) else Color.Transparent

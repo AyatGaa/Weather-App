@@ -10,14 +10,15 @@ sealed class ScreenRoute() {
     @Serializable
     data object Home : ScreenRoute()
 
-@Serializable
-   data class  Favorites(val lat:Double, val lon:Double) : ScreenRoute()
+    @Serializable
+    data class Favorites(val lat: Double =0.0, val lon: Double=0.0) : ScreenRoute()
 
     @Serializable
     data object Alerts : ScreenRoute()
 
     @Serializable
     data object Settings : ScreenRoute()
+
     @Serializable
     data object MapScreen : ScreenRoute()
 

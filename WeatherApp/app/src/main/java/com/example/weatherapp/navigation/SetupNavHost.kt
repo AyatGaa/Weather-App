@@ -4,6 +4,7 @@ import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -29,17 +30,17 @@ import com.example.weatherapp.setting.Setting
 import com.example.weatherapp.homescreen.viewmodel.HomeScreenViewModel
 import com.example.weatherapp.setting.uicomponent.MapScreen
 import com.google.android.gms.maps.model.LatLng
+const val LOCATION_RESULT_KEY = "location_result"
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun SetupNavHost(navController: NavHostController
  ) {
-   // var navController = rememberNavController()
+
     NavHost(
         navController = navController,
         startDestination = ScreenRoute.Home
     ) {
-       // composable(ScreenRoute.Home.route) { HomeScreen(homeViewModel){} }
         composable<ScreenRoute.Home> {
         val context = LocalContext.current
 
@@ -58,8 +59,6 @@ fun SetupNavHost(navController: NavHostController
             HomeScreen (viewModelHome){}
         }
 
-        //composable(ScreenRoute.Favorites.route) { Favourite(navController,favoriteViewModel,latLng)  }
-
         composable<ScreenRoute.Favorites> {
             val context = LocalContext.current
 
@@ -76,19 +75,20 @@ fun SetupNavHost(navController: NavHostController
             val viewModelFavorite :FavoriteScreenViewModel =  viewModel(factory = favoriteFactory)
 
             val profile = it.toRoute<ScreenRoute.Favorites>( )
+            Log.d("TAG", "SetupNavHost FAVVV: LatLong PROFILE ${profile.lat},,${profile.lon}")
+
             val latLng = LatLng(profile.lat,profile.lon)
-            Favourite(viewModelFavorite){
+
+            Favourite(viewModelFavorite, latLng){
                 navController.navigate(ScreenRoute.MapScreen)
             }
         }
 
 
-       // composable(ScreenRoute.Alerts.route) { Alert(){} }
         composable<ScreenRoute.Alerts> {
             val profile = it.toRoute<ScreenRoute.Alerts>( )
             Alert(){}
         }
-   //     composable(ScreenRoute.Settings.route) { Setting( )   }
         composable<ScreenRoute.Settings> {
             val profile = it.toRoute<ScreenRoute.Settings>( )
             Setting ()
@@ -97,13 +97,18 @@ fun SetupNavHost(navController: NavHostController
 
         composable<ScreenRoute.MapScreen> {
                 val profile = it.toRoute<ScreenRoute.Favorites>( )
-            MapScreen() {
-           //     Favourite(navController,favoriteViewModel,latLng)
-             navController.navigate(ScreenRoute.Favorites(profile.lat,profile.lon))
-                navController.popBackStack()
-                val latLng= LatLng(profile.lat,profile.lon)
 
+            MapScreen() {locationFromMap->
+//                navController.previousBackStackEntry
+//                    ?.savedStateHandle
+//                    ?.set(LOCATION_RESULT_KEY, LatLng(it.latitude, it.longitude))
+
+                navController.popBackStack()
+                navController.navigate(ScreenRoute.Favorites(locationFromMap.latitude.toDouble(), locationFromMap.longitude))
             }
+
+                Log.w("TAG", "SetupNavHost: inMAP Screen", )
+
         }
 
 

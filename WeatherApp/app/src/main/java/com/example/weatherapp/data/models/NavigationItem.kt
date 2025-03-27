@@ -6,7 +6,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class NavigationItem(
-    val id :Int,
     val title: String,
     val route: ScreenRoute,
     val selected: Int,
