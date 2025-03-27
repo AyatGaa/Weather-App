@@ -269,8 +269,6 @@ fun MapScreen(
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 24.dp)
                 .statusBarsPadding(),
-
-
             ) {
             TextField(
                 value = " ",
@@ -281,8 +279,7 @@ fun MapScreen(
                 Modifier
                     .fillMaxWidth()
                     .background(Color.White, shape = RoundedCornerShape(12.dp))
-                    .shadow(4.dp, RoundedCornerShape(12.dp))
-                    .padding(8.dp),
+                    .shadow(6.dp, shape = RoundedCornerShape(12.dp)),
 
                 leadingIcon = {
                     Icon(
