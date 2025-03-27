@@ -56,28 +56,34 @@ class MainActivity : ComponentActivity() {
             )
         )
         setContent {
+            val navController = rememberNavController()
+
+            val viewModelHome =
+                ViewModelProvider(this, homeFactory)[HomeScreenViewModel::class.java]
+            val favoriteLocationViewModel =
+                ViewModelProvider(this, favoriteFactory)[FavoriteScreenViewModel::class.java]
+
+            SetupNavHost(navController)
             Log.w("TAG", "onCreate: share init")
             SharedObject.init(this)
 
 
-            val viewModelHome = ViewModelProvider(this, homeFactory)[HomeScreenViewModel::class.java]
-            val favoriteLocationViewModel = ViewModelProvider(this, favoriteFactory)[FavoriteScreenViewModel::class.java]
-
-
-            val navController = rememberNavController()
             Scaffold(
 
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(bottom = 32.dp),
 
-                bottomBar = { BottomNavigationBar(navController = navController) }
+                bottomBar = {
+                    BottomNavigationBar(navController
+                    )
+                }
             ) { pad ->
                 Row(
                     modifier = Modifier
                         .fillMaxSize()
                 ) {
-                    SetupNavHost(navController = navController, viewModelHome,favoriteLocationViewModel)
+                    SetupNavHost(navController)
                 }
 
             }

@@ -1,6 +1,8 @@
 package com.example.weatherapp.setting.uicomponent
 
 import android.util.Log
+import android.widget.AutoCompleteTextView
+import android.widget.EditText
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -15,8 +17,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonColors
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -25,11 +29,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
+import com.example.weatherapp.navigation.ScreenRoute
 import com.example.weatherapp.ui.theme.BabyBlue
 import com.example.weatherapp.ui.theme.DarkBlue2
 import com.example.weatherapp.ui.theme.Gray
@@ -46,15 +52,15 @@ import com.google.maps.android.compose.rememberCameraPositionState
 
 
 @Composable
-fun LocationSection( ) {
+fun LocationSection() {
     val context = LocalContext.current
     val locationOptions = listOf("GPS", "Map")
-     var selectedLoc by remember {
-        mutableStateOf(SharedObject.getString("loc","GPS"))
+    var selectedLoc by remember {
+        mutableStateOf(SharedObject.getString("loc", "GPS"))
     }
 
 
-     var showMapDialog by remember { mutableStateOf(false) }
+    var showMapDialog by remember { mutableStateOf(false) }
     var selectedLocation by remember { mutableStateOf<LatLng?>(null) }
 
     Column(
@@ -119,8 +125,8 @@ fun LocationSection( ) {
             onDismiss = { showMapDialog = false },
             onLocationSelected = { latLng ->
                 selectedLocation = latLng
-               SharedObject.saveString("lat","${ latLng.latitude }" )
-               SharedObject.saveString("lon","${latLng.longitude}")
+                SharedObject.saveString("lat", "${latLng.latitude}")
+                SharedObject.saveString("lon", "${latLng.longitude}")
                 showMapDialog = false //to close dialog
             }
         )
@@ -134,8 +140,12 @@ fun MapDialog(
 ) {
     var selectedLocation by remember {
         mutableStateOf(
-            LatLng( SharedObject.getString("lat","0").toDouble(),
-                    SharedObject.getString("lon","0").toDouble())) }
+            LatLng(
+                SharedObject.getString("lat", "0").toDouble(),
+                SharedObject.getString("lon", "0").toDouble()
+            )
+        )
+    }
 
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(selectedLocation, 15f)
@@ -148,8 +158,9 @@ fun MapDialog(
                 .background(BabyBlue)
         ) {
 
-            Text("Select Location", modifier = Modifier
-                .padding(16.dp)
+            Text(
+                "Select Location", modifier = Modifier
+                    .padding(16.dp)
             )
 
             GoogleMap(
@@ -157,9 +168,8 @@ fun MapDialog(
                 cameraPositionState = cameraPositionState,
                 onMapClick = { latLng ->
                     selectedLocation = latLng
-                    Log.w("TAG", "MapDialog: need to save hrer?", )
-                }
-                        , properties = MapProperties(mapType = MapType.NORMAL)
+                    Log.w("TAG", "MapDialog: need to save hrer?")
+                }, properties = MapProperties(mapType = MapType.NORMAL)
             ) {
                 Marker(
                     state = MarkerState(position = selectedLocation),
@@ -183,7 +193,8 @@ fun MapDialog(
                     .padding(16.dp)
             ) {
                 Text(
-                    text= "Confirm Location")
+                    text = "Confirm Location"
+                )
             }
         }
     }
@@ -192,37 +203,52 @@ fun MapDialog(
 
 //unused
 @Composable
-fun MapScreen(navController: NavController, onLocationSelected: (LatLng) -> Unit){
+fun MapScreen(
+    onLocationSelected: (locationDetails:LatLng) -> Unit
+) {
 
-    var selectedLocation by remember { mutableStateOf(  LatLng(0.0, 0.0))}
+    val context = LocalContext.current
+
+    var selectedLocation by remember { mutableStateOf(LatLng(0.0, 0.0)) }
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(selectedLocation, 15f)
     }
+
     GoogleMap(
         modifier = Modifier.fillMaxSize(),
         cameraPositionState = cameraPositionState,
+        properties = MapProperties(mapType = MapType.NORMAL),
         onMapClick = { latLng ->
-            SharedObject.saveString("lat", "${latLng.latitude}")
-            SharedObject.saveString("lon", "${latLng.longitude}")
+
+            Log.w("TAG", "MapScreen: map clicked")
+            // SharedObject.saveString("lat", "${latLng.latitude}")
+            //  SharedObject.saveString("lon", "${latLng.longitude}")
             selectedLocation = latLng
         }
 
-    ){
+    ) {
         Marker(
             state = MarkerState(position = selectedLocation),
             title = "Selected Location"
         )
     }
 
+    Column(
 
-    Button(
 
-        onClick = {
+    ) {
 
-            SharedObject.saveString("loc", "${selectedLocation.latitude},${selectedLocation.longitude}")
-            onLocationSelected(selectedLocation)
-            navController.popBackStack()
-        },
-        modifier = Modifier.padding(16.dp)
-    ) {   Text("Confirm Location") }
+        SmallFloatingActionButton(
+            modifier = Modifier
+               // .fillMaxSize()
+                .background(Color.Transparent)
+                .align(Alignment.End)
+                .padding(16.dp),
+            onClick = {
+                Log.w("TAG", "MapScreen: btun confirm clicked")
+                onLocationSelected(selectedLocation)
+
+            },
+         ) { Text("Ad") }
+    }
 }

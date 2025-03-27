@@ -1,21 +1,25 @@
 package com.example.weatherapp.navigation
 
+import com.google.android.gms.maps.model.LatLng
 import kotlinx.serialization.Serializable
 
 
 @kotlinx.serialization.Serializable
-sealed class ScreenRoute(val route: String) {
-    @Serializable
-    data object Home : ScreenRoute(NavRoutes.HOME_SCREEN)
+sealed class ScreenRoute() {
 
     @Serializable
-    data object Favorites : ScreenRoute(NavRoutes.FAVORITE_SCREEN)
+    data object Home : ScreenRoute()
+
+@Serializable
+   data class  Favorites(val lat:Double, val lon:Double) : ScreenRoute()
 
     @Serializable
-    data object Alerts : ScreenRoute(NavRoutes.ALERT_SCREEN)
+    data object Alerts : ScreenRoute()
 
     @Serializable
-    data object Settings : ScreenRoute(NavRoutes.SETTING_SCREEN)
+    data object Settings : ScreenRoute()
+    @Serializable
+    data object MapScreen : ScreenRoute()
 
 }
 
@@ -25,5 +29,6 @@ object NavRoutes {
     const val FAVORITE_SCREEN = "Favorite"
     const val SETTING_SCREEN = "Setting"
     const val ALERT_SCREEN = "Alert"
+    const val MAP_SCREEN = "Map"
 
 }
