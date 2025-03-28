@@ -7,11 +7,10 @@ import androidx.room.RoomDatabase
 import com.example.weatherapp.data.models.CityLocation
 
 
-@Database(entities = [CityLocation::class], version = 1)
+@Database(entities = [CityLocation::class], version = 3)
 abstract class CityDatabase :RoomDatabase(){
 
     abstract fun getCityDao(): CityLocationDao
-
 
     companion object {
         private var instance: CityDatabase? = null
@@ -22,7 +21,8 @@ abstract class CityDatabase :RoomDatabase(){
                     context,
                     CityDatabase::class.java,
                     "city_db"
-                ).build()
+                ).fallbackToDestructiveMigration()
+                    .build()
                 instance = INSTANCE
                 INSTANCE
             }

@@ -1,11 +1,10 @@
 package com.example.weatherapp.data.repository
 
-import ForecastResponseApi
-import android.location.Location
+import com.example.weatherapp.data.models.ForecastResponseApi
 import com.example.weatherapp.data.models.CityLocation
+import com.example.weatherapp.data.models.CityResponse
 import com.example.weatherapp.data.models.CurrentResponseApi
 import kotlinx.coroutines.flow.Flow
-import retrofit2.Response
 
 interface WeatherRepository {
 
@@ -23,6 +22,11 @@ interface WeatherRepository {
         units: String
     ): Flow<ForecastResponseApi>
 
+
+    suspend fun getCityByLatLon(
+        lat: Double,
+        lon: Double
+    ): List<CityResponse.CityResponseItem>
 
     suspend fun getFavouriteCityLocations(): Flow<List<CityLocation>>
 

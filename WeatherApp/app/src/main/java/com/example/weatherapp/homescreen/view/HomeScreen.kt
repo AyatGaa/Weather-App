@@ -1,6 +1,6 @@
 package com.example.weatherapp.homescreen.view
 
-import ForecastItem
+import com.example.weatherapp.data.models.ForecastItem
 import android.Manifest
 import android.content.Context
 import android.content.Intent
@@ -58,7 +58,6 @@ import com.example.weatherapp.utils.location.LocationClient
 import com.example.weatherapp.utils.location.hasLocationPermission
 import com.example.weatherapp.utils.timeZoneConversion
 import com.google.android.gms.location.LocationServices
-import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 

@@ -1,9 +1,9 @@
 package com.example.weatherapp.data.remote
 
-import ForecastResponseApi
+import com.example.weatherapp.data.models.ForecastResponseApi
 import android.util.Log
+import com.example.weatherapp.data.models.CityResponse
 import com.example.weatherapp.data.models.CurrentResponseApi
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
@@ -15,7 +15,7 @@ class WeatherRemoteDataSourceImpl(private val apiService: WeatherApiService) :
         lat: Double,
         lon: Double,
         lang: String,
-        units:String
+        units: String
 
     ): Flow<CurrentResponseApi> {
         return flow {
@@ -46,7 +46,9 @@ class WeatherRemoteDataSourceImpl(private val apiService: WeatherApiService) :
                         Log.d(
                             "TAG",
                             "currentWeather: In isSuccessful but NULL  Remote Weather soruce ${
-                                latestWeather.body()?.weather?.get(0)}")
+                                latestWeather.body()?.weather?.get(0)
+                            }"
+                        )
                     }
 
                 } else {
@@ -66,25 +68,38 @@ class WeatherRemoteDataSourceImpl(private val apiService: WeatherApiService) :
         lat: Double,
         lon: Double,
         lang: String,
-        units:String
+        units: String
     ): Flow<ForecastResponseApi> {
         return flow {
             try {
                 val latestWeather =
-                    apiService.getForecastWeather(lat, lon, lang,units)
-          //     delay(1000)
+                    apiService.getForecastWeather(lat, lon, lang, units)
+                //     delay(1000)
 
-                Log.d("TAG", "forecast: IN Remote Weather soruce ${latestWeather.body()?.list?.get(0)}")
+                Log.d(
+                    "TAG",
+                    "forecast: IN Remote Weather soruce ${latestWeather.body()?.list?.get(0)}"
+                )
 
                 if (latestWeather.isSuccessful) {
                     val response = latestWeather.body()
                     if (response != null) {
 
                         emit(response)
-                        Log.d("TAG", "forecast: In isSuccessful and NOt Null Remote Weather soruce ${latestWeather.body()?.list?.get(0)}")
+                        Log.d(
+                            "TAG",
+                            "forecast: In isSuccessful and NOt Null Remote Weather soruce ${
+                                latestWeather.body()?.list?.get(0)
+                            }"
+                        )
 
                     } else {
-                        Log.d("TAG", "forecast: In isSuccessful but NULL  Remote Weather soruce ${latestWeather.body()?.list?.get(0)}")
+                        Log.d(
+                            "TAG",
+                            "forecast: In isSuccessful but NULL  Remote Weather soruce ${
+                                latestWeather.body()?.list?.get(0)
+                            }"
+                        )
                     }
 
                 } else {
@@ -98,6 +113,10 @@ class WeatherRemoteDataSourceImpl(private val apiService: WeatherApiService) :
             }
 
         }
+    }
+
+    override suspend fun getCityByLatLon(lat: Double, lon: Double): List<CityResponse.CityResponseItem> {
+        return apiService.getLocationDetails(lat, lon)
     }
 
 

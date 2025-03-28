@@ -1,7 +1,5 @@
-import com.example.weatherapp.data.models.CurrentResponseApi
-import com.example.weatherapp.data.models.Main
-import com.example.weatherapp.data.models.Weather
-import com.example.weatherapp.data.models.Wind
+package com.example.weatherapp.data.models
+
 import com.google.gson.annotations.SerializedName
 
 data class ForecastResponseApi(

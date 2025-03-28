@@ -1,6 +1,6 @@
 package com.example.weatherapp.homescreen.view.uicomponent
 
-import ForecastItem
+import com.example.weatherapp.data.models.ForecastItem
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

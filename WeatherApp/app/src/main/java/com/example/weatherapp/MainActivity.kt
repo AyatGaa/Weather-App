@@ -35,33 +35,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        val homeFactory = CurrentWeatherFactory(
-            repo = WeatherRepositoryImpl.getInstance(
-                WeatherRemoteDataSourceImpl(
-                    RetrofitHelper.service
-                ),
-                CityLocationLocalDataSourceImpl(
-                    CityDatabase.getInstance(this@MainActivity).getCityDao()
-                )
-            )
-        )
-        val favoriteFactory = FavoriteLocationFactory(
-            repo = WeatherRepositoryImpl.getInstance(
-                WeatherRemoteDataSourceImpl(
-                    RetrofitHelper.service
-                ),
-                CityLocationLocalDataSourceImpl(
-                    CityDatabase.getInstance(this@MainActivity).getCityDao()
-                )
-            )
-        )
         setContent {
             val navController = rememberNavController()
-
-            val viewModelHome =
-                ViewModelProvider(this, homeFactory)[HomeScreenViewModel::class.java]
-            val favoriteLocationViewModel =
-                ViewModelProvider(this, favoriteFactory)[FavoriteScreenViewModel::class.java]
 
             SetupNavHost(navController)
             Log.w("TAG", "onCreate: share init")

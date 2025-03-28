@@ -230,7 +230,7 @@ fun MapScreen(
     onLocationSelected: (locationDetails: LatLng) -> Unit
 ) {
     val context = LocalContext.current
-    var selectedLocation by remember { mutableStateOf<LatLng?>(null) } // Use nullable type
+    var selectedLocation by remember { mutableStateOf<LatLng?>(null) }  //mutable of remem ber
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(
             LatLng(

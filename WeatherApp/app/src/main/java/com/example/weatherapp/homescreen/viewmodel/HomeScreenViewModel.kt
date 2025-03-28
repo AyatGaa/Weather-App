@@ -1,9 +1,8 @@
 package com.example.weatherapp.homescreen.viewmodel
 
-import ForecastItem
+import com.example.weatherapp.data.models.ForecastItem
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -27,11 +26,11 @@ class HomeScreenViewModel(private val repo: WeatherRepository) : ViewModel() {
 
     private val _lang = mutableStateOf("en")
     var lang = _lang
-    private val _unit =mutableStateOf( "Standard")
+    private val _unit = mutableStateOf("Standard")
     var unit = _unit
-   private val _mapLat = mutableDoubleStateOf(0.0)
+    private val _mapLat = mutableDoubleStateOf(0.0)
     var mapLat = _mapLat
-   private val _mapLon = mutableDoubleStateOf(0.0)
+    private val _mapLon = mutableDoubleStateOf(0.0)
     var mapLon = _mapLon
 
 
@@ -69,9 +68,9 @@ class HomeScreenViewModel(private val repo: WeatherRepository) : ViewModel() {
                 else -> _unit.value = "standard"
             }
 
-            if(locRes == "Map"){
-                _mapLat.doubleValue = SharedObject.getString("lat","0.0").toDouble()
-                _mapLon.doubleValue = SharedObject.getString("lon","0.0").toDouble()
+            if (locRes == "Map") {
+                _mapLat.doubleValue = SharedObject.getString("lat", "0.0").toDouble()
+                _mapLon.doubleValue = SharedObject.getString("lon", "0.0").toDouble()
             }
         }
     }
@@ -85,7 +84,7 @@ class HomeScreenViewModel(private val repo: WeatherRepository) : ViewModel() {
     fun loadCurrentWeather(lat: Double, lon: Double, lang: String, units: String) {
         viewModelScope.launch {
             try {
-                 getCurrentSetting()
+                getCurrentSetting()
                 val result = repo.getCurrentWeather(lat, lon, lang, units)
                 result.catch { ex ->
                     _currentWeatherData.value = ResponseState.Failure(ex)
