@@ -61,6 +61,7 @@ fun Favourite(viewModel: FavoriteScreenViewModel, latLong: LatLng, onFabMapClick
     LaunchedEffect(latLong) {
         selectedLocation = latLong
         viewModel.getLocationData(latLong.latitude, latLong.longitude)
+
     }
     LaunchedEffect(Unit) {
         viewModel.getAllFavoriteLocationFromDataBase()
@@ -102,9 +103,9 @@ fun Favourite(viewModel: FavoriteScreenViewModel, latLong: LatLng, onFabMapClick
             is ResponseState.Success -> {
                 val data = (cityData as ResponseState.Success).data
                 Log.w("TAG", "Favourite: ${data.toString()}")
-                FavoriteItem(data.cityData.name, data.lat, data.lon, data.currentWeather.main?.temp){
-                    viewModel.deleteFromFavorite(data)
-                }
+//                FavoriteItem(data.cityData.name, data.lat, data.lon, data.currentWeather.main?.temp){
+//                    viewModel.deleteFromFavorite(data)
+//                }
 
             }
 

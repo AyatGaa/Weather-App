@@ -36,13 +36,19 @@ class FavoriteScreenViewModel(private val repo: WeatherRepository) : ViewModel()
         currentLon = lon
     }
 
+    var isFetchingLocation by mutableStateOf(false)
+
 
     private val _uiState = MutableStateFlow<ResponseState<CityLocation>>(ResponseState.Loading)
     val uiState: StateFlow<ResponseState<CityLocation>> = _uiState.asStateFlow()
 
 
     fun getLocationData(lat: Double, lon: Double) {
+        if (isFetchingLocation) return
+
         viewModelScope.launch {
+            Log.d("INSERT_DEBUG", "getLocationData() called for lat: $lat, lon: $lon")
+
             try {
                 val city = repo.getCityByLatLon(lat, lon).first()
                 val weather = repo.getCurrentWeather(lat, lon, "en", "Standard").first()
@@ -51,16 +57,21 @@ class FavoriteScreenViewModel(private val repo: WeatherRepository) : ViewModel()
                 val uiState = CityLocation(
                     cityData = city,
                     lat = lat,
-                    lon = lat,
+                    lon = lon,
                     currentWeather = weather,
                     forecastWeather = forecast,
                     flag = " "
                 )
 
                 _uiState.value = ResponseState.Success(uiState)
+
                 addFavouriteLocation(uiState)
+
+
             } catch (e: Exception) {
                 _uiState.value = ResponseState.Failure(e)
+            }finally {
+                isFetchingLocation = false
             }
         }
 
@@ -70,14 +81,26 @@ class FavoriteScreenViewModel(private val repo: WeatherRepository) : ViewModel()
     fun addFavouriteLocation(cityLocation: CityLocation) {
 
         viewModelScope.launch {
+            Log.d("INSERT_DEBUG", "addFavouriteLocation() called for lat: ${cityLocation.lat}, lon: ${cityLocation.lon}")
+
             try {
-                val res = repo.insertCityLocation(cityLocation)
+                val existingCities =
+                    repo.getFavouriteCityLocations().first()
+                val exists =
+                    existingCities.any { it.lat == cityLocation.lat && it.lon == cityLocation.lon }
+                if (!exists) {
+                    val res = repo.insertCityLocation(cityLocation)
+                    Log.d("INSERT_DEBUG", "Insertion result: $res")
 
-                if (res > 0) {
-                    _mutableDatabaseMessage.emit("Location Added!")
-                } else {
+                    if (res > 0) {
+                        _mutableDatabaseMessage.emit("Location Added!")
+                    } else {
 
-                    _mutableDatabaseMessage.emit("Can Not Add")
+                        _mutableDatabaseMessage.emit("Can Not Add")
+                    }
+                }else{
+                    Log.d("INSERT_DEBUG", "Location already exists, skipping insertion.") // Debug Log
+                    _mutableDatabaseMessage.emit("Location already exists!")
                 }
             } catch (th: Throwable) {
                 th.message?.let { _mutableDatabaseMessage.emit(it) }
@@ -88,13 +111,11 @@ class FavoriteScreenViewModel(private val repo: WeatherRepository) : ViewModel()
     fun getAllFavoriteLocationFromDataBase() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                delay(100)
                 repo.getFavouriteCityLocations()
                     .catch {
                         _mutableDatabaseMessage.emit("Can not get data from db")
-                    }.collect {
-
-                        _localCityFlow.value += it
+                    }.collectLatest {
+                        _localCityFlow.value = it
                     }
             } catch (th: Throwable) {
                 th.message?.let { _mutableDatabaseMessage.emit(it) }
@@ -107,8 +128,6 @@ class FavoriteScreenViewModel(private val repo: WeatherRepository) : ViewModel()
 
         viewModelScope.launch {
             try {
-
-
                 val res = repo.deleteCityLocation(cityLocation)
                 delay(100)
                 if (res >= 0) {
