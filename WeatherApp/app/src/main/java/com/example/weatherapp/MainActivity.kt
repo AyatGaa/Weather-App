@@ -16,7 +16,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
 import com.example.weatherapp.navigation.BottomNavigationBar
 import com.example.weatherapp.navigation.SetupNavHost
-import com.example.weatherapp.utils.PlacesObject
 
 import com.example.weatherapp.utils.SharedObject
 
@@ -27,21 +26,17 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            val navController = rememberNavController()
 
+            val navController = rememberNavController()
             SetupNavHost(navController)
             Log.w("TAG", "onCreate: share init")
             SharedObject.init(this)
-            Log.w("TAG", "onCreate: place objet init", )
-            PlacesObject.placesInit(this)
 
 
             Scaffold(
-
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(bottom = 32.dp),
-
                 bottomBar = {
                     BottomNavigationBar(navController
                     )
@@ -53,13 +48,8 @@ class MainActivity : ComponentActivity() {
                 ) {
                     SetupNavHost(navController)
                 }
-
             }
-
-
         }
-
-
     }
 }
 

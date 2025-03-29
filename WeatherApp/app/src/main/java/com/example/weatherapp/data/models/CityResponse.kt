@@ -2,9 +2,11 @@ package com.example.weatherapp.data.models
 
 
 import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.Serializable
 
+@Serializable
 class CityResponse : ArrayList<CityResponse.CityResponseItem>(){
-
+    @Serializable
     data class CityResponseItem(
         @SerializedName("country")
         val country: String?,
@@ -17,6 +19,7 @@ class CityResponse : ArrayList<CityResponse.CityResponseItem>(){
         @SerializedName("name")
         val name: String?
     ) {
+        @Serializable
         data class LocalNames(
             @SerializedName("ar")
             val ar: String?,

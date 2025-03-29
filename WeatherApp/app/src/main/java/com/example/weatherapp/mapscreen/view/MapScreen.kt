@@ -63,7 +63,7 @@ fun MapScreen(
 
 
     var searchText by remember { mutableStateOf("") }
-    var selectedLocation by remember { mutableStateOf<LatLng?>(null) }  //mutable of remem ber
+    var selectedLocation by remember { mutableStateOf<LatLng?>(null) }  //mutable of remember
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(
             LatLng(
@@ -128,10 +128,12 @@ fun MapScreen(
                 ),
                 singleLine = true
             )
+
             LazyColumn(modifier = Modifier.fillMaxWidth()) {
+
                 items(searchResult) { place ->
                     Text(
-                        text = place.name, // ✅ Corrected
+                        text = place.name,
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable {
@@ -145,10 +147,8 @@ fun MapScreen(
                 }
             }
         }
+
         // Results List
-
-
-
         Box(
 
             modifier = Modifier

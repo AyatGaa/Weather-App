@@ -52,6 +52,10 @@ class WeatherRepositoryImpl(
         return  localDataSource.getFavouriteCityLocations()
     }
 
+    override suspend fun getCityById(cityId: Int): CityLocation {
+        return localDataSource.getCityById(cityId)
+    }
+
     override suspend fun insertCityLocation(cityLocation: CityLocation): Long {
         return localDataSource.insertCityLocation(cityLocation)
     }

@@ -20,4 +20,9 @@ interface CityLocationDao {
 
     @Delete
     suspend fun deleteCityLocation(cityLocation: CityLocation): Int
+
+    @Query("SELECT DISTINCT  * FROM city_location WHERE id== :cityId")
+    suspend fun getCityById(  cityId:Int) : CityLocation
+
+
 }

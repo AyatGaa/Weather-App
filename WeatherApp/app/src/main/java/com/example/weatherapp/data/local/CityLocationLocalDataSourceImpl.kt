@@ -8,6 +8,10 @@ class CityLocationLocalDataSourceImpl(private val dao:CityLocationDao) : CityLoc
         return dao.getFavouriteCityLocations()
     }
 
+    override suspend fun getCityById(cityId: Int): CityLocation {
+        return dao.getCityById(cityId)
+    }
+
     override suspend fun insertCityLocation(cityLocation: CityLocation): Long {
         return dao.insertCityLocation(cityLocation)
     }

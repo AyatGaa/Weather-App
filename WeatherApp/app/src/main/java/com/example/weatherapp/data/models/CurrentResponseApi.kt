@@ -2,7 +2,9 @@ package com.example.weatherapp.data.models
 
 
 import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class CurrentResponseApi(
     @SerializedName("base")
     val base: String?,
@@ -33,12 +35,12 @@ data class CurrentResponseApi(
     @SerializedName("wind")
     val wind: Wind?
 ) {
-
+    @Serializable
     data class Clouds(
         @SerializedName("all")
         val all: Int?
     )
-
+    @Serializable
     data class Coord(
         @SerializedName("lat")
         val lat: Double?,
@@ -46,12 +48,12 @@ data class CurrentResponseApi(
         val lon: Double?
     )
 
-
+    @Serializable
     data class Rain(
         @SerializedName("1h")
         val h: Double?
     )
-
+    @Serializable
     data class Sys(
         @SerializedName("country")
         val country: String?,
@@ -67,7 +69,7 @@ data class CurrentResponseApi(
 
 
 }
-
+@Serializable
 data class Main(
     @SerializedName("feels_like")
     val feelsLike: Double?,
@@ -86,7 +88,7 @@ data class Main(
     @SerializedName("temp_min")
     val tempMin: Double?
 )
-
+@Serializable
 data class Weather(
     @SerializedName("description")
     val description: String?,
@@ -97,7 +99,7 @@ data class Weather(
     @SerializedName("main")
     val main: String?
 )
-
+@Serializable
 data class Wind(
     @SerializedName("deg")
     val deg: Int?,

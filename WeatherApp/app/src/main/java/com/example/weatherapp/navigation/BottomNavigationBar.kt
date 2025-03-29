@@ -11,15 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.outlined.FavoriteBorder
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Notifications
-import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,15 +19,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
-import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
 import com.example.weatherapp.R
 import com.example.weatherapp.data.models.NavigationItem
 import com.example.weatherapp.ui.theme.DarkBlue2
@@ -154,5 +142,6 @@ fun isRouteSelected(route: ScreenRoute, currentDestination: NavDestination?): Bo
         is ScreenRoute.Settings -> currentRoute.contains(NavRoutes.SETTING_SCREEN)
         is ScreenRoute.MapScreen -> currentRoute.contains(NavRoutes.MAP_SCREEN)
         is ScreenRoute.Favorites -> currentRoute.contains(NavRoutes.FAVORITE_SCREEN)
+        is ScreenRoute.FavoriteCardDetails -> currentRoute.contains(NavRoutes.FAVORITE_CARD_DETAILS)
     }
 }

@@ -44,13 +44,11 @@ fun getWeatherIcon(iconCode: String): Int {
         "03d", "03n" -> R.drawable.cloudy
         "04d", "04n" -> R.drawable.cloudy
         "09d" -> R.drawable.rainy_3
-
         "09n" -> R.drawable.rainy_7
         "10d" -> R.drawable.rainy_1
         "10n" -> R.drawable.rainy_6
         "11d", "11n" -> R.drawable.thunder
         "13d" -> R.drawable.snowy_3
-
         "13n" -> R.drawable.snowy_6
         "50d", "50n" -> R.drawable.mist
         else -> R.drawable.weather // A fallback icon

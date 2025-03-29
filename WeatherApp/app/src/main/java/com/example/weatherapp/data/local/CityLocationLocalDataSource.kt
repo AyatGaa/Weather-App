@@ -8,6 +8,7 @@ interface CityLocationLocalDataSource {
 
     suspend fun getFavouriteCityLocations(): Flow<List<CityLocation>>
 
+    suspend fun getCityById(  cityId:Int) : CityLocation
 
     suspend fun insertCityLocation(cityLocation: CityLocation): Long
 

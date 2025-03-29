@@ -19,7 +19,6 @@ import com.example.weatherapp.ui.theme.component.TopAppBar
 @Composable
 fun Setting( ) {
     Scaffold(
-
         containerColor = BabyBlue,
         modifier = Modifier
             .fillMaxSize()
@@ -33,7 +32,6 @@ fun Setting( ) {
             item { LanguageSection() }
             item { UnitsSection() }
             item { Spacer(modifier = Modifier.height(32.dp)) }
-
         }
     }
 }

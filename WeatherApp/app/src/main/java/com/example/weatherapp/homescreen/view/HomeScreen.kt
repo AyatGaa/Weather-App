@@ -46,6 +46,7 @@ import com.example.weatherapp.homescreen.view.uicomponent.Failure
 import com.example.weatherapp.homescreen.view.uicomponent.HourlyForecast
 import com.example.weatherapp.homescreen.view.uicomponent.WeatherDetails
 import com.example.weatherapp.homescreen.viewmodel.HomeScreenViewModel
+import com.example.weatherapp.navigation.ScreenRoute
 import com.example.weatherapp.ui.theme.BabyBlue
 import com.example.weatherapp.ui.theme.White
 import com.example.weatherapp.ui.theme.Yellow
@@ -64,7 +65,7 @@ import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun HomeScreen(viewModel: HomeScreenViewModel, onNavigateTo: () -> Unit) {
+fun HomeScreen(viewModel: HomeScreenViewModel) {
 
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
