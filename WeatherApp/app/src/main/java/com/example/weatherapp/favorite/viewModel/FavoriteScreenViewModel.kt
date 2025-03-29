@@ -1,6 +1,5 @@
-package com.example.weatherapp.favorite
+package com.example.weatherapp.favorite.viewModel
 
-import com.example.weatherapp.data.models.ForecastItem
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -16,13 +15,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import java.time.Instant
-import java.time.ZoneOffset
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+
 
 class FavoriteScreenViewModel(private val repo: WeatherRepository) : ViewModel() {
 
     var currentLat by mutableStateOf(0.0)
     var currentLon by mutableStateOf(0.0)
+
 
     private val _mutableDatabaseMessage = MutableSharedFlow<String>()
     val mutableDatabaseMessage = _mutableDatabaseMessage.asSharedFlow()
@@ -45,7 +46,7 @@ class FavoriteScreenViewModel(private val repo: WeatherRepository) : ViewModel()
 
     fun getLocationData(lat: Double, lon: Double) {
         if (isFetchingLocation) return
-
+        isFetchingLocation = true
         viewModelScope.launch {
             Log.d("INSERT_DEBUG", "getLocationData() called for lat: $lat, lon: $lon")
 
@@ -70,7 +71,7 @@ class FavoriteScreenViewModel(private val repo: WeatherRepository) : ViewModel()
 
             } catch (e: Exception) {
                 _uiState.value = ResponseState.Failure(e)
-            }finally {
+            } finally {
                 isFetchingLocation = false
             }
         }
@@ -81,7 +82,10 @@ class FavoriteScreenViewModel(private val repo: WeatherRepository) : ViewModel()
     fun addFavouriteLocation(cityLocation: CityLocation) {
 
         viewModelScope.launch {
-            Log.d("INSERT_DEBUG", "addFavouriteLocation() called for lat: ${cityLocation.lat}, lon: ${cityLocation.lon}")
+            Log.d(
+                "INSERT_DEBUG",
+                "addFavouriteLocation() called for lat: ${cityLocation.lat}, lon: ${cityLocation.lon}"
+            )
 
             try {
                 val existingCities =
@@ -98,8 +102,11 @@ class FavoriteScreenViewModel(private val repo: WeatherRepository) : ViewModel()
 
                         _mutableDatabaseMessage.emit("Can Not Add")
                     }
-                }else{
-                    Log.d("INSERT_DEBUG", "Location already exists, skipping insertion.") // Debug Log
+                } else {
+                    Log.d(
+                        "INSERT_DEBUG",
+                        "Location already exists, skipping insertion."
+                    ) // Debug Log
                     _mutableDatabaseMessage.emit("Location already exists!")
                 }
             } catch (th: Throwable) {

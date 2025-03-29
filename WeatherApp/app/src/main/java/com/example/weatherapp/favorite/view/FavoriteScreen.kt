@@ -1,7 +1,6 @@
-package com.example.weatherapp.screens
+package com.example.weatherapp.favorite.view
 
 import android.os.Build
-import com.example.weatherapp.data.models.ForecastItem
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
@@ -29,17 +28,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.weatherapp.data.models.CityLocation
-import com.example.weatherapp.data.models.CityResponse
-import com.example.weatherapp.data.models.CurrentResponseApi
 import com.example.weatherapp.data.models.ResponseState
-import com.example.weatherapp.favorite.FavoriteScreenViewModel
+import com.example.weatherapp.favorite.viewModel.FavoriteScreenViewModel
 import com.example.weatherapp.ui.theme.BabyBlue
 import com.example.weatherapp.ui.theme.DarkBlue2
 import com.example.weatherapp.ui.theme.component.LoadingIndicator
 import com.example.weatherapp.ui.theme.component.TopAppBar
-import com.example.weatherapp.utils.getWeatherIcon
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.launch
 

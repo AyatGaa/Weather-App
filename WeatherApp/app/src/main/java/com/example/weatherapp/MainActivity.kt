@@ -13,19 +13,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.rememberNavController
-import com.example.weatherapp.data.local.CityDatabase
-import com.example.weatherapp.data.local.CityLocationLocalDataSourceImpl
-import com.example.weatherapp.data.remote.RetrofitHelper
-import com.example.weatherapp.data.remote.WeatherRemoteDataSourceImpl
-import com.example.weatherapp.data.repository.WeatherRepositoryImpl
-import com.example.weatherapp.favorite.FavoriteLocationFactory
-import com.example.weatherapp.favorite.FavoriteScreenViewModel
 import com.example.weatherapp.navigation.BottomNavigationBar
 import com.example.weatherapp.navigation.SetupNavHost
-import com.example.weatherapp.homescreen.viewmodel.CurrentWeatherFactory
-import com.example.weatherapp.homescreen.viewmodel.HomeScreenViewModel
+import com.example.weatherapp.utils.PlacesObject
 
 import com.example.weatherapp.utils.SharedObject
 
@@ -41,6 +32,8 @@ class MainActivity : ComponentActivity() {
             SetupNavHost(navController)
             Log.w("TAG", "onCreate: share init")
             SharedObject.init(this)
+            Log.w("TAG", "onCreate: place objet init", )
+            PlacesObject.placesInit(this)
 
 
             Scaffold(

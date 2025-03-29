@@ -4,31 +4,27 @@ import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.example.weatherapp.data.local.CityDatabase
 import com.example.weatherapp.data.local.CityLocationLocalDataSourceImpl
 import com.example.weatherapp.data.remote.RetrofitHelper
 import com.example.weatherapp.data.remote.WeatherRemoteDataSourceImpl
 import com.example.weatherapp.data.repository.WeatherRepositoryImpl
-import com.example.weatherapp.favorite.FavoriteLocationFactory
-import com.example.weatherapp.favorite.FavoriteScreenViewModel
+import com.example.weatherapp.favorite.viewModel.FavoriteLocationFactory
+import com.example.weatherapp.favorite.viewModel.FavoriteScreenViewModel
+import com.example.weatherapp.mapscreen.viewModel.MapViewModel
 import com.example.weatherapp.screens.Alert
-import com.example.weatherapp.screens.Favourite
+import com.example.weatherapp.favorite.view.Favourite
 import com.example.weatherapp.homescreen.view.HomeScreen
 import com.example.weatherapp.homescreen.viewmodel.CurrentWeatherFactory
 import com.example.weatherapp.setting.Setting
 import com.example.weatherapp.homescreen.viewmodel.HomeScreenViewModel
-import com.example.weatherapp.setting.uicomponent.MapScreen
+import com.example.weatherapp.mapscreen.view.MapScreen
 import com.google.android.gms.maps.model.LatLng
 const val LOCATION_RESULT_KEY = "location_result"
 
@@ -72,7 +68,7 @@ fun SetupNavHost(navController: NavHostController
                     )
                 )
             )
-            val viewModelFavorite :FavoriteScreenViewModel =  viewModel(factory = favoriteFactory)
+            val viewModelFavorite : FavoriteScreenViewModel =  viewModel(factory = favoriteFactory)
 
             val profile = it.toRoute<ScreenRoute.Favorites>( )
             Log.d("TAG", "SetupNavHost FAVVV: LatLong PROFILE ${profile.lat},,${profile.lon}")
@@ -97,8 +93,9 @@ fun SetupNavHost(navController: NavHostController
 
         composable<ScreenRoute.MapScreen> {
                 val profile = it.toRoute<ScreenRoute.Favorites>( )
+            val viewModelMap: MapViewModel =  viewModel()
 
-            MapScreen() {locationFromMap->
+            MapScreen(viewModelMap) {locationFromMap->
 //                navController.previousBackStackEntry
 //                    ?.savedStateHandle
 //                    ?.set(LOCATION_RESULT_KEY, LatLng(it.latitude, it.longitude))

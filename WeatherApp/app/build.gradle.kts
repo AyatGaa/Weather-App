@@ -77,6 +77,9 @@ dependencies {
     implementation("com.google.android.gms:play-services-maps:19.0.0")
     implementation("com.google.maps.android:maps-compose:4.3.3")
 
+//places
+    implementation("com.google.android.libraries.places:places:3.5.0")
+
     //Room
     val room_version = "2.6.1"
     implementation("androidx.room:room-runtime:$room_version")
