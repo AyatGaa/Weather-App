@@ -5,7 +5,9 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-      id ("org.jetbrains.kotlin.plugin.serialization")
+    id("com.google.devtools.ksp")
+
+    kotlin("plugin.serialization") version "2.1.10"
 }
 
 android {
@@ -24,6 +26,7 @@ android {
         versionName = "1.0"
 
         buildConfigField("String", "apiKeySafe", properties.getProperty("apiKey"))
+        buildConfigField("String", "mapApiKeySafe", properties.getProperty("mapApiKey"))
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -48,12 +51,12 @@ android {
         compose = true
         buildConfig = true
     }
+
 }
 
 dependencies {
     //Scoped API
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose-android:2.8.7")
-
     //google service
     implementation("com.google.android.gms:play-services-location:21.1.0")
 
@@ -69,9 +72,21 @@ dependencies {
     //Serialization for NavArgs
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
 
+    //googel-map
+    implementation("com.google.android.gms:play-services-maps:19.0.0")
+    implementation("com.google.maps.android:maps-compose:4.3.3")
 
+//places
+    implementation("com.google.android.libraries.places:places:3.5.0")
 
+    //Room
+    val room_version = "2.6.1"
+    implementation("androidx.room:room-runtime:$room_version")
+    // Kotlin Symbol Processing (KSP)
+    ksp("androidx.room:room-compiler:$room_version")
 
+    // optional - Kotlin Extensions and Coroutines support for Room
+    implementation("androidx.room:room-ktx:$room_version")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

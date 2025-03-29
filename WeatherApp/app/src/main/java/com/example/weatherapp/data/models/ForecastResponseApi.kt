@@ -1,13 +1,13 @@
-import com.example.weatherapp.data.models.CurrentResponseApi
-import com.example.weatherapp.data.models.Main
-import com.example.weatherapp.data.models.Weather
-import com.example.weatherapp.data.models.Wind
-import com.google.gson.annotations.SerializedName
+package com.example.weatherapp.data.models
 
+import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class ForecastResponseApi(
     @SerializedName("list") val list: List<ForecastItem>
 )
-
+@Serializable
 data class ForecastItem(
     @SerializedName("dt") val timestamp: Long,
     @SerializedName("main") val main: Main,

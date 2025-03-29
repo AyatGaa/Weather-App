@@ -1,5 +1,6 @@
 package com.example.weatherapp.navigation
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -10,15 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.outlined.FavoriteBorder
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Notifications
-import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,13 +19,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
-import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.weatherapp.R
 import com.example.weatherapp.data.models.NavigationItem
 import com.example.weatherapp.ui.theme.DarkBlue2
 import com.example.weatherapp.ui.theme.White
@@ -43,27 +35,27 @@ import com.example.weatherapp.ui.theme.Yellow
 val navigationItems = listOf(
     NavigationItem(
         title = "Home",
-        selected = Icons.Filled.Home,
-        unSelected = Icons.Outlined.Home,
-        route = ScreenRoute.Home.route
+        selected = R.drawable.home_fill,
+        unSelected =  R.drawable.home_outline,
+        route = ScreenRoute.Home
     ),
     NavigationItem(
         title = "Alert",
-        selected = Icons.Filled.Notifications,
-        unSelected = Icons.Outlined.Notifications,
-        route = ScreenRoute.Alerts.route
+        selected =  R.drawable.alert_fill,
+        unSelected =  R.drawable.alert_outline,
+        route = ScreenRoute.Alerts
     ),
     NavigationItem(
         title = "Favorite",
-        selected = Icons.Filled.Favorite,
-        unSelected = Icons.Outlined.FavoriteBorder,
-        route = ScreenRoute.Favorites.route
+        selected =R.drawable.fav_fill,
+        unSelected = R.drawable.fav_outline,
+        route = ScreenRoute.Favorites(0.0,0.0)
     ),
     NavigationItem(
         title = "Setting",
-        selected = Icons.Filled.Settings,
-        unSelected = Icons.Outlined.Settings,
-        route = ScreenRoute.Settings.route
+        selected = R.drawable.setting_fill,
+        unSelected =R.drawable.setting_outline,
+        route = ScreenRoute.Settings
     )
 )
 
@@ -83,60 +75,28 @@ fun BottomNavigationBar(navController: NavController) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         navigationItems.forEachIndexed { _, item ->
-            AddItem(item, currentDestination3, navController)
+            AddItem(item, currentDestination3, ){
+                navController.navigate(item.route) {
+                    popUpTo(navController.graph.findStartDestination().id) {
+                        saveState = true
+                    }
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            }
         }
     }
 }
-/*
-    NavigationBar(
-        containerColor = Color.White,
-        tonalElevation = 2.dp
-        ,
-    ) {
-        navigationItems.forEachIndexed { index, item ->
-            AddItem(item, currentDestination2,navController)
-
-
-           /* NavigationBarItem(
-                selected = currentDestination2 ==index,
-                onClick = {
-                    currentDestination2 = index
-                    navController.navigate(item.route)
-                },
-                icon = {
-                    Icon(
-                        imageVector = if ( index  == currentDestination2) {
-                            item.selected
-                        }else{ item.unSelected},
-                        contentDescription = item.route,
-
-                        tint = DarkBlue2
-                    )
-                },
-                label = {
-                    Text(
-                        item.route,
-                    )
-                },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = BabyBlue,
-                    indicatorColor = BabyBlue
-                )
-            )*/
-        }
-    }
-}*/
 
 @Composable
 fun AddItem(
     item: NavigationItem,
     currentDestination: NavDestination?,
-    navController: NavController
+    onNavigateItem:()->Unit
 ) {
 
-    val selected = currentDestination?.hierarchy?.any { it.route == item.route } == true
-
-    val container = if (selected) Yellow else White
+    val selected = isRouteSelected(item.route, currentDestination)
+     val container = if (selected) Yellow else White
 
     val background = if (selected) DarkBlue2.copy(alpha = 0.3f) else Color.Transparent
     Box(
@@ -145,10 +105,7 @@ fun AddItem(
             .clip(shape = CircleShape)
             .background(background)
             .clickable(onClick = {
-                navController.navigate(item.route) {
-                    popUpTo(navController.graph.findStartDestination().id)
-                    launchSingleTop = true
-                }
+                onNavigateItem()
             })
     ) {
         Row(
@@ -158,7 +115,8 @@ fun AddItem(
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             Icon(
-                imageVector = if (selected) item.selected else item.unSelected,
+
+                painter = painterResource(if (selected) item.selected else item.unSelected),
                 contentDescription = item.title,
                 tint = container
             )
@@ -174,3 +132,16 @@ fun AddItem(
 
 }
 
+fun isRouteSelected(route: ScreenRoute, currentDestination: NavDestination?): Boolean {
+    val currentRoute = currentDestination?.route ?: return false
+    Log.d("TAG", "Current Route: $currentRoute | Checking: $route")
+
+    return when (route) {
+        is ScreenRoute.Home -> currentRoute.contains(NavRoutes.HOME_SCREEN)
+        is ScreenRoute.Alerts -> currentRoute.contains(NavRoutes.ALERT_SCREEN)
+        is ScreenRoute.Settings -> currentRoute.contains(NavRoutes.SETTING_SCREEN)
+        is ScreenRoute.MapScreen -> currentRoute.contains(NavRoutes.MAP_SCREEN)
+        is ScreenRoute.Favorites -> currentRoute.contains(NavRoutes.FAVORITE_SCREEN)
+        is ScreenRoute.FavoriteCardDetails -> currentRoute.contains(NavRoutes.FAVORITE_CARD_DETAILS)
+    }
+}

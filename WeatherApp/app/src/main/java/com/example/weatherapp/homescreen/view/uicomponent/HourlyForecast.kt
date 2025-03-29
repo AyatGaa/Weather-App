@@ -1,6 +1,6 @@
 package com.example.weatherapp.homescreen.view.uicomponent
 
-import ForecastItem
+import com.example.weatherapp.data.models.ForecastItem
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
@@ -23,7 +22,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -31,7 +29,9 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.weatherapp.ui.theme.DarkBlue2
 import com.example.weatherapp.ui.theme.White
-import com.example.weatherapp.utils.timeZoneConversionToHourly
+import com.example.weatherapp.utils.getTempUnit
+import com.example.weatherapp.utils.getWeatherIcon
+import com.example.weatherapp.utils.timeZoneConversion
 
 
 @Composable
@@ -57,15 +57,17 @@ fun HourlyForecast(hourly: List<ForecastItem>?) {
             horizontalArrangement = Arrangement.spacedBy(8.dp),
 
             ) {
-            hourly?.let {
 
+            hourly?.let {
+                val measurement = getTempUnit()
                 items(it.size) { idx ->
                     val forecast = it[idx]
+                    val ic = getWeatherIcon(forecast.weather[0].icon.toString())
                     HourlyForecastItem(
-                        time = timeZoneConversionToHourly(forecast.timestamp),
-                        icon = "https://openweathermap.org/img/wn/${forecast.weather[0].icon}@2x.png",
-                        temp = "${forecast.main.temp}",
-                        measurement = "K"
+                        time = timeZoneConversion(forecast.timestamp.toInt()," hh:mm a"),
+                        icon = ic,
+                        temp = "${forecast.main.temp?.toInt()}",
+                        measurement = measurement
                     )
                 }
             }
@@ -75,7 +77,7 @@ fun HourlyForecast(hourly: List<ForecastItem>?) {
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun HourlyForecastItem(time: String, icon: String, temp: String, measurement: String = " K") {
+fun HourlyForecastItem(time: String, icon: Int, temp: String, measurement: String = " K") {
     Card(
         modifier = Modifier
             .width(80.dp)

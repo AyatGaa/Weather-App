@@ -1,10 +1,28 @@
 package com.example.weatherapp.navigation
 
-sealed class ScreenRoute(val route: String) {
-    data object Home : ScreenRoute(NavRoutes.HOME_SCREEN)
-    data object Favorites : ScreenRoute(NavRoutes.FAVORITE_SCREEN)
-    data object Alerts : ScreenRoute(NavRoutes.ALERT_SCREEN)
-    data object Settings : ScreenRoute(NavRoutes.SETTING_SCREEN)
+import kotlinx.serialization.Serializable
+
+
+@kotlinx.serialization.Serializable
+sealed class ScreenRoute() {
+
+    @Serializable
+    data object Home: ScreenRoute()
+
+    @Serializable
+    data class Favorites(val lat: Double =0.0, val lon: Double=0.0) : ScreenRoute()
+
+    @Serializable
+    data object Alerts : ScreenRoute()
+
+    @Serializable
+    data object Settings : ScreenRoute()
+
+    @Serializable
+    data object MapScreen : ScreenRoute()
+
+    @Serializable
+    data class FavoriteCardDetails(val lat:Double, val lon :Double, val id:Int):ScreenRoute()
 }
 
 
@@ -13,4 +31,7 @@ object NavRoutes {
     const val FAVORITE_SCREEN = "Favorite"
     const val SETTING_SCREEN = "Setting"
     const val ALERT_SCREEN = "Alert"
+    const val MAP_SCREEN = "Map"
+    const val FAVORITE_CARD_DETAILS = "Favorite_Details"
+
 }

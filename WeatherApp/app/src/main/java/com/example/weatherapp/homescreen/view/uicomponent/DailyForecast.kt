@@ -1,6 +1,6 @@
 package com.example.weatherapp.homescreen.view.uicomponent
 
-import ForecastItem
+import com.example.weatherapp.data.models.ForecastItem
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -9,10 +9,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
@@ -21,7 +22,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -30,7 +30,9 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.example.weatherapp.ui.theme.DarkBlue1
 import com.example.weatherapp.ui.theme.DarkBlue2
 import com.example.weatherapp.ui.theme.White
-import com.example.weatherapp.utils.timeZoneConversionToHourly
+import com.example.weatherapp.utils.getTempUnit
+import com.example.weatherapp.utils.getWeatherIcon
+import com.example.weatherapp.utils.timeZoneConversion
 
 
 @Composable
@@ -39,6 +41,8 @@ fun DailyForecast(daily: List<ForecastItem>?) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 0.dp)
+            .navigationBarsPadding()
+            .systemBarsPadding()
     ) {
         Text(
             text = "Next 5 Days",
@@ -55,13 +59,15 @@ fun DailyForecast(daily: List<ForecastItem>?) {
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             daily?.let {
+                val measurement = getTempUnit()
                 items(it.size) { idx ->
                     val forecast = it[idx]
+                val i = getWeatherIcon(forecast.weather[0].icon.toString())
                     DailyForecastItem(
-                        date = timeZoneConversionToHourly(forecast.timestamp, "dd/MM\t\tEEEE"),
-                        icon = "https://openweathermap.org/img/wn/${forecast.weather[0].icon}@4x.png",
-                        temp = "${forecast.main.temp}",
-                        measurement = "K"
+                        date = timeZoneConversion(forecast.timestamp.toInt(), "dd/MM\t\tEEEE"),
+                        icon = i,
+                        temp = "${forecast.main.temp?.toInt()}",
+                        measurement = measurement
                     )
                 }
             }
@@ -72,7 +78,7 @@ fun DailyForecast(daily: List<ForecastItem>?) {
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun DailyForecastItem(date: String, icon: String, temp: String, measurement: String) {
+fun DailyForecastItem(date: String, icon: Int, temp: String, measurement: String) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -99,12 +105,12 @@ fun DailyForecastItem(date: String, icon: String, temp: String, measurement: Str
             // Icon
             Box(
                 modifier = Modifier
-                    .size(40.dp),
+                    .size(100.dp),
                 contentAlignment = Alignment.Center,
             ) {
                 GlideImage(
                     contentDescription = "Weather Icon",
-                    modifier = Modifier.size(40.dp),
+                    modifier = Modifier.size(100.dp),
                     model = icon,
                 )
             }

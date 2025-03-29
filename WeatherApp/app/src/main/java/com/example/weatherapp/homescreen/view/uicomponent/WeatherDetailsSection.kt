@@ -29,6 +29,8 @@ import com.example.weatherapp.ui.theme.DarkBlue1
 import com.example.weatherapp.ui.theme.DarkBlue2
 import com.example.weatherapp.ui.theme.White
 import com.example.weatherapp.ui.theme.Yellow
+import com.example.weatherapp.utils.getSpeedUnit
+import com.example.weatherapp.utils.getWeatherIcon
 
 
 @Composable
@@ -57,7 +59,7 @@ fun WeatherDetails(weather: CurrentResponseApi) {
         )
 
     ) {
-
+        val measure =getSpeedUnit()
         DetailedWeatherItem(
             label = "Pressure",
             value = "${weather.main?.pressure}",
@@ -73,7 +75,7 @@ fun WeatherDetails(weather: CurrentResponseApi) {
         DetailedWeatherItem(
             label = "Wind",
             value = "${weather.wind?.deg}",
-            " Km/h",
+           measurement =  measure,
             icon = R.drawable.wind
         )
 
@@ -103,6 +105,7 @@ fun DetailedWeatherItem(label: String, value: String, measurement: String, icon:
 
             ) {
             // Icon
+
             Icon(
                 painter = painterResource(id = icon),
                 contentDescription = label,
