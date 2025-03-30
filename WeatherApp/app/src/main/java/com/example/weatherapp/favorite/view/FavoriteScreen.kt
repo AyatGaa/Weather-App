@@ -64,6 +64,7 @@ import com.example.weatherapp.ui.theme.BabyBlue
 import com.example.weatherapp.ui.theme.DarkBlue2
 import com.example.weatherapp.ui.theme.Yellow
 import com.example.weatherapp.ui.theme.component.LoadingIndicator
+import com.example.weatherapp.ui.theme.component.SwipeToDeleteContainer
 import com.example.weatherapp.ui.theme.component.TopAppBar
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.delay
@@ -232,76 +233,3 @@ fun FavoriteItemCard(
     }
 }
 
-@Composable
-fun <T> SwipeToDeleteContainer(
-    item: T,
-    onDelete: (T) -> Unit,
-    content: @Composable (T) -> Unit
-) {
-    val offsetX = remember { Animatable(0f) }
-    val coroutineScope = rememberCoroutineScope()
-    val dismissThreshold = 300f
-
-    LaunchedEffect(item) {
-        offsetX.snapTo(0f)
-    }
-
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(IntrinsicSize.Min)
-    ) {
-        DeleteBackground(offsetX.value)
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .pointerInput(Unit) {
-                    detectHorizontalDragGestures(
-                        onDragEnd = {
-                            coroutineScope.launch {
-                                if (offsetX.value < -dismissThreshold) {
-                                    offsetX.animateTo(-1000f, tween(300))
-                                    delay(300)
-                                    onDelete(item)
-                                } else {
-                                    offsetX.animateTo(0f, tween(300))
-                                }
-                            }
-                        }
-                    ) { _, dragAmount ->
-                        coroutineScope.launch {
-                            offsetX.snapTo(offsetX.value + dragAmount)
-                        }
-                    }
-                }
-                .offset { IntOffset(offsetX.value.toInt(), 0) }
-        ) {
-            content(item)
-        }
-    }
-}
-
-
-@Composable
-fun DeleteBackground(offsetX: Float) {
-    val backgroundColor by animateColorAsState(
-        targetValue = if (offsetX < -100f) Color.Red else Color.Transparent,
-        animationSpec = tween(durationMillis = 300), label = ""
-    )
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(backgroundColor)
-            .padding(16.dp),
-        contentAlignment = Alignment.CenterEnd
-    ) {
-        if (offsetX < -100f) {
-            Icon(
-                imageVector = Icons.Default.Delete,
-                contentDescription = "Delete Icon",
-                tint = Color.White
-            )
-        }
-    }
-}

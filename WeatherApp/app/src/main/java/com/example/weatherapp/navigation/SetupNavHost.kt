@@ -25,6 +25,8 @@ import com.example.weatherapp.homescreen.viewmodel.HomeScreenViewModel
 import com.example.weatherapp.mapscreen.view.MapScreen
 import com.example.weatherapp.mapscreen.viewModel.MapViewModel
 import com.example.weatherapp.screens.Alert
+import com.example.weatherapp.screens.AlertFactory
+import com.example.weatherapp.screens.AlertViewModel
 import com.example.weatherapp.setting.Setting
 import com.google.android.gms.maps.model.LatLng
 
@@ -34,13 +36,13 @@ import com.google.android.gms.maps.model.LatLng
 fun SetupNavHost(
     navController: NavHostController
 ) {
-
+    val context = LocalContext.current
     NavHost(
         navController = navController,
         startDestination = ScreenRoute.Home
     ) {
         composable<ScreenRoute.Home> {
-            val context = LocalContext.current
+
 
             val homeFactory = CurrentWeatherFactory(
                 repo = WeatherRepositoryImpl.getInstance(
@@ -57,7 +59,6 @@ fun SetupNavHost(
             HomeScreen(viewModelHome)
         }
         composable<ScreenRoute.FavoriteCardDetails> {
-            val context = LocalContext.current
 
             val favoriteFactory = FavoriteLocationFactory(
                 repo = WeatherRepositoryImpl.getInstance(
@@ -78,7 +79,7 @@ fun SetupNavHost(
         }
 
         composable<ScreenRoute.Favorites> {
-            val context = LocalContext.current
+
 
             val favoriteFactory = FavoriteLocationFactory(
                 repo = WeatherRepositoryImpl.getInstance(
@@ -116,7 +117,20 @@ fun SetupNavHost(
 
         composable<ScreenRoute.Alerts> {
             val profile = it.toRoute<ScreenRoute.Alerts>()
-            Alert() {}
+
+            val alertFactory = AlertFactory(
+                repo = WeatherRepositoryImpl.getInstance(
+                    WeatherRemoteDataSourceImpl(
+                        RetrofitHelper.service
+                    ),
+                    CityLocationLocalDataSourceImpl(
+                        CityDatabase.getInstance(context).getCityDao()
+                    )
+                )
+            )
+            val viewModelAlert: AlertViewModel = viewModel(factory = alertFactory)
+
+            Alert(viewModelAlert)
         }
         composable<ScreenRoute.Settings> {
             val profile = it.toRoute<ScreenRoute.Settings>()
