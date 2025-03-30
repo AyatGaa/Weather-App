@@ -5,8 +5,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission
-        android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -21,8 +21,9 @@
         <uses-library
             android:name="org.apache.http.legacy"
             android:required="false" />
-        <meta-data android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyASPTItqNeWifC1NO4nUdCwQ-fLHeg-lx4"/>
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/mapApiKeySafe" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
