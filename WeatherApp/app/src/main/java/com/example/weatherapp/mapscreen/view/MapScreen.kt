@@ -143,6 +143,8 @@ fun MapScreen(
                             }
                             .background(White)
                             .padding(12.dp)
+
+                            .navigationBarsPadding()
                     )
                 }
             }

@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
+import com.example.weatherapp.R
 import com.example.weatherapp.ui.theme.DarkBlue2
 import com.example.weatherapp.ui.theme.Gray
 import com.example.weatherapp.utils.SharedObject
@@ -40,7 +41,7 @@ fun LanguageSection() {
     Column(
         modifier = Modifier.selectableGroup()
     ) {
-        MainHeader("Language", Icons.Default.Star)
+        MainHeader("Language", R.drawable.language)
 
         langOptions.forEach { text ->
             Row(

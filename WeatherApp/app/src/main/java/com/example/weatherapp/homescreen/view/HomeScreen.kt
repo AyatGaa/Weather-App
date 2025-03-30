@@ -164,11 +164,12 @@ fun HomeScreen(viewModel: HomeScreenViewModel) {
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
-            .statusBarsPadding()
-            .navigationBarsPadding(),
-           // .padding(top = 32.dp),
-        containerColor = BabyBlue,
+             .padding(top = 32.dp)
+           /// .statusBarsPadding()
+           // .navigationBarsPadding(),
+      ,  containerColor = BabyBlue,
         topBar = { TopAppBar("Home") }
+
     ) { innerPadding ->
 
         when (uiState) {
@@ -203,7 +204,7 @@ fun HomeScreen(viewModel: HomeScreenViewModel) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxHeight()
-                .padding(innerPadding),
+                 .padding(innerPadding),
             //   .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {

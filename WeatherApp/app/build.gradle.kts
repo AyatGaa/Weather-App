@@ -18,6 +18,12 @@ android {
     val properties = Properties()
     properties.load(FileInputStream(file))
 
+    val localProperties = Properties().apply {
+        load(rootProject.file("local.properties").inputStream())
+    }
+    val mapApiKey: String = localProperties.getProperty("mapApiKey", "")
+
+
     defaultConfig {
         applicationId = "com.example.weatherapp"
         minSdk = 24
@@ -26,7 +32,9 @@ android {
         versionName = "1.0"
 
         buildConfigField("String", "apiKeySafe", properties.getProperty("apiKey"))
-        buildConfigField("String", "mapApiKeySafe", properties.getProperty("mapApiKey"))
+        buildConfigField("String", "mapApiKeySafe", mapApiKey)
+        resValue("string", "mapApiKeySafe", mapApiKey)
+
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -87,6 +95,11 @@ dependencies {
 
     // optional - Kotlin Extensions and Coroutines support for Room
     implementation("androidx.room:room-ktx:$room_version")
+
+
+    // splash
+    implementation("androidx.core:core-splashscreen:1.0.1")
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

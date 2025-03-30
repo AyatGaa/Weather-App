@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -20,10 +21,9 @@ import com.example.weatherapp.ui.theme.White
 
 
 @Composable
-fun MainHeader(title: String, icon: ImageVector?) {
+fun MainHeader(title: String, icon: Int?) {
     Row(
         modifier = Modifier
-
             .background(DarkBlue1)
             .padding(8.dp)
             .fillMaxWidth()
@@ -31,8 +31,9 @@ fun MainHeader(title: String, icon: ImageVector?) {
     ) {
         icon?.let {
             Icon(
-                modifier = Modifier.size(18.dp),
-                imageVector = it,
+                modifier = Modifier.size(18.dp).padding(end = 4.dp),
+                painter = painterResource(it),
+
                 tint = White,
                 contentDescription = "location logo"
             )

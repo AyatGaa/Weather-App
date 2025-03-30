@@ -32,6 +32,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.example.weatherapp.R
 import com.example.weatherapp.ui.theme.BabyBlue
 import com.example.weatherapp.ui.theme.DarkBlue2
 import com.example.weatherapp.ui.theme.Gray
@@ -64,7 +65,7 @@ fun LocationSection() {
             .selectableGroup()
     ) {
 
-        MainHeader("Location", Icons.Default.LocationOn)
+        MainHeader("Location", R.drawable.add_location)
 
         locationOptions.forEach { text ->
             Row(

@@ -41,8 +41,7 @@ fun DailyForecast(daily: List<ForecastItem>?) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 0.dp)
-            .navigationBarsPadding()
-            .systemBarsPadding()
+
     ) {
         Text(
             text = "Next 5 Days",
@@ -62,7 +61,7 @@ fun DailyForecast(daily: List<ForecastItem>?) {
                 val measurement = getTempUnit()
                 items(it.size) { idx ->
                     val forecast = it[idx]
-                val i = getWeatherIcon(forecast.weather[0].icon.toString())
+                    val i = getWeatherIcon(forecast.weather[0].icon.toString())
                     DailyForecastItem(
                         date = timeZoneConversion(forecast.timestamp.toInt(), "dd/MM\t\tEEEE"),
                         icon = i,
