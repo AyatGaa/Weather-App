@@ -64,7 +64,7 @@ fun HourlyForecast(hourly: List<ForecastItem>?) {
                     val forecast = it[idx]
                     val ic = getWeatherIcon(forecast.weather[0].icon.toString())
                     HourlyForecastItem(
-                        time = timeZoneConversion(forecast.timestamp.toInt()," hh:mm a"),
+                        time = timeZoneConversion(forecast.timestamp.toInt(), " hh:mm a"),
                         icon = ic,
                         temp = "${forecast.main.temp?.toInt()}",
                         measurement = measurement

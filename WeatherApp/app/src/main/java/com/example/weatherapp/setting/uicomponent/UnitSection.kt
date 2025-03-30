@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
+import com.example.weatherapp.R
 import com.example.weatherapp.ui.theme.DarkBlue2
 import com.example.weatherapp.ui.theme.Gray
 import com.example.weatherapp.utils.SharedObject
@@ -64,7 +65,7 @@ fun UnitsSection() {
 
 
     Column(modifier = Modifier.selectableGroup()) {
-        MainHeader("Units", Icons.Default.Build)
+        MainHeader("Units", R.drawable.barometer)
 
         Spacer(modifier = Modifier.height(10.dp))
         SectionHeader("Temperature Unit")
