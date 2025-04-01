@@ -37,18 +37,30 @@ import com.example.weatherapp.ui.theme.White
 import com.example.weatherapp.ui.theme.Yellow
 import com.example.weatherapp.ui.theme.component.LoadingIndicator
 import com.example.weatherapp.ui.theme.component.TopAppBar
+import com.example.weatherapp.utils.SharedObject
 import com.example.weatherapp.utils.getTempUnit
+import com.example.weatherapp.utils.getUnitSymbol
 import com.example.weatherapp.utils.timeZoneConversion
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun FavoriteCardDetail(viewModel: FavoriteScreenViewModel,  lat:Double,  lon :Double,  id:Int) {
+fun FavoriteCardDetail(viewModel: FavoriteScreenViewModel, lat: Double, lon: Double, id: Int) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
-        viewModel.getLocationDetailsForCardOnline(lat,lon)
-        viewModel.getLocationDetailsForCardOffline(lat,lon, id)
+        viewModel.getLocationDetailsForCardOnline(lat, lon)
+        viewModel.getLocationDetailsForCardOffline(lat, lon, id)
     }
+    val unitTemp = getUnitSymbol(
+        SharedObject.getString("lang", "en"),
+        "temp",
+        SharedObject.getString("temp", "Kelivn")
+    )
+    val unitSpeed = getUnitSymbol(
+        SharedObject.getString("lang", "en"),
+        "speed",
+        SharedObject.getString("temp", "Meter/Sec (m/sec)")
+    )
 
     when (uiState) {
         is ResponseState.Loading -> LoadingIndicator()
@@ -80,12 +92,12 @@ fun FavoriteCardDetail(viewModel: FavoriteScreenViewModel,  lat:Double,  lon :Do
 
                     // Weather Details
                     item {
-                        WeatherDetails(data.currentWeather)
+                        WeatherDetails(data.currentWeather, unitTemp, unitSpeed)
                     }
 
                     // Hourly Forecast
                     item {
-                        HourlyForecast(data.forecastWeather.list.take(8))
+                        HourlyForecast(data.forecastWeather.list.take(8), unitTemp, unitSpeed)
                     }
                     // Daily Forecast
                     item {
@@ -97,14 +109,15 @@ fun FavoriteCardDetail(viewModel: FavoriteScreenViewModel,  lat:Double,  lon :Do
                             }
                         }.map { (_, forecasts) ->
                             forecasts.first()
-                        })
+                        }, unitTemp, unitSpeed)
                     }
                 }
             }
 
 
         }
-        is ResponseState.Failure->{
+
+        is ResponseState.Failure -> {
             Failure("Can not find data")
         }
     }

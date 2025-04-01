@@ -34,7 +34,7 @@ import com.example.weatherapp.utils.getWeatherIcon
 
 
 @Composable
-fun WeatherDetails(weather: CurrentResponseApi) {
+fun WeatherDetails(weather: CurrentResponseApi , unitTemp:String, unitSpeed:String) {
     Column(
         modifier = Modifier
             .padding(0.dp)
@@ -59,7 +59,7 @@ fun WeatherDetails(weather: CurrentResponseApi) {
         )
 
     ) {
-        val measure =getSpeedUnit()
+
         DetailedWeatherItem(
             label = "Pressure",
             value = "${weather.main?.pressure}",
@@ -75,7 +75,7 @@ fun WeatherDetails(weather: CurrentResponseApi) {
         DetailedWeatherItem(
             label = "Wind",
             value = "${weather.wind?.deg}",
-           measurement =  measure,
+           measurement =  unitSpeed,
             icon = R.drawable.wind
         )
 

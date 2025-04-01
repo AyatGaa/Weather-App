@@ -29,6 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -38,6 +39,7 @@ import com.example.weatherapp.ui.theme.DarkBlue2
 import com.example.weatherapp.ui.theme.Gray
 import com.example.weatherapp.ui.theme.White
 import com.example.weatherapp.utils.SharedObject
+import com.example.weatherapp.utils.getLocationType
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
@@ -51,11 +53,16 @@ import com.google.maps.android.compose.rememberCameraPositionState
 @Composable
 fun LocationSection() {
     val context = LocalContext.current
-    val locationOptions = listOf("GPS", "Map")
-    var selectedLoc by remember {
-        mutableStateOf(SharedObject.getString("loc", "GPS"))
-    }
+    val locationOptions = listOf(stringResource(R.string.gps), stringResource(R.string.map))
 
+    var selectedLoc by remember {
+        mutableStateOf(
+            getLocationType(
+                SharedObject.getString("lang", "en"),
+                SharedObject.getString("loc", context.getString(R.string.gps))
+            )
+        )
+    }
 
     var showMapDialog by remember { mutableStateOf(false) }
     var selectedLocation by remember { mutableStateOf<LatLng?>(null) }
@@ -65,7 +72,7 @@ fun LocationSection() {
             .selectableGroup()
     ) {
 
-        MainHeader("Location", R.drawable.add_location)
+        MainHeader(title = stringResource(R.string.location), icon = R.drawable.add_location)
 
         locationOptions.forEach { text ->
             Row(
@@ -79,13 +86,13 @@ fun LocationSection() {
 
                             selectedLoc = text
                             SharedObject.saveString("loc", selectedLoc)
-                            if (selectedLoc == "Map") {
+                            if (selectedLoc == context.getString(R.string.map)) {
                                 showMapDialog = true
                             }
 
                             Toast.makeText(
                                 context,
-                                "Location set to $selectedLoc",
+                                "Location set to " + selectedLoc,
                                 Toast.LENGTH_SHORT
                             ).show()
 
@@ -156,7 +163,7 @@ fun MapDialog(
         ) {
 
             Text(
-                "Select Location", modifier = Modifier
+                stringResource(R.string.select_location), modifier = Modifier
                     .padding(16.dp)
             )
 
@@ -170,7 +177,7 @@ fun MapDialog(
             ) {
                 Marker(
                     state = MarkerState(position = selectedLocation),
-                    title = "Here"
+                    title = stringResource(R.string.here)
                 )
             }
 
@@ -190,7 +197,7 @@ fun MapDialog(
                     .padding(16.dp)
             ) {
                 Text(
-                    text = "Confirm Location"
+                    text = stringResource(R.string.confirm_location)
                 )
             }
         }

@@ -18,9 +18,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -46,7 +44,6 @@ import com.example.weatherapp.homescreen.view.uicomponent.Failure
 import com.example.weatherapp.homescreen.view.uicomponent.HourlyForecast
 import com.example.weatherapp.homescreen.view.uicomponent.WeatherDetails
 import com.example.weatherapp.homescreen.viewmodel.HomeScreenViewModel
-import com.example.weatherapp.navigation.ScreenRoute
 import com.example.weatherapp.ui.theme.BabyBlue
 import com.example.weatherapp.ui.theme.White
 import com.example.weatherapp.ui.theme.Yellow
@@ -54,6 +51,7 @@ import com.example.weatherapp.ui.theme.component.LoadingIndicator
 import com.example.weatherapp.ui.theme.component.TopAppBar
 import com.example.weatherapp.utils.SharedObject
 import com.example.weatherapp.utils.getTempUnit
+import com.example.weatherapp.utils.getUnitSymbol
 import com.example.weatherapp.utils.location.DefaultLocationClient
 import com.example.weatherapp.utils.location.LocationClient
 import com.example.weatherapp.utils.location.hasLocationPermission
@@ -82,6 +80,10 @@ fun HomeScreen(viewModel: HomeScreenViewModel) {
 
     val locationClient: LocationClient =
         DefaultLocationClient(context, LocationServices.getFusedLocationProviderClient(context))
+
+    val unitTemp = getUnitSymbol(lang,"temp",SharedObject.getString("temp","Kelvin" ))
+    val unitSpeed = getUnitSymbol(lang,"speed",SharedObject.getString("speed","Meter/Sec (m/sec)" ))
+
 
     RequestLocationPermission(
         onPermissionGranted = {
@@ -213,21 +215,21 @@ fun HomeScreen(viewModel: HomeScreenViewModel) {
                 // Top Section
                 item {
                     Log.d("TAG", "HomeScreen: waether compose")
-                    TopSection(weatherData)
+                    TopSection(weatherData, unitTemp, unitSpeed)
                 }
 
                 // Weather Details
                 item {
-                    WeatherDetails(weatherData)
+                    WeatherDetails(weatherData, unitTemp, unitSpeed)
                 }
 
                 // Hourly Forecast
                 item {
-                    HourlyForecast(hourly)
+                    HourlyForecast(hourly, unitTemp, unitSpeed)
                 }
                 // Daily Forecast
                 item {
-                    DailyForecast(daily)
+                    DailyForecast(daily, unitTemp, unitSpeed)
                 }
             }
         }
@@ -236,7 +238,7 @@ fun HomeScreen(viewModel: HomeScreenViewModel) {
 
 
 @Composable
-fun TopSection(weather: CurrentResponseApi) {
+fun TopSection(weather: CurrentResponseApi, unitTemp: String, unitSpeed: String) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -270,10 +272,9 @@ fun TopSection(weather: CurrentResponseApi) {
                 fontSize = 64.sp,
                 color = White
             )
-            //temp type K, C, F
-            val measure = getTempUnit()
+
             Text(
-                text = measure,
+                text = unitTemp,
                 fontWeight = FontWeight.Bold,
                 fontSize = 38.sp,
                 color = White

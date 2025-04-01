@@ -36,7 +36,7 @@ import com.example.weatherapp.utils.timeZoneConversion
 
 
 @Composable
-fun DailyForecast(daily: List<ForecastItem>?) {
+fun DailyForecast(daily: List<ForecastItem>?, unitTemp:String, unitSpeed:String) {
     Column(
         modifier = Modifier
             .fillMaxWidth()

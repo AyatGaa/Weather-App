@@ -47,12 +47,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
+import com.example.weatherapp.R
 import com.example.weatherapp.data.models.WeatherAlert
 import com.example.weatherapp.ui.theme.BabyBlue
 import com.example.weatherapp.ui.theme.DarkBlue2
@@ -123,7 +125,7 @@ fun Alert(
             .fillMaxSize()
             .padding(top = 32.dp)
             .background(BabyBlue),
-        topBar = { TopAppBar("Alert") },
+        topBar = { TopAppBar(stringResource(R.string.alert)) },
 
         floatingActionButton = {
             FloatingActionButton(
@@ -170,8 +172,8 @@ fun Alert(
                             scope.launch {
                                 viewModel.getAllAlerts()
                                 val result = snackBarHostState.showSnackbar(
-                                    message = "Deleted",
-                                    actionLabel = "Undo",
+                                    message = context.getString(R.string.deleted),
+                                    actionLabel = context.getString(/* resId = */ R.string.undo),
                                     duration = SnackbarDuration.Short
                                 )
 
@@ -202,7 +204,7 @@ fun Alert(
                 .fillMaxWidth()
                 .height(400.dp),
             onDismissRequest = { showAlertDialog.value = false },
-            title = { Text("Select Alert Duration") },
+            title = { Text(stringResource(R.string.select_alert_duration)) },
             text = {
                 Column {
 

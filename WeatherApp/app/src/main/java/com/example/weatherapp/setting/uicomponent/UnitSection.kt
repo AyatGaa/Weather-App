@@ -22,12 +22,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.example.weatherapp.R
 import com.example.weatherapp.ui.theme.DarkBlue2
 import com.example.weatherapp.ui.theme.Gray
 import com.example.weatherapp.utils.SharedObject
+import com.example.weatherapp.utils.getSettingType
 
 @Composable
 fun UnitsSection() {
@@ -38,23 +40,42 @@ fun UnitsSection() {
     * */
 
     val context = LocalContext.current
-    val tempOptions = listOf("Kelvin", "Celsius", "Fahrenheit")
-    val speedOptions = listOf("Meter/Sec (m/sec)", "Miles/Hour (mph)")
+    val tempOptions = listOf(stringResource(R.string.kelvin),
+        stringResource(R.string.celsius), stringResource(R.string.fahrenheit)
+    )
+    val speedOptions = listOf(
+        stringResource(R.string.meter_sec_m_sec),
+        stringResource(R.string.miles_hour_mph)
+    )
+
 
     var selectedTemp by remember {
-        mutableStateOf(SharedObject.getString("temp","Kelvin") )
+        mutableStateOf(
+            getSettingType(
+                SharedObject.getString("lang", "en"),
+                "temp",
+                SharedObject.getString("temp", context.getString(R.string.kelvin))
+            )
+        )
     }
+
     var selectedSpeed by remember {
-        mutableStateOf(SharedObject.getString("speed","Meter/Sec (m/sec)") )
+        mutableStateOf(
+            getSettingType(
+                SharedObject.getString("lang", "en"),
+                "speed",
+                SharedObject.getString("speed", context.getString(R.string.meter_sec_m_sec))
+            )
+        )
     }
 
     fun updateUnits(temp: String?, speed: String?) {
         if (temp != null) {
             selectedTemp = temp
-            selectedSpeed = if (temp == "Fahrenheit") "Miles/Hour (mph)" else "Meter/Sec (m/sec)"
+            selectedSpeed = if (temp == context.getString(R.string.fahrenheit)) context.getString(R.string.miles_hour_mph)  else context.getString(R.string.meter_sec_m_sec)
         } else if (speed != null) {
             selectedSpeed = speed
-            selectedTemp = if (speed == "Miles/Hour (mph)") "Fahrenheit" else "Kelvin"
+            selectedTemp = if (speed == context.getString(R.string.miles_hour_mph)) context.getString(R.string.fahrenheit) else context.getString(R.string.kelvin)
         }
 
         SharedObject.saveString("temp", selectedTemp)
@@ -65,10 +86,10 @@ fun UnitsSection() {
 
 
     Column(modifier = Modifier.selectableGroup()) {
-        MainHeader("Units", R.drawable.barometer)
+        MainHeader(stringResource(R.string.units), R.drawable.barometer)
 
         Spacer(modifier = Modifier.height(10.dp))
-        SectionHeader("Temperature Unit")
+        SectionHeader(stringResource(R.string.temperature_unit))
 
         tempOptions.forEach { temp ->
             Row(
@@ -96,7 +117,7 @@ fun UnitsSection() {
             }
         }
 
-        SectionHeader("Wind Speed")
+        SectionHeader(stringResource(R.string.wind_speed))
         speedOptions.forEach { speed ->
             Row(
                 modifier = Modifier

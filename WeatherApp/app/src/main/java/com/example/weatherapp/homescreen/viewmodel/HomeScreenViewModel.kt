@@ -56,17 +56,17 @@ class HomeScreenViewModel(private val repo: WeatherRepository) : ViewModel() {
     fun getCurrentSetting() {
         viewModelScope.launch {
             val langRes = SharedObject.getString("lang", "en")
-            val unitRes = SharedObject.getString("temp", "en")
+            val unitRes = SharedObject.getString("temp", "Standard")
             val locRes = SharedObject.getString("loc", "GPS")
 
-            if (langRes == "Arabic") _lang.value = "ar" else {
-                _lang.value = "en"
-            }
+       //     if (langRes == "Arabic") _lang.value = "ar" else {
+                _lang.value = SharedObject.getString("lang", "en")
+       //     }
 
             when (unitRes) {
-                "Celsius" -> _unit.value = "metric"
-                "Kelvin" -> _unit.value = "standard"
-                "Fahrenheit" -> _unit.value = "imperial"
+                "Celsius", "درجة مئوية" -> _unit.value = "metric"
+                "Kelvin","كلفن" -> _unit.value = "standard"
+                "Fahrenheit", "فهرنهايت" -> _unit.value = "imperial"
                 else -> _unit.value = "standard"
             }
 

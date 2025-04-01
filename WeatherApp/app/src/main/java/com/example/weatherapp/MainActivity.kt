@@ -19,6 +19,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.weatherapp.navigation.BottomNavigationBar
 import com.example.weatherapp.navigation.SetupNavHost
 import com.example.weatherapp.utils.SharedObject
+import java.util.Locale
 
 class MainActivity : ComponentActivity() {
 
@@ -29,6 +30,9 @@ class MainActivity : ComponentActivity() {
         lateinit var navController: NavHostController
 
         super.onCreate(savedInstanceState)
+        SharedObject.init(this@MainActivity)
+
+        applyLanguage(SharedObject.getString("lang", "en"))
         setContent {
 
             enableEdgeToEdge()
@@ -38,7 +42,6 @@ class MainActivity : ComponentActivity() {
                     actionBar?.hide()
 
                     navController = rememberNavController()
-                    SharedObject.init(this@MainActivity)
 
                     setKeepOnScreenCondition {
                         viewModel.isLoading.value
@@ -66,6 +69,14 @@ class MainActivity : ComponentActivity() {
             }
 
         }
+    }
+
+    private fun applyLanguage(languageCode: String) {
+        val locale = Locale(languageCode)
+        Locale.setDefault(locale)
+        val config = resources.configuration
+        config.setLocale(locale)
+        resources.updateConfiguration(config, resources.displayMetrics)
     }
 }
 

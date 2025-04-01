@@ -35,7 +35,7 @@ import com.example.weatherapp.utils.timeZoneConversion
 
 
 @Composable
-fun HourlyForecast(hourly: List<ForecastItem>?) {
+fun HourlyForecast(hourly: List<ForecastItem>?,unitTemp:String, unitSpeed:String) {
 
     Column(
         modifier = Modifier.fillMaxWidth(),
