@@ -44,8 +44,12 @@ class AlertViewModel(private val repo: WeatherRepository) : ViewModel() {
 
     fun scheduleNotification(context: Context, triggerTimeMillis: Long, alert: WeatherAlert) {
         viewModelScope.launch {
+
+
             val weather = repo.getCurrentWeather(alert.lat, alert.lon, "en", "Metric").first()
+
             val durationMillis = alert.endDate - alert.startDate  // Make sure duration is correctly calculated
+
             val notificationId = (System.currentTimeMillis() % Int.MAX_VALUE).toInt()  // Generate unique ID
 
             // Serialize the alert object to JSON
@@ -59,6 +63,7 @@ class AlertViewModel(private val repo: WeatherRepository) : ViewModel() {
                 "id" to alert.id
                 )
             Log.w("TAG", "scheduleNotification: alert ID from MOdel ${alert.id}", )
+
             val now = System.currentTimeMillis()
             val delay = triggerTimeMillis - now
 

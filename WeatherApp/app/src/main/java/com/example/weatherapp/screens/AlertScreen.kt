@@ -268,6 +268,7 @@ fun Alert(
 
                     Log.i("TAG", "Alert: on done click")
                     val addedAlert = WeatherAlert(
+                        id = System.currentTimeMillis().toInt(),
                         startDate = startTime.value,
                         endDate = endTime.value,
                         lat = lat.value,

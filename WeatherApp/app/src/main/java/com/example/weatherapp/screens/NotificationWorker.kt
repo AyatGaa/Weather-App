@@ -32,6 +32,7 @@ class NotificationWorker(
 ) : CoroutineWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result {
+
         val repo = WeatherRepositoryImpl.getInstance(
             WeatherRemoteDataSourceImpl(
                 RetrofitHelper.service
@@ -93,23 +94,27 @@ class NotificationWorker(
             applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.notify(notificationId, notification)
 
+        CoroutineScope(Dispatchers.IO).launch {
+            repo.deleteAlertById(alertId)
+        }
+
         Log.d("NotificationWorker", "Notification displayed with weather details")
 
-        if (alert.endDate > 0) {
-            val handler = Handler(Looper.getMainLooper())
-            handler.postDelayed({
-                notificationManager.cancel(notificationId)
-                Log.d("TAG", "Sending alertId: ${alert.id} to notification cancel intent")
-
-                CoroutineScope(Dispatchers.IO).launch {
-                    repo.deleteAlertById(alertId)
-                    Log.i("TAG", "doWork:alert.id ++>${alert.id}")
-                    Log.i("TAG", "doWork: alertId =>${alertId}")
-                }
-                Log.d("TAG", "Received alertId: $alert.id for deletion")
-
-            }, alert.endDate - alert.startDate)
-        }
+//        if (alert.endDate > 0) {
+//            val handler = Handler(Looper.getMainLooper())
+//            handler.postDelayed({
+//                notificationManager.cancel(notificationId)
+//                Log.d("TAG", "Sending alertId: ${alert.id} to notification cancel intent")
+//
+//                CoroutineScope(Dispatchers.IO).launch {
+//                    repo.deleteAlertById(alertId)
+//                    Log.i("TAG", "doWork:alert.id ++>${alert.id}")
+//                    Log.i("TAG", "doWork: alertId =>${alertId}")
+//                }
+//                Log.d("TAG", "Received alertId: $alert.id for deletion")
+//
+//            }, alert.endDate - alert.startDate)
+//        }
 
         return Result.success()
     }
@@ -123,34 +128,34 @@ class NotificationReceiver : BroadcastReceiver() {
             val notificationId = intent.getIntExtra("notificationId", -1)
             Log.d("TAG", "Received cancel for Alert ID: $alertId")
 
-            if (context != null && alertId != -1) {
-                val repo = WeatherRepositoryImpl.getInstance(
-                    WeatherRemoteDataSourceImpl(
-                        RetrofitHelper.service
-                    ),
-                    CityLocationLocalDataSourceImpl(
-                        CityDatabase.getInstance(context).getCityDao()
-                    )
-                )
-
-                CoroutineScope(Dispatchers.IO).launch {
-                 val res = repo.deleteAlertById(alertId)
-
-                    val alert = repo.getAlertByID(alertId)
-                    if (alert == null) {
-                        Log.d("TAG", "No alert found with ID: $alertId")
-                    } else {
-                        Log.d("TAG", "Alert found, deleting...")
-                        val rowsDeleted = repo.deleteAlertById(alertId)
-                        Log.d("TAG", "Deleted $rowsDeleted rows from Room")
-                    }
-
-
-                    Log.d("TAG", "Deleted $alertId rows from Room")
-                    Log.d("TAG", "Deleted $res RESULT")
-
-                }
-            }
+//            if (context != null && alertId != -1) {
+//                val repo = WeatherRepositoryImpl.getInstance(
+//                    WeatherRemoteDataSourceImpl(
+//                        RetrofitHelper.service
+//                    ),
+//                    CityLocationLocalDataSourceImpl(
+//                        CityDatabase.getInstance(context).getCityDao()
+//                    )
+//                )
+//
+//                CoroutineScope(Dispatchers.IO).launch {
+//                 val res = repo.deleteAlertById(alertId)
+//
+//                    val alert = repo.getAlertByID(alertId)
+//                    if (alert == null) {
+//                        Log.d("TAG", "No alert found with ID: $alertId")
+//                    } else {
+//                        Log.d("TAG", "Alert found, deleting...")
+//                        val rowsDeleted = repo.deleteAlertById(alertId)
+//                        Log.d("TAG", "Deleted $rowsDeleted rows from Room")
+//                    }
+//
+//
+//                    Log.d("TAG", "Deleted $alertId rows from Room")
+//                    Log.d("TAG", "Deleted $res RESULT")
+//
+//                }
+//            }
 
              val notificationManager =
                 context?.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
