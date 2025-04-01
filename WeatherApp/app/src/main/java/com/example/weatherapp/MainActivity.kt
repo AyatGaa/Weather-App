@@ -28,9 +28,9 @@ class MainActivity : ComponentActivity() {
 
         val viewModel by viewModels<SplashViewModel>()
         lateinit var navController: NavHostController
+        SharedObject.init(this@MainActivity)
 
         super.onCreate(savedInstanceState)
-        SharedObject.init(this@MainActivity)
 
         applyLanguage(SharedObject.getString("lang", "en"))
         setContent {

@@ -47,25 +47,22 @@ class FavoriteScreenViewModel(private val repo: WeatherRepository) : ViewModel()
         viewModelScope.launch {
             val langRes = SharedObject.getString("lang", "en")
             val unitRes = SharedObject.getString("temp", "en")
-
-            if (langRes == "Arabic") _lang.value = "ar" else {
-                _lang.value = "en"
-            }
+            _lang.value = langRes
 
             when (unitRes) {
-                "Celsius" -> _unit.value = "metric"
-                "Kelvin" -> _unit.value = "standard"
-                "Fahrenheit" -> _unit.value = "imperial"
+                "Celsius", "درجة مئوية" -> _unit.value = "metric"
+                "Kelvin", "كلفن" -> _unit.value = "standard"
+                "Fahrenheit", "فهرنهايت" -> _unit.value = "imperial"
                 else -> _unit.value = "standard"
             }
 
         }
     }
 
-    fun getLocationDetailsForCardOffline(lat: Double, lon: Double , id:Int){
-         // if offline get from db
+    fun getLocationDetailsForCardOffline(lat: Double, lon: Double, id: Int) {
+        // if offline get from db
         viewModelScope.launch {
-         //   getCurrentSetting()
+            getCurrentSetting()
             Log.d("INSERT_DEBUG", "getLocationData() called for lat: $lat, lon: $lon")
 
             try {
@@ -87,18 +84,18 @@ class FavoriteScreenViewModel(private val repo: WeatherRepository) : ViewModel()
         }
     }
 
-    fun getLocationDetailsForCardOnline(lat: Double, lon: Double){
+    fun getLocationDetailsForCardOnline(lat: Double, lon: Double) {
         // if online get form api,
         // if offline get from db
         //if online
         viewModelScope.launch {
-          //  getCurrentSetting()
+            getCurrentSetting()
             Log.d("INSERT_DEBUG", "getLocationData() called for lat: $lat, lon: $lon")
 
             try {
                 val city = repo.getCityByLatLon(lat, lon).first()
-                val weather = repo.getCurrentWeather(lat, lon, lang.value   , unit.value).first()
-                val forecast = repo.getForecastWeather(lat, lon, lang.value   , unit.value).first()
+                val weather = repo.getCurrentWeather(lat, lon, lang.value, unit.value).first()
+                val forecast = repo.getForecastWeather(lat, lon, lang.value, unit.value).first()
 
                 val uiState = CityLocation(
                     cityData = city,
@@ -125,8 +122,8 @@ class FavoriteScreenViewModel(private val repo: WeatherRepository) : ViewModel()
             Log.d("INSERT_DEBUG", "getLocationData() called for lat: $lat, lon: $lon")
             try {
                 val city = repo.getCityByLatLon(lat, lon).first()
-                val weather = repo.getCurrentWeather(lat, lon, lang.value   , unit.value).first()
-                val forecast = repo.getForecastWeather(lat, lon, lang.value   , unit.value).first()
+                val weather = repo.getCurrentWeather(lat, lon, lang.value, unit.value).first()
+                val forecast = repo.getForecastWeather(lat, lon, lang.value, unit.value).first()
 
                 val uiState = CityLocation(
                     cityData = city,
@@ -179,7 +176,7 @@ class FavoriteScreenViewModel(private val repo: WeatherRepository) : ViewModel()
                     Log.d(
                         "INSERT_DEBUG",
                         "Location already exists, skipping insertion."
-                    ) // Debug Log
+                    )
                     _mutableDatabaseMessage.emit("Location already exists!")
                 }
             } catch (th: Throwable) {
@@ -212,7 +209,7 @@ class FavoriteScreenViewModel(private val repo: WeatherRepository) : ViewModel()
                 delay(100)
                 if (res >= 0) {
 
-                   getAllFavoriteLocationFromDataBase()
+                    getAllFavoriteLocationFromDataBase()
                     _mutableDatabaseMessage.emit("Location Deleted!")
                     Log.d("DELETE_DEBUG", "Updated localCityFlow: ${_localCityFlow.value}")
                 } else {

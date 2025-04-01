@@ -22,27 +22,30 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import com.example.weatherapp.R
 import com.example.weatherapp.ui.theme.DarkBlue2
 import com.example.weatherapp.ui.theme.White
+import com.example.weatherapp.utils.formatNumberBasedOnLanguage
 import com.example.weatherapp.utils.getTempUnit
 import com.example.weatherapp.utils.getWeatherIcon
 import com.example.weatherapp.utils.timeZoneConversion
 
 
 @Composable
-fun HourlyForecast(hourly: List<ForecastItem>?,unitTemp:String, unitSpeed:String) {
+fun HourlyForecast(hourly: List<ForecastItem>?,unitTemp:String) {
 
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.SpaceBetween,
     ) {
         Text(
-            text = "Hourly Details",
+            text = stringResource(R.string.hourly_details),
             fontWeight = FontWeight.ExtraBold,
             color = White,
             fontSize = 22.sp,
@@ -59,7 +62,7 @@ fun HourlyForecast(hourly: List<ForecastItem>?,unitTemp:String, unitSpeed:String
             ) {
 
             hourly?.let {
-                val measurement = getTempUnit()
+
                 items(it.size) { idx ->
                     val forecast = it[idx]
                     val ic = getWeatherIcon(forecast.weather[0].icon.toString())
@@ -67,7 +70,7 @@ fun HourlyForecast(hourly: List<ForecastItem>?,unitTemp:String, unitSpeed:String
                         time = timeZoneConversion(forecast.timestamp.toInt(), " hh:mm a"),
                         icon = ic,
                         temp = "${forecast.main.temp?.toInt()}",
-                        measurement = measurement
+                        measurement = unitTemp
                     )
                 }
             }
@@ -120,7 +123,7 @@ fun HourlyForecastItem(time: String, icon: Int, temp: String, measurement: Strin
 
             Row {
                 Text(
-                    text = temp,
+                    text = formatNumberBasedOnLanguage(temp),
                     fontSize = 12.sp,
                     color = DarkBlue2,
                     fontWeight = FontWeight.SemiBold,

@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import java.util.Locale
 
 fun restartActivity(context: Context) {
 
@@ -77,3 +78,12 @@ fun getUnitSymbol(lang: String, settingType: String , value: String): String {
 }
 
 
+fun convertToArabicNumbers(number: String): String {
+    val arabicDigits = arrayOf('٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩')
+    return number.map { if (it.isDigit()) arabicDigits[it.digitToInt()] else it }.joinToString("")
+}
+
+fun formatNumberBasedOnLanguage(number: String): String {
+    val language = Locale.getDefault().language
+    return if (language == "ar") convertToArabicNumbers(number) else number
+}

@@ -22,4 +22,18 @@
     <string name="units">Units</string>
     <string name="wind_speed">Wind Speed</string>
     <string name="language">Language</string>
+    <string name="weather_details">Weather Details</string>
+    <string name="pressure">Pressure</string>
+    <string name="humidity">Humidity</string>
+    <string name="wind">Wind</string>
+    <string name="hourly_details">Hourly Details</string>
+    <string name="next_5_days">Next 5 Days</string>
+    <string name="start_time">Start Time</string>
+    <string name="past_time">Past Time!</string>
+    <string name="start">Start: %1$s</string>
+    <string name="end_time">End Time</string>
+    <string name="end_time_must_be_after_start_time">End time must be after start time</string>
+    <string name="end">End : %1$s</string>
+    <string name="done">Done</string>
+    <string name="start_end">Start: %1$s  End: %2$s</string>
 </resources>

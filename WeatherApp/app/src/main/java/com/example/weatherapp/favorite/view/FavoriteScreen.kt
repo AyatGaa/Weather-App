@@ -66,6 +66,9 @@ import com.example.weatherapp.ui.theme.Yellow
 import com.example.weatherapp.ui.theme.component.LoadingIndicator
 import com.example.weatherapp.ui.theme.component.SwipeToDeleteContainer
 import com.example.weatherapp.ui.theme.component.TopAppBar
+import com.example.weatherapp.utils.SharedObject
+import com.example.weatherapp.utils.getSettingType
+import com.example.weatherapp.utils.getUnitSymbol
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -88,11 +91,11 @@ fun Favourite(
 
 
     val localCitiesState by viewModel.localCityFlow.collectAsStateWithLifecycle()
-     val cityData by viewModel.uiState.collectAsStateWithLifecycle()
+    val cityData by viewModel.uiState.collectAsStateWithLifecycle()
     LaunchedEffect(latLong) {
         selectedLocation = latLong
         viewModel.getLocationData(latLong.latitude, latLong.longitude)
-
+        viewModel.getCurrentSetting()
     }
     LaunchedEffect(Unit) {
         viewModel.getAllFavoriteLocationFromDataBase()
@@ -136,13 +139,16 @@ fun Favourite(
                 val data = (cityData as ResponseState.Success).data
                 Log.w("TAG", "Favourite: ${data.toString()}")
             }
+
             is ResponseState.Failure -> {
 
             }
         }
         // Show all saved locations
         if (localCitiesState.isNotEmpty()) {
-            LazyColumn(modifier = Modifier.padding(pad).navigationBarsPadding()) {
+            LazyColumn(modifier = Modifier
+                .padding(pad)
+                .navigationBarsPadding()) {
                 items(
                     count = localCitiesState.size,
                     key = { it }
@@ -212,16 +218,17 @@ fun FavoriteItemCard(
             )
 
             Spacer(modifier = Modifier.width(12.dp))
-
-            location.cityData.name?.let {
+            
+            location.currentWeather.name?.let { it1 ->
                 Text(
-                    text = it,
+                    text = it1,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = DarkBlue2,
                     modifier = Modifier.weight(1f)
                 )
             }
+
 
             Icon(
                 imageVector = Icons.Default.ArrowDropDown,

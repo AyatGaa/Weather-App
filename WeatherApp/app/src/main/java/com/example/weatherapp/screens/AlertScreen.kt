@@ -100,10 +100,7 @@ fun Alert(
         scope.launch(Dispatchers.IO) {
             locationClient.getCurrentLocation()
                 .collect { location ->
-                    Log.w(
-                        "TAG",
-                        "RequestLocationPermission= Home Location: ${location.latitude}, ${location.longitude}"
-                    )
+
                     if (SharedObject.getString("loc", "GPS") == "Map") {
                         lat.value = SharedObject.getString("lat", "0.0").toDouble()
                         lon.value = SharedObject.getString("lon", "0.0").toDouble()
@@ -130,9 +127,6 @@ fun Alert(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    scope.launch {
-                        snackBarHostState.showSnackbar("fab clicked")
-                    }
                     showAlertDialog.value = true
                 },
                 shape = CircleShape,
@@ -215,20 +209,20 @@ fun Alert(
                     ) {
 
                         Button(onClick = { showStartTimePicker.value = true }) {
-                            Text("Start Time")
+                            Text(stringResource(R.string.start_time))
                         }
                         Spacer(modifier = Modifier.width(8.dp))
                         val now = System.currentTimeMillis()
                         if (startTime.value < now) {
                             Text(
-                                "Past Time!",
+                                stringResource(R.string.past_time),
                                 fontSize = 16.sp,
                                 color = Color.Red,
                                 fontWeight = FontWeight.Bold
                             )
                         } else {
                             Text(
-                                "Start: ${formatTime(startTime.value)}",
+                                stringResource(R.string.start, formatTime(startTime.value)),
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold
                             )
@@ -242,20 +236,20 @@ fun Alert(
                         horizontalArrangement = Arrangement.Start
                     ) {
                         Button(onClick = { showEndTimePicker.value = true }) {
-                            Text("End Time")
+                            Text(stringResource(R.string.end_time))
                         }
                         Spacer(modifier = Modifier.width(8.dp))
 
                         if (endTime.value < startTime.value) {
                             Text(
-                                "End time must be after start time",
+                                stringResource(R.string.end_time_must_be_after_start_time),
                                 fontSize = 16.sp,
                                 color = Color.Red,
                                 fontWeight = FontWeight.Bold
                             )
                         } else {
                             Text(
-                                "End : ${formatTime(endTime.value)}",
+                                stringResource(R.string.end, formatTime(endTime.value)),
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold
                             )
@@ -288,7 +282,7 @@ fun Alert(
 
 
                 }) {
-                    Text("Done")
+                    Text(stringResource(R.string.done))
                 }
             }
 
@@ -363,9 +357,12 @@ fun AlertItemCard(alert: WeatherAlert) {
 
             Spacer(modifier = Modifier.width(12.dp))
 
-
             Text(
-                text = "Start: ${formatTime(alert.startDate)}  End: ${formatTime(alert.endDate)}",
+                text = stringResource(
+                    R.string.start_end,
+                    formatTime(alert.startDate),
+                    formatTime(alert.endDate)
+                ),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
                 color = DarkBlue2,
@@ -380,65 +377,6 @@ fun AlertItemCard(alert: WeatherAlert) {
                 modifier = Modifier.weight(1f)
             )
 
-
         }
-    }
-}
-
-fun showTimePicker(
-    context: Context,
-    showPicker: MutableState<Boolean>,
-    selectedTime: MutableState<Long>,
-    isStartTime: Boolean
-) {
-    if (showPicker.value) {
-        TimePickerDialog(
-            context,
-            { _, hour, minute ->
-                val now = Calendar.getInstance()
-                val pickedTime = Calendar.getInstance().apply {
-                    set(Calendar.HOUR_OF_DAY, hour)
-                    set(Calendar.MINUTE, minute)
-                    set(Calendar.SECOND, 0)
-                    set(Calendar.MILLISECOND, 0)
-                }
-
-                if (isStartTime) {
-                    if (pickedTime.timeInMillis < now.timeInMillis) {
-                        // Close picker, then show toast
-                        showPicker.value = false
-                        Handler(Looper.getMainLooper()).postDelayed({
-                            Toast.makeText(
-                                context,
-                                "Start time cannot be in the past.",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            showPicker.value = true
-                        }, 500)
-                    } else {
-                        selectedTime.value = pickedTime.timeInMillis
-                        showPicker.value = false
-                    }
-                } else {
-                    if (pickedTime.timeInMillis < selectedTime.value) {
-                        showPicker.value = false
-                        Handler(Looper.getMainLooper()).postDelayed({
-                            Toast.makeText(
-                                context,
-                                "End time must be after start time.",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            showPicker.value = true
-                        }, 500)
-                    } else {
-                        selectedTime.value = pickedTime.timeInMillis
-                        showPicker.value = false
-                    }
-                }
-            },
-            Calendar.getInstance().get(Calendar.HOUR_OF_DAY),
-            Calendar.getInstance().get(Calendar.MINUTE),
-            true
-        ).show()
     }
 }

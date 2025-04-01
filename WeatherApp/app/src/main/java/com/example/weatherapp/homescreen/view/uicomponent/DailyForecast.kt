@@ -22,21 +22,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import com.example.weatherapp.R
 import com.example.weatherapp.ui.theme.DarkBlue1
 import com.example.weatherapp.ui.theme.DarkBlue2
 import com.example.weatherapp.ui.theme.White
+import com.example.weatherapp.utils.formatNumberBasedOnLanguage
 import com.example.weatherapp.utils.getTempUnit
 import com.example.weatherapp.utils.getWeatherIcon
 import com.example.weatherapp.utils.timeZoneConversion
 
 
 @Composable
-fun DailyForecast(daily: List<ForecastItem>?, unitTemp:String, unitSpeed:String) {
+fun DailyForecast(daily: List<ForecastItem>?, unitTemp:String) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -44,7 +47,7 @@ fun DailyForecast(daily: List<ForecastItem>?, unitTemp:String, unitSpeed:String)
 
     ) {
         Text(
-            text = "Next 5 Days",
+            text = stringResource(R.string.next_5_days),
             fontWeight = FontWeight.ExtraBold,
             color = White,
             fontSize = 22.sp,
@@ -58,7 +61,7 @@ fun DailyForecast(daily: List<ForecastItem>?, unitTemp:String, unitSpeed:String)
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             daily?.let {
-                val measurement = getTempUnit()
+
                 items(it.size) { idx ->
                     val forecast = it[idx]
                     val i = getWeatherIcon(forecast.weather[0].icon.toString())
@@ -66,7 +69,7 @@ fun DailyForecast(daily: List<ForecastItem>?, unitTemp:String, unitSpeed:String)
                         date = timeZoneConversion(forecast.timestamp.toInt(), "dd/MM\t\tEEEE"),
                         icon = i,
                         temp = "${forecast.main.temp?.toInt()}",
-                        measurement = measurement
+                        measurement = unitTemp
                     )
                 }
             }
@@ -120,7 +123,7 @@ fun DailyForecastItem(date: String, icon: Int, temp: String, measurement: String
                 horizontalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = temp,
+                    text = formatNumberBasedOnLanguage(temp),
                     color = DarkBlue1,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 14.sp,
