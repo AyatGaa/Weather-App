@@ -64,7 +64,11 @@ import com.example.weatherapp.ui.theme.BabyBlue
 import com.example.weatherapp.ui.theme.DarkBlue2
 import com.example.weatherapp.ui.theme.Yellow
 import com.example.weatherapp.ui.theme.component.LoadingIndicator
+import com.example.weatherapp.ui.theme.component.SwipeToDeleteContainer
 import com.example.weatherapp.ui.theme.component.TopAppBar
+import com.example.weatherapp.utils.SharedObject
+import com.example.weatherapp.utils.getSettingType
+import com.example.weatherapp.utils.getUnitSymbol
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -87,11 +91,11 @@ fun Favourite(
 
 
     val localCitiesState by viewModel.localCityFlow.collectAsStateWithLifecycle()
-     val cityData by viewModel.uiState.collectAsStateWithLifecycle()
+    val cityData by viewModel.uiState.collectAsStateWithLifecycle()
     LaunchedEffect(latLong) {
         selectedLocation = latLong
         viewModel.getLocationData(latLong.latitude, latLong.longitude)
-
+        viewModel.getCurrentSetting()
     }
     LaunchedEffect(Unit) {
         viewModel.getAllFavoriteLocationFromDataBase()
@@ -133,15 +137,17 @@ fun Favourite(
             is ResponseState.Loading -> LoadingIndicator()
             is ResponseState.Success -> {
                 val data = (cityData as ResponseState.Success).data
-                Log.w("TAG", "Favourite: ${data.toString()}")
+
             }
+
             is ResponseState.Failure -> {
 
             }
         }
-        // Show all saved locations
         if (localCitiesState.isNotEmpty()) {
-            LazyColumn(modifier = Modifier.padding(pad).navigationBarsPadding()) {
+            LazyColumn(modifier = Modifier
+                .padding(pad)
+                .navigationBarsPadding()) {
                 items(
                     count = localCitiesState.size,
                     key = { it }
@@ -212,15 +218,16 @@ fun FavoriteItemCard(
 
             Spacer(modifier = Modifier.width(12.dp))
 
-            location.cityData.name?.let {
+            location.currentWeather.name?.let { it1 ->
                 Text(
-                    text = it,
+                    text = it1,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = DarkBlue2,
                     modifier = Modifier.weight(1f)
                 )
             }
+
 
             Icon(
                 imageVector = Icons.Default.ArrowDropDown,
@@ -232,76 +239,3 @@ fun FavoriteItemCard(
     }
 }
 
-@Composable
-fun <T> SwipeToDeleteContainer(
-    item: T,
-    onDelete: (T) -> Unit,
-    content: @Composable (T) -> Unit
-) {
-    val offsetX = remember { Animatable(0f) }
-    val coroutineScope = rememberCoroutineScope()
-    val dismissThreshold = 300f
-
-    LaunchedEffect(item) {
-        offsetX.snapTo(0f)
-    }
-
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(IntrinsicSize.Min)
-    ) {
-        DeleteBackground(offsetX.value)
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .pointerInput(Unit) {
-                    detectHorizontalDragGestures(
-                        onDragEnd = {
-                            coroutineScope.launch {
-                                if (offsetX.value < -dismissThreshold) {
-                                    offsetX.animateTo(-1000f, tween(300))
-                                    delay(300)
-                                    onDelete(item)
-                                } else {
-                                    offsetX.animateTo(0f, tween(300))
-                                }
-                            }
-                        }
-                    ) { _, dragAmount ->
-                        coroutineScope.launch {
-                            offsetX.snapTo(offsetX.value + dragAmount)
-                        }
-                    }
-                }
-                .offset { IntOffset(offsetX.value.toInt(), 0) }
-        ) {
-            content(item)
-        }
-    }
-}
-
-
-@Composable
-fun DeleteBackground(offsetX: Float) {
-    val backgroundColor by animateColorAsState(
-        targetValue = if (offsetX < -100f) Color.Red else Color.Transparent,
-        animationSpec = tween(durationMillis = 300), label = ""
-    )
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(backgroundColor)
-            .padding(16.dp),
-        contentAlignment = Alignment.CenterEnd
-    ) {
-        if (offsetX < -100f) {
-            Icon(
-                imageVector = Icons.Default.Delete,
-                contentDescription = "Delete Icon",
-                tint = Color.White
-            )
-        }
-    }
-}

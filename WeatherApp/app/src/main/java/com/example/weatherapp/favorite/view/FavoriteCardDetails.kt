@@ -19,6 +19,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -37,19 +40,40 @@ import com.example.weatherapp.ui.theme.White
 import com.example.weatherapp.ui.theme.Yellow
 import com.example.weatherapp.ui.theme.component.LoadingIndicator
 import com.example.weatherapp.ui.theme.component.TopAppBar
+import com.example.weatherapp.utils.SharedObject
+import com.example.weatherapp.utils.formatNumberBasedOnLanguage
+import com.example.weatherapp.utils.getSettingType
 import com.example.weatherapp.utils.getTempUnit
+import com.example.weatherapp.utils.getUnitSymbol
 import com.example.weatherapp.utils.timeZoneConversion
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun FavoriteCardDetail(viewModel: FavoriteScreenViewModel,  lat:Double,  lon :Double,  id:Int) {
+fun FavoriteCardDetail(viewModel: FavoriteScreenViewModel, lat: Double, lon: Double, id: Int) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
-        viewModel.getLocationDetailsForCardOnline(lat,lon)
-        viewModel.getLocationDetailsForCardOffline(lat,lon, id)
+        viewModel.getLocationDetailsForCardOnline(lat, lon)
+        viewModel.getLocationDetailsForCardOffline(lat, lon, id)
     }
 
+    var lang by remember { mutableStateOf("") }
+
+    var unitTemp by remember { mutableStateOf("") }
+    var unitSpeed by remember { mutableStateOf("") }
+
+    LaunchedEffect(lang) {
+        lang = SharedObject.getString("lang", "en")
+
+        val storedTemp = SharedObject.getString("temp", "Kelvin")
+        val storedSpeed = SharedObject.getString("speed", "Meter/Sec (m/sec)")
+
+        val translatedTemp = getSettingType(lang, "temp", storedTemp)
+        val translatedSpeed = getSettingType(lang, "speed", storedSpeed)
+
+        unitTemp = getUnitSymbol(lang, "temp", translatedTemp)
+        unitSpeed = getUnitSymbol(lang, "speed", translatedSpeed)
+    }
     when (uiState) {
         is ResponseState.Loading -> LoadingIndicator()
         is ResponseState.Success -> {
@@ -75,17 +99,17 @@ fun FavoriteCardDetail(viewModel: FavoriteScreenViewModel,  lat:Double,  lon :Do
                     // Top Section
                     item {
                         Log.d("TAG", "HomeScreen: waether compose")
-                        TopSection(data.currentWeather)
+                        TopSection(data.currentWeather,unitTemp)
                     }
 
                     // Weather Details
                     item {
-                        WeatherDetails(data.currentWeather)
+                        WeatherDetails(data.currentWeather, unitSpeed)
                     }
 
                     // Hourly Forecast
                     item {
-                        HourlyForecast(data.forecastWeather.list.take(8))
+                        HourlyForecast(data.forecastWeather.list.take(8), unitTemp)
                     }
                     // Daily Forecast
                     item {
@@ -97,14 +121,15 @@ fun FavoriteCardDetail(viewModel: FavoriteScreenViewModel,  lat:Double,  lon :Do
                             }
                         }.map { (_, forecasts) ->
                             forecasts.first()
-                        })
+                        }, unitTemp)
                     }
                 }
             }
 
 
         }
-        is ResponseState.Failure->{
+
+        is ResponseState.Failure -> {
             Failure("Can not find data")
         }
     }
@@ -113,7 +138,7 @@ fun FavoriteCardDetail(viewModel: FavoriteScreenViewModel,  lat:Double,  lon :Do
 
 
 @Composable
-fun TopSection(weather: CurrentResponseApi) {
+fun TopSection(weather: CurrentResponseApi,unitTemp:String) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -142,15 +167,14 @@ fun TopSection(weather: CurrentResponseApi) {
 
         Row {
             Text(
-                text = "${weather.main?.temp?.toInt()}",
+                text = formatNumberBasedOnLanguage(weather.main?.temp?.toInt().toString()),
                 fontWeight = FontWeight.Bold,
                 fontSize = 64.sp,
                 color = White
             )
             //temp type K, C, F
-            val measure = getTempUnit()
-            Text(
-                text = measure,
+             Text(
+                text = unitTemp,
                 fontWeight = FontWeight.Bold,
                 fontSize = 38.sp,
                 color = White
@@ -165,7 +189,7 @@ fun TopSection(weather: CurrentResponseApi) {
 
             )
         Text(
-            text = "Clouds: ${weather.clouds?.all}%",
+            text = "Clouds: ${ formatNumberBasedOnLanguage(weather.clouds?.all.toString())}%",
             fontWeight = FontWeight.SemiBold,
             color = Yellow,
             fontSize = 16.sp,

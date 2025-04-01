@@ -3,12 +3,17 @@ package com.example.weatherapp.homescreen.viewmodel
 import com.example.weatherapp.data.models.ForecastItem
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.weatherapp.data.models.CurrentResponseApi
+import com.example.weatherapp.data.models.ForecastResponseApi
+import com.example.weatherapp.data.models.HomeEntity
 import com.example.weatherapp.data.models.ResponseState
 import com.example.weatherapp.data.repository.WeatherRepository
 import com.example.weatherapp.utils.SharedObject
@@ -19,6 +24,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
+import kotlin.reflect.KProperty
 
 
 // here where i send data to compose funs
@@ -48,24 +54,28 @@ class HomeScreenViewModel(private val repo: WeatherRepository) : ViewModel() {
     var dailyWeatherData = _dailyWeatherData.asStateFlow()
 
 
+    private val _localForcastHomeData = mutableStateOf(ForecastResponseApi(emptyList()))
+
+
     //not used for now
     private val _mutableMessage = MutableSharedFlow<String>()
     val mutableMessage = _mutableMessage.asSharedFlow()
 
+//private insertHome
+//GetHome
+
     fun getCurrentSetting() {
         viewModelScope.launch {
             val langRes = SharedObject.getString("lang", "en")
-            val unitRes = SharedObject.getString("temp", "en")
+            val unitRes = SharedObject.getString("temp", "Standard")
             val locRes = SharedObject.getString("loc", "GPS")
 
-            if (langRes == "Arabic") _lang.value = "ar" else {
-                _lang.value = "en"
-            }
+            _lang.value = SharedObject.getString("lang", "en")
 
             when (unitRes) {
-                "Celsius" -> _unit.value = "metric"
-                "Kelvin" -> _unit.value = "standard"
-                "Fahrenheit" -> _unit.value = "imperial"
+                "Celsius", "درجة مئوية" -> _unit.value = "metric"
+                "Kelvin", "كلفن" -> _unit.value = "standard"
+                "Fahrenheit", "فهرنهايت" -> _unit.value = "imperial"
                 else -> _unit.value = "standard"
             }
 
@@ -80,6 +90,29 @@ class HomeScreenViewModel(private val repo: WeatherRepository) : ViewModel() {
       * Metric => Celsius => meter/sec
       * Imperial => Fahrenheit => mile/hour
       * */
+    var weather = mutableStateOf<CurrentResponseApi?>(null)
+
+    fun updateDatabase() {
+        val homeEntity = weather.value?.let { HomeEntity(0, it,_localForcastHomeData.value) }
+        //repo funs
+    }
+
+
+    fun loadOnlineData(lat: Double, lon: Double, lang: String, units: String) {
+        viewModelScope.launch {
+            try {
+
+                repo.getForecastWeather(lat, lon, lang, units).collect {
+
+                 }
+
+            } catch (e: Exception) {
+
+            }
+        }
+
+
+    }
 
 
     fun loadCurrentWeather(lat: Double, lon: Double, lang: String, units: String) {
@@ -92,7 +125,7 @@ class HomeScreenViewModel(private val repo: WeatherRepository) : ViewModel() {
                     _mutableMessage.emit("API Error ${ex.message}")
                 }.collect {
 
-                    _currentWeatherData.value = ResponseState.Success(it)
+                     _currentWeatherData.value = ResponseState.Success(it)
                     _mutableMessage.emit("Done")
                 }
 
@@ -106,7 +139,6 @@ class HomeScreenViewModel(private val repo: WeatherRepository) : ViewModel() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun loadForecastWeather(lat: Double, lon: Double, lang: String, units: String) {
-
         viewModelScope.launch {
             getCurrentSetting()
             val result = repo.getForecastWeather(lat, lon, lang, units)
@@ -117,6 +149,7 @@ class HomeScreenViewModel(private val repo: WeatherRepository) : ViewModel() {
                 _mutableMessage.emit("API Error ${ex.message}")
 
             }.collect { forecast ->
+                _localForcastHomeData.value = forecast
                 val hourly = forecast.list.take(8)
                 val daily = forecast.list.groupBy {
                     it.timestamp.let { ts ->
@@ -132,6 +165,8 @@ class HomeScreenViewModel(private val repo: WeatherRepository) : ViewModel() {
             }
         }
     }
+
+
 }
 
 

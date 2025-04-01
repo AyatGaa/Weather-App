@@ -1,5 +1,6 @@
 package com.example.weatherapp.setting.uicomponent
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,27 +22,31 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.example.weatherapp.R
 import com.example.weatherapp.ui.theme.DarkBlue2
 import com.example.weatherapp.ui.theme.Gray
 import com.example.weatherapp.utils.SharedObject
+import com.example.weatherapp.utils.getLanguage
+import com.example.weatherapp.utils.getLanguageReverse
+import com.example.weatherapp.utils.restartActivity
 
 
 @Composable
 fun LanguageSection() {
-    val langOptions = listOf("English", "Arabic")
+    val langOptions = listOf(stringResource(R.string.english), stringResource(R.string.arabic))
     val context = LocalContext.current
 
     var selectedLang by remember {
-        mutableStateOf(SharedObject.getString("lang","en"))
+        mutableStateOf(getLanguageReverse(SharedObject.getString("lang",context.getString(R.string.english))))
     }
 
     Column(
         modifier = Modifier.selectableGroup()
     ) {
-        MainHeader("Language", R.drawable.language)
+        MainHeader(title = stringResource(R.string.language), icon = R.drawable.language)
 
         langOptions.forEach { text ->
             Row(
@@ -53,12 +58,13 @@ fun LanguageSection() {
                         selected = (selectedLang == text),
                         onClick = {
                             selectedLang = text
-                            SharedObject.saveString("lang", selectedLang)
+                            SharedObject.saveString("lang", getLanguage(selectedLang))
                             Toast.makeText(
                                 context,
                                 "Language set to $selectedLang",
                                 Toast.LENGTH_SHORT
                             ).show()
+                            restartActivity(context)
                         },
                         role = Role.RadioButton
                     )

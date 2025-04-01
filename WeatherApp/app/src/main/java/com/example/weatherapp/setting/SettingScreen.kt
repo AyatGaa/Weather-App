@@ -9,7 +9,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.weatherapp.R
+import com.example.weatherapp.homescreen.viewmodel.HomeScreenViewModel
 import com.example.weatherapp.setting.uicomponent.LanguageSection
 import com.example.weatherapp.setting.uicomponent.LocationSection
 import com.example.weatherapp.setting.uicomponent.UnitsSection
@@ -24,7 +28,7 @@ fun Setting( ) {
             .fillMaxSize()
             .padding(top = 32.dp)
             .background(BabyBlue),
-        topBar = { TopAppBar("Setting") }
+        topBar = { TopAppBar(stringResource(R.string.setting)) }
     ) { pad ->
         LazyColumn(modifier = Modifier.padding(pad)) {
             item { Spacer(modifier = Modifier.height(16.dp)) }
@@ -34,4 +38,4 @@ fun Setting( ) {
             item { Spacer(modifier = Modifier.height(32.dp)) }
         }
     }
-}
+  }

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">غيث</string>
+    <string name="alert">تنبيه</string>
+    <string name="deleted">تم الحذف</string>
+    <string name="undo">تراجع</string>
+    <string name="select_alert_duration">اختر مدة التنبيه</string>
+    <string name="setting">الإعدادات</string>
+    <string name="arabic">العربية</string>
+    <string name="english">English</string>
+    <string name="map">الخريطة</string>
+    <string name="gps">نظام تحديد المواقع (GPS)</string>
+    <string name="location">الموقع</string>
+    <string name="select_location">اختر الموقع</string>
+    <string name="here">هنا</string>
+    <string name="confirm_location">تأكيد الموقع</string>
+    <string name="kelvin">كلفن</string>
+    <string name="celsius">درجة مئوية</string>
+    <string name="fahrenheit">فهرنهايت</string>
+    <string name="meter_sec_m_sec">متر/ثانية (م/ث)</string>
+    <string name="miles_hour_mph">ميل/ساعة (ميل/س)</string>
+    <string name="temperature_unit">وحدة درجة الحرارة</string>
+    <string name="units">الوحدات</string>
+    <string name="wind_speed">سرعة الرياح</string>
+    <string name="language">اللغة</string>
+    <string name="weather_details">تفاصيل الطقس</string>
+    <string name="pressure">الضغط</string>
+    <string name="humidity">الرطوبة</string>
+    <string name="wind">الرياح</string>
+    <string name="hourly_details">تفاصيل كل ساعة</string>
+    <string name="next_5_days">الخمسة أيام القادمة</string>
+    <string name="start_time">وقت البدء</string>
+    <string name="past_time">وقت منتهي!</string>
+    <string name="start">البداية: %1$s</string>
+    <string name="end_time">وقت الانتهاء</string>
+    <string name="end_time_must_be_after_start_time">يجب أن يكون وقت الانتهاء بعد وقت البدء</string>
+    <string name="end">النهاية: %1$s</string>
+    <string name="done">تم</string>
+    <string name="start_end">البداية: %1$s  النهاية: %2$s</string>
+
+
+
+</resources>

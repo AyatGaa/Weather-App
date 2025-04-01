@@ -18,9 +18,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -46,14 +44,16 @@ import com.example.weatherapp.homescreen.view.uicomponent.Failure
 import com.example.weatherapp.homescreen.view.uicomponent.HourlyForecast
 import com.example.weatherapp.homescreen.view.uicomponent.WeatherDetails
 import com.example.weatherapp.homescreen.viewmodel.HomeScreenViewModel
-import com.example.weatherapp.navigation.ScreenRoute
 import com.example.weatherapp.ui.theme.BabyBlue
 import com.example.weatherapp.ui.theme.White
 import com.example.weatherapp.ui.theme.Yellow
 import com.example.weatherapp.ui.theme.component.LoadingIndicator
 import com.example.weatherapp.ui.theme.component.TopAppBar
 import com.example.weatherapp.utils.SharedObject
+import com.example.weatherapp.utils.formatNumberBasedOnLanguage
+import com.example.weatherapp.utils.getSettingType
 import com.example.weatherapp.utils.getTempUnit
+import com.example.weatherapp.utils.getUnitSymbol
 import com.example.weatherapp.utils.location.DefaultLocationClient
 import com.example.weatherapp.utils.location.LocationClient
 import com.example.weatherapp.utils.location.hasLocationPermission
@@ -83,17 +83,27 @@ fun HomeScreen(viewModel: HomeScreenViewModel) {
     val locationClient: LocationClient =
         DefaultLocationClient(context, LocationServices.getFusedLocationProviderClient(context))
 
+    var unitTemp by remember { mutableStateOf("") }
+    var unitSpeed by remember { mutableStateOf("") }
+
+    LaunchedEffect(lang) {
+
+        val storedTemp = SharedObject.getString("temp", "Kelvin")
+        val storedSpeed = SharedObject.getString("speed", "Meter/Sec (m/sec)")
+
+        val translatedTemp = getSettingType(lang, "temp", storedTemp)
+        val translatedSpeed = getSettingType(lang, "speed", storedSpeed)
+
+        unitTemp = getUnitSymbol(lang, "temp", translatedTemp)
+        unitSpeed = getUnitSymbol(lang, "speed", translatedSpeed)
+    }
+
     RequestLocationPermission(
         onPermissionGranted = {
             scope.launch {
                 locationClient.getCurrentLocation()
                     .collect { location ->
-                        Log.w(
-                            "TAG",
-                            "RequestLocationPermission= Home Location: ${location.latitude}, ${location.longitude}"
-                        )
-                        Log.w("TAG", "RequestLocationPermission =API Call with lang: $lang")
-                        Log.w("TAG", "RequestLocationPermission =API Call with UNITS: $units")
+
                         if (SharedObject.getString("loc", "GPS") == "Map") {
                             viewModel.loadForecastWeather(lat, lon, lang, units)
                             viewModel.loadCurrentWeather(lat, lon, lang, units)
@@ -164,7 +174,7 @@ fun HomeScreen(viewModel: HomeScreenViewModel) {
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
-             .padding(top = 32.dp)
+            .padding(top = 32.dp)
            /// .statusBarsPadding()
            // .navigationBarsPadding(),
       ,  containerColor = BabyBlue,
@@ -204,7 +214,7 @@ fun HomeScreen(viewModel: HomeScreenViewModel) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxHeight()
-                 .padding(innerPadding),
+                .padding(innerPadding),
             //   .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
@@ -213,21 +223,21 @@ fun HomeScreen(viewModel: HomeScreenViewModel) {
                 // Top Section
                 item {
                     Log.d("TAG", "HomeScreen: waether compose")
-                    TopSection(weatherData)
+                    TopSection(weatherData, unitTemp)
                 }
 
                 // Weather Details
                 item {
-                    WeatherDetails(weatherData)
+                    WeatherDetails(weatherData,  unitSpeed)
                 }
 
                 // Hourly Forecast
                 item {
-                    HourlyForecast(hourly)
+                    HourlyForecast(hourly, unitTemp)
                 }
                 // Daily Forecast
                 item {
-                    DailyForecast(daily)
+                    DailyForecast(daily, unitTemp)
                 }
             }
         }
@@ -236,7 +246,7 @@ fun HomeScreen(viewModel: HomeScreenViewModel) {
 
 
 @Composable
-fun TopSection(weather: CurrentResponseApi) {
+fun TopSection(weather: CurrentResponseApi, unitTemp: String) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -265,15 +275,14 @@ fun TopSection(weather: CurrentResponseApi) {
 
         Row {
             Text(
-                text = "${weather.main?.temp?.toInt()}",
+                text = formatNumberBasedOnLanguage(weather.main?.temp?.toInt().toString()),
                 fontWeight = FontWeight.Bold,
                 fontSize = 64.sp,
                 color = White
             )
-            //temp type K, C, F
-            val measure = getTempUnit()
+
             Text(
-                text = measure,
+                text = unitTemp,
                 fontWeight = FontWeight.Bold,
                 fontSize = 38.sp,
                 color = White
@@ -298,7 +307,7 @@ fun TopSection(weather: CurrentResponseApi) {
 
             )
         Text(
-            text = "Clouds: ${weather.clouds?.all}%",
+            text = "Clouds: ${formatNumberBasedOnLanguage(weather.clouds?.all.toString())}%",
             fontWeight = FontWeight.SemiBold,
             color = Yellow,
             fontSize = 16.sp,

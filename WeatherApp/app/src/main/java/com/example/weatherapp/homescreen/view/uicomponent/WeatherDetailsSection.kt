@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -29,19 +30,21 @@ import com.example.weatherapp.ui.theme.DarkBlue1
 import com.example.weatherapp.ui.theme.DarkBlue2
 import com.example.weatherapp.ui.theme.White
 import com.example.weatherapp.ui.theme.Yellow
+import com.example.weatherapp.utils.SharedObject
+import com.example.weatherapp.utils.formatNumberBasedOnLanguage
 import com.example.weatherapp.utils.getSpeedUnit
 import com.example.weatherapp.utils.getWeatherIcon
 
 
 @Composable
-fun WeatherDetails(weather: CurrentResponseApi) {
+fun WeatherDetails(weather: CurrentResponseApi ,   unitSpeed:String) {
     Column(
         modifier = Modifier
             .padding(0.dp)
     ) {
 
         Text(
-            text = "Weather Details",
+            text = stringResource(R.string.weather_details),
             fontWeight = FontWeight.ExtraBold,
             color = White,
             fontSize = 22.sp,
@@ -59,23 +62,26 @@ fun WeatherDetails(weather: CurrentResponseApi) {
         )
 
     ) {
-        val measure =getSpeedUnit()
+        var presUnit ="hPa"
+        if(SharedObject.getString("lang" ,"en") == "ar"){
+            presUnit = " هكتوباسكال"
+        }
         DetailedWeatherItem(
-            label = "Pressure",
-            value = "${weather.main?.pressure}",
-            " hPa",
+            label = stringResource(R.string.pressure),
+            value = formatNumberBasedOnLanguage(weather.clouds?.all.toString()),
+            presUnit,
             icon = R.drawable.barometer
         )
         DetailedWeatherItem(
-            label = "Humidity",
-            value = "${weather.main?.humidity}",
+            label = stringResource(R.string.humidity),
+            value = formatNumberBasedOnLanguage(weather.main?.humidity.toString()),
             " %",
             icon = R.drawable.water_drop
         )
         DetailedWeatherItem(
-            label = "Wind",
-            value = "${weather.wind?.deg}",
-           measurement =  measure,
+            label = stringResource(R.string.wind),
+            value = formatNumberBasedOnLanguage(weather.wind?.deg.toString()),
+           measurement =  unitSpeed,
             icon = R.drawable.wind
         )
 
