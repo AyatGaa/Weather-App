@@ -137,14 +137,13 @@ fun Favourite(
             is ResponseState.Loading -> LoadingIndicator()
             is ResponseState.Success -> {
                 val data = (cityData as ResponseState.Success).data
-                Log.w("TAG", "Favourite: ${data.toString()}")
+
             }
 
             is ResponseState.Failure -> {
 
             }
         }
-        // Show all saved locations
         if (localCitiesState.isNotEmpty()) {
             LazyColumn(modifier = Modifier
                 .padding(pad)
@@ -218,7 +217,7 @@ fun FavoriteItemCard(
             )
 
             Spacer(modifier = Modifier.width(12.dp))
-            
+
             location.currentWeather.name?.let { it1 ->
                 Text(
                     text = it1,

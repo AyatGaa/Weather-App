@@ -48,21 +48,19 @@ class AlertViewModel(private val repo: WeatherRepository) : ViewModel() {
 
             val weather = repo.getCurrentWeather(alert.lat, alert.lon, "en", "Metric").first()
 
-            val durationMillis = alert.endDate - alert.startDate  // Make sure duration is correctly calculated
+            val durationMillis = alert.endDate - alert.startDate
 
-            val notificationId = (System.currentTimeMillis() % Int.MAX_VALUE).toInt()  // Generate unique ID
+            val notificationId = (System.currentTimeMillis() % Int.MAX_VALUE).toInt()
 
-            // Serialize the alert object to JSON
             val gson = Gson()
             val alertJson = gson.toJson(alert)
 
-             val weatherData = workDataOf(
+            val weatherData = workDataOf(
                 "notificationId" to notificationId,
                 "alertData" to alertJson,
                 "des" to weather.weather?.get(0)?.description,
                 "id" to alert.id
-                )
-            Log.w("TAG", "scheduleNotification: alert ID from MOdel ${alert.id}", )
+            )
 
             val now = System.currentTimeMillis()
             val delay = triggerTimeMillis - now
@@ -83,9 +81,9 @@ class AlertViewModel(private val repo: WeatherRepository) : ViewModel() {
                     Toast.LENGTH_SHORT
                 ).show()
             }
-            if(now > alert.endDate){
+            if (now > alert.endDate) {
 
-            getAllAlerts()
+                getAllAlerts()
             }
         }
     }
@@ -94,9 +92,9 @@ class AlertViewModel(private val repo: WeatherRepository) : ViewModel() {
 
         viewModelScope.launch {
 
-                scheduleNotification(context, start, alert)
+            scheduleNotification(context, start, alert)
 
-            Log.w("TAG", "onTimeSelected: Alert from selcted ${alert.id}", )
+            Log.w("TAG", "onTimeSelected: Alert from selcted ${alert.id}")
         }
 
     }
@@ -118,7 +116,6 @@ class AlertViewModel(private val repo: WeatherRepository) : ViewModel() {
 
                 if (result > 0) {
                     _alertFlow.update { oldList -> oldList + alert }
-                    Log.i("TAG", "addAlert:  $alert")
                     _mutableDatabaseMessage.emit("Alert Added!")
                 } else {
 
@@ -142,7 +139,6 @@ class AlertViewModel(private val repo: WeatherRepository) : ViewModel() {
                 if (result > 0) {
 
                     _alertFlow.update { oldList -> oldList - alert }
-                    Log.d("TAG", "deleteAlert:${alert.toString()} ")
                     _mutableDatabaseMessage.emit("Alert Deleted!")
                 } else {
 
@@ -167,7 +163,6 @@ class AlertViewModel(private val repo: WeatherRepository) : ViewModel() {
                         _mutableDatabaseMessage.emit("Can not get data from db")
                     }.collectLatest {
                         _alertFlow.value = it
-                        Log.i("TAG", "getAllAlerts: $it")
                     }
 
             } catch (ex: Throwable) {

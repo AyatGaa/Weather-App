@@ -23,6 +23,20 @@
     <string name="units">الوحدات</string>
     <string name="wind_speed">سرعة الرياح</string>
     <string name="language">اللغة</string>
+    <string name="weather_details">تفاصيل الطقس</string>
+    <string name="pressure">الضغط</string>
+    <string name="humidity">الرطوبة</string>
+    <string name="wind">الرياح</string>
+    <string name="hourly_details">تفاصيل كل ساعة</string>
+    <string name="next_5_days">الخمسة أيام القادمة</string>
+    <string name="start_time">وقت البدء</string>
+    <string name="past_time">وقت منتهي!</string>
+    <string name="start">البداية: %1$s</string>
+    <string name="end_time">وقت الانتهاء</string>
+    <string name="end_time_must_be_after_start_time">يجب أن يكون وقت الانتهاء بعد وقت البدء</string>
+    <string name="end">النهاية: %1$s</string>
+    <string name="done">تم</string>
+    <string name="start_end">البداية: %1$s  النهاية: %2$s</string>
 
 
 
