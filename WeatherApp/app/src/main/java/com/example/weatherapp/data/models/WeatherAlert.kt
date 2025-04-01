@@ -10,7 +10,7 @@ data class WeatherAlert(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
 
-    val cityName: String,
+    var cityName: String,
     val startDate: Long,
     val endDate: Long,
     val lat: Double,

@@ -10,6 +10,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.weatherapp.homescreen.viewmodel.HomeScreenViewModel
 import com.example.weatherapp.setting.uicomponent.LanguageSection
 import com.example.weatherapp.setting.uicomponent.LocationSection
 import com.example.weatherapp.setting.uicomponent.UnitsSection
@@ -34,4 +36,4 @@ fun Setting( ) {
             item { Spacer(modifier = Modifier.height(32.dp)) }
         }
     }
-}
+  }

@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
+import kotlin.reflect.KProperty
 
 
 // here where i send data to compose funs
@@ -132,6 +133,9 @@ class HomeScreenViewModel(private val repo: WeatherRepository) : ViewModel() {
             }
         }
     }
+
+
+
 }
 
 

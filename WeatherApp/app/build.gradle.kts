@@ -84,8 +84,6 @@ dependencies {
     implementation("com.google.android.gms:play-services-maps:19.0.0")
     implementation("com.google.maps.android:maps-compose:4.3.3")
 
-//places
-    implementation("com.google.android.libraries.places:places:3.5.0")
 
     //Room
     val room_version = "2.6.1"
@@ -96,10 +94,15 @@ dependencies {
     // optional - Kotlin Extensions and Coroutines support for Room
     implementation("androidx.room:room-ktx:$room_version")
 
-
     // splash
     implementation("androidx.core:core-splashscreen:1.0.1")
 
+
+    //worker
+    implementation("androidx.work:work-runtime-ktx:2.7.1")
+
+//places
+    implementation("com.google.android.libraries.places:places:3.5.0")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

@@ -82,6 +82,14 @@ class WeatherRepositoryImpl(
         return localDataSource.getAllWeatherAlert()
     }
 
+    override suspend fun deleteAlertById(alertId: Int): Int {
+        return localDataSource.deleteAlertById(alertId)
+    }
+
+    override suspend fun getAlertByTime(start: Long, end: Long): WeatherAlert? {
+        return localDataSource.getAlertByTime(start,end)
+    }
+
     override suspend fun getAlertByID( id: Int): WeatherAlert {
         return localDataSource.getAlertByID( id)
     }

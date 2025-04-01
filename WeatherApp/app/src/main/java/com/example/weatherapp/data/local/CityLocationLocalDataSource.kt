@@ -23,4 +23,9 @@ interface CityLocationLocalDataSource {
     suspend fun getAllWeatherAlert():Flow<List<WeatherAlert>>
 
     suspend fun getAlertByID( id:Int):WeatherAlert
+
+    suspend fun deleteAlertById(alertId: Int): Int
+
+     suspend fun getAlertByTime(start: Long, end: Long): WeatherAlert?
+
 }

@@ -37,4 +37,13 @@ class CityLocationLocalDataSourceImpl(private val dao: CityLocationDao) :
     override suspend fun getAlertByID( id: Int):WeatherAlert {
         return dao.getAlertByID( id)
     }
+
+    override suspend fun deleteAlertById(alertId: Int): Int {
+        return dao.deleteAlertById(alertId)
+    }
+
+    override suspend fun getAlertByTime(start: Long, end: Long): WeatherAlert? {
+        return dao.getAlertByTime(start,end)
+    }
+
 }
