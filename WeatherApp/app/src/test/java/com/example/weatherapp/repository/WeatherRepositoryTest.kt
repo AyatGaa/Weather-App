@@ -36,48 +36,14 @@ class WeatherRepositoryTest {
 
     private lateinit var localDataSource: CityLocationLocalDataSource
     private lateinit var remoteDataSource: WeatherRemoteDataSource
-    private lateinit var cityDatabase: CityDatabase
-    private lateinit var dao: CityLocationDao
     private lateinit var repository: WeatherRepository
 
-    private val cityLocation1 = CityLocation(
-        1,
-        CityResponse.CityResponseItem("cityName", 0.0, CityResponse.CityResponseItem.LocalNames(null, null, null), 0.0, "name"),
-        0.0,
-        currentWeather = mockCurrentWeather(),
-        lon = 0.0,
-        forecastWeather = mockForecastWeather(),
-        flag = "flag",
-    )
-    private val cityLocation2 = CityLocation(
-        2,
-        CityResponse.CityResponseItem("cityName", 0.0, CityResponse.CityResponseItem.LocalNames(null, null, null), 0.0, "name"),
-        0.0,
-        currentWeather = mockCurrentWeather(),
-        lon = 0.0,
-        forecastWeather = mockForecastWeather(),
-        flag = "flag",
-    )
+    private val cityLocation1 = CityLocation(1, CityResponse.CityResponseItem("cityName", 0.0, CityResponse.CityResponseItem.LocalNames(null, null, null), 0.0, "name"), 0.0, currentWeather = mockCurrentWeather(), lon = 0.0, forecastWeather = mockForecastWeather(), flag = "flag",)
+    private val cityLocation2 = CityLocation(2, CityResponse.CityResponseItem("cityName", 0.0, CityResponse.CityResponseItem.LocalNames(null, null, null), 0.0, "name"), 0.0, currentWeather = mockCurrentWeather(), lon = 0.0, forecastWeather = mockForecastWeather(), flag = "flag",)
 
-    private val cityLocation3 = CityLocation(
-        3,
-        CityResponse.CityResponseItem("cityName", 0.0, CityResponse.CityResponseItem.LocalNames(null, null, null), 0.0, "name"),
-        0.0,
-        currentWeather = mockCurrentWeather(),
-        lon = 0.0,
-        forecastWeather = mockForecastWeather(),
-        flag = "flag",
-    )
+    private val cityLocation3 = CityLocation(3, CityResponse.CityResponseItem("cityName", 0.0, CityResponse.CityResponseItem.LocalNames(null, null, null), 0.0, "name"), 0.0, currentWeather = mockCurrentWeather(), lon = 0.0, forecastWeather = mockForecastWeather(), flag = "flag",)
 
-    private val cityLocation4 = CityLocation(
-        4,
-        CityResponse.CityResponseItem("cityName", 0.0, CityResponse.CityResponseItem.LocalNames(null, null, null), 0.0, "name"),
-        0.0,
-        currentWeather = mockCurrentWeather(),
-        lon = 0.0,
-        forecastWeather = mockForecastWeather(),
-        flag = "flag",
-    )
+    private val cityLocation4 = CityLocation(4, CityResponse.CityResponseItem("cityName", 0.0, CityResponse.CityResponseItem.LocalNames(null, null, null), 0.0, "name"), 0.0, currentWeather = mockCurrentWeather(), lon = 0.0, forecastWeather = mockForecastWeather(), flag = "flag",)
 
     private val currentWeather = mockCurrentWeather()
 
@@ -90,6 +56,7 @@ class WeatherRepositoryTest {
 
         localDataSource = FakeLocalDataSource(localCities.toMutableList())
         remoteDataSource = FakeRemoteDataSource(remoteData)
+
         repository = WeatherRepositoryImpl(
             localDataSource = localDataSource,
             remoteDataSource = remoteDataSource
@@ -102,7 +69,6 @@ class WeatherRepositoryTest {
         // When, call getCty by Id using repository
         val city = repository.getCityById(2)
 
-
         //Then the object retrievd form local is the same is exist
         assertThat(city, `is`(localCities.get(1)))
     }
@@ -114,7 +80,6 @@ class WeatherRepositoryTest {
         val city = CityLocation(5, CityResponse.CityResponseItem("cityName", 0.0, CityResponse.CityResponseItem.LocalNames(null, null, null), 0.0, "name"), 0.0, currentWeather = mockCurrentWeather(), lon = 0.0, forecastWeather = mockForecastWeather(), flag = "flag",)
         //When Insert it using repo
         val result = repository.insertCityLocation(city)
-
 
         // Then, data returned correctly
         assertThat(result, `is`(city.id.toLong()))

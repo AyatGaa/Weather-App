@@ -24,9 +24,9 @@ import com.example.weatherapp.homescreen.viewmodel.CurrentWeatherFactory
 import com.example.weatherapp.homescreen.viewmodel.HomeScreenViewModel
 import com.example.weatherapp.mapscreen.view.MapScreen
 import com.example.weatherapp.mapscreen.viewModel.MapViewModel
-import com.example.weatherapp.screens.Alert
-import com.example.weatherapp.screens.AlertFactory
-import com.example.weatherapp.screens.AlertViewModel
+import com.example.weatherapp.alertscreen.view.Alert
+import com.example.weatherapp.alertscreen.viewModel.AlertFactory
+import com.example.weatherapp.alertscreen.viewModel.AlertViewModel
 import com.example.weatherapp.setting.Setting
 import com.google.android.gms.maps.model.LatLng
 

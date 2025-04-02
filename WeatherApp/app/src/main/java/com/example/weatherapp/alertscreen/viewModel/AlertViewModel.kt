@@ -1,4 +1,4 @@
-package com.example.weatherapp.screens
+package com.example.weatherapp.alertscreen.viewModel
 
 import android.content.Context
 import android.os.Build
@@ -11,14 +11,11 @@ import androidx.lifecycle.viewModelScope
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.workDataOf
-import com.example.weatherapp.R
+import com.example.weatherapp.alertscreen.NotificationWorker
 import com.example.weatherapp.data.models.ResponseState
 import com.example.weatherapp.data.models.WeatherAlert
 import com.example.weatherapp.data.repository.WeatherRepository
-import com.example.weatherapp.utils.SharedObject
-import com.example.weatherapp.utils.getWeatherIcon
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -103,13 +100,10 @@ class AlertViewModel(private val repo: WeatherRepository) : ViewModel() {
     fun addAlert(alert: WeatherAlert) {
         viewModelScope.launch {
             try {
-
                 val city = repo.getCityByLatLon(
                     alert.lat, alert.lon
                 ).first()
                 alert.cityName = city.name ?: "city"
-
-
 
                 Log.i("TAG", "addAlert:  ")
                 val result = repo.insertAlert(alert)

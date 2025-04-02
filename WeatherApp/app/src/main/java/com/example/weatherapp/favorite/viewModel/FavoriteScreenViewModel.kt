@@ -120,8 +120,8 @@ class FavoriteScreenViewModel(private val repo: WeatherRepository) : ViewModel()
 
 
     fun getLocationData(lat: Double, lon: Double) {
- if (isFetchingLocation) return
-         isFetchingLocation = true
+        if (isFetchingLocation) return
+        isFetchingLocation = true
         viewModelScope.launch {
             try {
                 val weather = repo.getCurrentWeather(lat, lon, lang.value, unit.value).first()
@@ -138,9 +138,9 @@ class FavoriteScreenViewModel(private val repo: WeatherRepository) : ViewModel()
                 )
 
                 _uiState.value = ResponseState.Success(uiState)
-                Log.w("Fav", "getLocationData: BEFORe inserting $uiState", )
+                Log.w("Fav", "getLocationData: BEFORe inserting $uiState")
                 addFavouriteLocation(uiState)
-                Log.w("Fav", "getLocationData: AFTER inserting $uiState", )
+                Log.w("Fav", "getLocationData: AFTER inserting $uiState")
 
 
             } catch (e: Exception) {
@@ -162,7 +162,7 @@ class FavoriteScreenViewModel(private val repo: WeatherRepository) : ViewModel()
             )
 
             try {
-                    Log.d("fav", "Insertion result: ")
+                Log.d("fav", "Insertion result: ")
 
                 val existingCities =
                     repo.getFavouriteCityLocations().first()
@@ -200,6 +200,7 @@ class FavoriteScreenViewModel(private val repo: WeatherRepository) : ViewModel()
                         _mutableDatabaseMessage.emit("Can not get data from db")
                     }.collectLatest {
                         _localCityFlow.value = it
+                        _mutableDatabaseMessage.emit("Success")
                     }
             } catch (th: Throwable) {
                 th.message?.let { _mutableDatabaseMessage.emit(it) }

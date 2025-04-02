@@ -36,7 +36,8 @@ class CityLocationLocalDataSourceTest {
         cityDatabase = Room.inMemoryDatabaseBuilder( // local DB for testing
             ApplicationProvider.getApplicationContext(),
             CityDatabase::class.java
-        ).build()
+        ).allowMainThreadQueries()//to run this op in Main Thread for seek of testing ONLY
+            .build()
         dao = cityDatabase.getCityDao()
         localDataSource = CityLocationLocalDataSourceImpl(dao)
 
