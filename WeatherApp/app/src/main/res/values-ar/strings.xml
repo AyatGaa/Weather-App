@@ -42,5 +42,6 @@
   <string name="home">الصفحة الرئيسية</string>
     <string name="clouds">"الغيوم "</string>
     <string name="favorites">المفضلة</string>
+    <string name="no_connection">غير متصل بالانترنت</string>
 
 </resources>
