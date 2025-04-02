@@ -5,58 +5,65 @@ import com.example.weatherapp.data.models.HomeEntity
 import com.example.weatherapp.data.models.WeatherAlert
 import kotlinx.coroutines.flow.Flow
 
-class CityLocationLocalDataSourceImpl(private val dao: CityLocationDao) :
+class FakeLocalDataSource(private var cityList: MutableList<CityLocation> = mutableListOf()) :
     CityLocationLocalDataSource {
 
-    //favorite
+
     override suspend fun getFavouriteCityLocations(): Flow<List<CityLocation>> {
-        return dao.getFavouriteCityLocations()
+        TODO("Not yet implemented")
     }
 
     override suspend fun getCityById(cityId: Int): CityLocation {
-        return dao.getCityById(cityId)
-    }
+        return cityList.find { it.id == cityId } ?: throw NoSuchElementException("City not found")
+
+     }
 
     override suspend fun insertCityLocation(cityLocation: CityLocation): Long {
-        return dao.insertCityLocation(cityLocation)
+        if (cityList.any { it.id == cityLocation.id }) {
+            return -1
+        }
+        cityList.add(cityLocation)
+        return cityLocation.id.toLong()
     }
+
 
     override suspend fun deleteCityLocation(cityLocation: CityLocation): Int {
-        return dao.deleteCityLocation(cityLocation)
+        var result = 0
+        if (cityList.remove(cityLocation)) {
+            result = 1
+        }
+        return result
     }
 
-    //alert
     override suspend fun insertAlert(alert: WeatherAlert): Long {
-        return dao.insertAlert(alert)
+        TODO("Not yet implemented")
     }
 
     override suspend fun deleteAlert(alert: WeatherAlert): Int {
-        return dao.deleteAlert(alert)
+        TODO("Not yet implemented")
     }
 
     override suspend fun getAllWeatherAlert(): Flow<List<WeatherAlert>> {
-        return dao.getAllWeatherAlert()
+        TODO("Not yet implemented")
     }
 
-    override suspend fun getAlertByID( id: Int):WeatherAlert {
-        return dao.getAlertByID( id)
+    override suspend fun getAlertByID(id: Int): WeatherAlert {
+        TODO("Not yet implemented")
     }
 
     override suspend fun deleteAlertById(alertId: Int): Int {
-        return dao.deleteAlertById(alertId)
+        TODO("Not yet implemented")
     }
 
     override suspend fun getAlertByTime(start: Long, end: Long): WeatherAlert? {
-        return dao.getAlertByTime(start,end)
+        TODO("Not yet implemented")
     }
 
-    //home
     override suspend fun getHomeData(): HomeEntity {
-        return dao.getHomeData()
+        TODO("Not yet implemented")
     }
 
     override suspend fun insertHomeData(homeEntity: HomeEntity): Long {
-        return dao.insertHomeData(homeEntity)
+        TODO("Not yet implemented")
     }
-
 }

@@ -51,6 +51,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -92,13 +93,19 @@ fun Favourite(
 
     val localCitiesState by viewModel.localCityFlow.collectAsStateWithLifecycle()
     val cityData by viewModel.uiState.collectAsStateWithLifecycle()
+
+
     LaunchedEffect(latLong) {
+        Log.w("fav", "Favourite: get data from map screen $latLong" )
         selectedLocation = latLong
+        Log.w("fav", "Favourite: get data from map screen $selectedLocation" )
         viewModel.getLocationData(latLong.latitude, latLong.longitude)
         viewModel.getCurrentSetting()
+
     }
     LaunchedEffect(Unit) {
         viewModel.getAllFavoriteLocationFromDataBase()
+        Log.d("fav", "Fetched cities: ${localCitiesState}")
         localCities = localCitiesState
     }
 
@@ -109,7 +116,7 @@ fun Favourite(
             .fillMaxSize()
             .padding(top = 32.dp)
             .background(BabyBlue),
-        topBar = { TopAppBar("Favorites") },
+        topBar = { TopAppBar(stringResource(R.string.favorites)) },
 
         floatingActionButton = {
             FloatingActionButton(

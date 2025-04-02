@@ -40,7 +40,7 @@
             </intent-filter>
 
         </activity>
-        <receiver android:name=".screens.NotificationReceiver" android:enabled="true" android:exported="false" />
+        <receiver android:name=".alertscreen.NotificationReceiver" android:enabled="true" android:exported="false" />
 
     </application>
 

@@ -51,16 +51,11 @@ import com.example.weatherapp.utils.timeZoneConversion
 @Composable
 fun FavoriteCardDetail(viewModel: FavoriteScreenViewModel, lat: Double, lon: Double, id: Int) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
-    LaunchedEffect(Unit) {
-        viewModel.getLocationDetailsForCardOnline(lat, lon)
-        viewModel.getLocationDetailsForCardOffline(lat, lon, id)
-    }
-
     var lang by remember { mutableStateOf("") }
 
     var unitTemp by remember { mutableStateOf("") }
     var unitSpeed by remember { mutableStateOf("") }
+
 
     LaunchedEffect(lang) {
         lang = SharedObject.getString("lang", "en")
@@ -74,10 +69,18 @@ fun FavoriteCardDetail(viewModel: FavoriteScreenViewModel, lat: Double, lon: Dou
         unitTemp = getUnitSymbol(lang, "temp", translatedTemp)
         unitSpeed = getUnitSymbol(lang, "speed", translatedSpeed)
     }
+
+    LaunchedEffect(Unit) {
+        viewModel.getLocationDetailsForCardOnline(lat, lon)
+        viewModel.getLocationDetailsForCardOffline(lat, lon, id)
+    }
+
+
     when (uiState) {
         is ResponseState.Loading -> LoadingIndicator()
         is ResponseState.Success -> {
             val data = (uiState as ResponseState.Success).data
+
             Scaffold(
                 modifier = Modifier
                     .fillMaxSize()
@@ -130,7 +133,7 @@ fun FavoriteCardDetail(viewModel: FavoriteScreenViewModel, lat: Double, lon: Dou
         }
 
         is ResponseState.Failure -> {
-            Failure("Can not find data")
+            viewModel.getLocationDetailsForCardOffline(lat, lon, id)
         }
     }
 

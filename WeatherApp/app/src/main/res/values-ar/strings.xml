@@ -38,6 +38,10 @@
     <string name="done">تم</string>
     <string name="start_end">البداية: %1$s  النهاية: %2$s</string>
 
-
+  <string name="error_not_found">خطأ غير موجود!</string>
+  <string name="home">الصفحة الرئيسية</string>
+    <string name="clouds">"الغيوم "</string>
+    <string name="favorites">المفضلة</string>
+    <string name="no_connection">غير متصل بالانترنت</string>
 
 </resources>

@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Scaffold
@@ -32,12 +33,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat.startActivities
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.weatherapp.R
 import com.example.weatherapp.data.models.CurrentResponseApi
+import com.example.weatherapp.data.models.HomeEntity
 import com.example.weatherapp.data.models.ResponseState
 import com.example.weatherapp.homescreen.view.uicomponent.DailyForecast
 import com.example.weatherapp.homescreen.view.uicomponent.Failure
@@ -66,13 +70,8 @@ import kotlinx.coroutines.launch
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreen(viewModel: HomeScreenViewModel) {
-
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
-
-    val uiState by viewModel.currentWeatherData.collectAsStateWithLifecycle()
-    val hourlyForecast by viewModel.hourlyWeatherData.collectAsStateWithLifecycle()
-    val dailyForecast by viewModel.dailyWeatherData.collectAsStateWithLifecycle()
 
     val lang by viewModel.lang
     val units by viewModel.unit
@@ -86,8 +85,13 @@ fun HomeScreen(viewModel: HomeScreenViewModel) {
     var unitTemp by remember { mutableStateOf("") }
     var unitSpeed by remember { mutableStateOf("") }
 
-    LaunchedEffect(lang) {
+    val weatherState by viewModel.weatherState.collectAsStateWithLifecycle()
 
+
+    LaunchedEffect(lang) {
+        viewModel.getHomeWeatherFromDatabase()
+
+        //for setting check
         val storedTemp = SharedObject.getString("temp", "Kelvin")
         val storedSpeed = SharedObject.getString("speed", "Meter/Sec (m/sec)")
 
@@ -103,10 +107,9 @@ fun HomeScreen(viewModel: HomeScreenViewModel) {
             scope.launch {
                 locationClient.getCurrentLocation()
                     .collect { location ->
-
-                        if (SharedObject.getString("loc", "GPS") == "Map") {
-                            viewModel.loadForecastWeather(lat, lon, lang, units)
-                            viewModel.loadCurrentWeather(lat, lon, lang, units)
+                        if (SharedObject.getString("loc", "GPS") == context.getString(R.string.map) ) {
+                             viewModel.loadForecastWeather(lat, lon, lang, units)
+                              viewModel.loadCurrentWeather(lat, lon, lang, units)
                         } else {
                             viewModel.loadForecastWeather(
                                 location.latitude,
@@ -130,114 +133,96 @@ fun HomeScreen(viewModel: HomeScreenViewModel) {
         }
     )
 
-    LaunchedEffect(lang) {
-        try {
-            locationClient.getCurrentLocation()
-                .catch { e ->
-                    Toast.makeText(context, "Turn On location Please", Toast.LENGTH_LONG).show()
-                    enableLocationService(context)
-                }
-                .collect { location ->
-                    Log.w("TAG", "LaunchedEffect Updated,, Language: $lang")
-                    Log.w("TAG", "LaunchedEffect Updated,, UNITS: $units")
-                    if (SharedObject.getString("loc", "GPS") == "Map") {
-                        viewModel.loadForecastWeather(lat, lon, lang, units)
-                        viewModel.loadCurrentWeather(lat, lon, lang, units)
-                    } else {
 
-                        viewModel.loadForecastWeather(
-                            location.latitude,
-                            location.longitude,
-                            lang,
-                            units
-                        )
-                        viewModel.loadCurrentWeather(
-                            location.latitude,
-                            location.longitude,
-                            lang,
-                            units
-                        )
-
+        LaunchedEffect(lang) {
+            try {
+                locationClient.getCurrentLocation()
+                    .catch { e ->
+                        Toast.makeText(context, "Turn On location Please", Toast.LENGTH_LONG).show()
+                        enableLocationService(context)
                     }
-                }
-        } catch (e: Exception) {
-            Log.i("TAG", "HomeScreenEX: Can no get location")
-        }
-    }
+                    .collect { location ->
+                        if (SharedObject.getString("loc", "GPS") ==  context.getString(R.string.map)) {
+                            viewModel.loadForecastWeather(lat, lon, lang, units)
+                            viewModel.loadCurrentWeather(lat, lon, lang, units)
+                        } else {
+                            viewModel.loadForecastWeather(
+                                location.latitude,
+                                location.longitude,
+                                lang,
+                                units
+                            )
+                            viewModel.loadCurrentWeather(
+                                location.latitude,
+                                location.longitude,
+                                lang,
+                                units
+                            )
 
-
-    var weather by remember { mutableStateOf<CurrentResponseApi?>(null) }
-    var hourly by remember { mutableStateOf<List<ForecastItem>?>(null) }
-    var daily by remember { mutableStateOf<List<ForecastItem>?>(null) }
-
-
-    Scaffold(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(top = 32.dp)
-           /// .statusBarsPadding()
-           // .navigationBarsPadding(),
-      ,  containerColor = BabyBlue,
-        topBar = { TopAppBar("Home") }
-
-    ) { innerPadding ->
-
-        when (uiState) {
-            is ResponseState.Loading -> LoadingIndicator()
-            is ResponseState.Success -> {
-                weather = (uiState as ResponseState.Success).data
-            }
-
-            is ResponseState.Failure -> Failure("Can not Reload Data")
-        }
-        when (hourlyForecast) {
-            is ResponseState.Loading -> LoadingIndicator()
-            is ResponseState.Success -> {
-                Log.i("TAG", "HomeScreen: success")
-                hourly = (hourlyForecast as ResponseState.Success).data
-            }
-
-            is ResponseState.Failure -> {
-                Failure("Can not Reload Hourly Data")
+                        }
+                    }
+            } catch (e: Exception) {
+                Log.i("TAG", "HomeScreenEX: Can no get location")
             }
         }
-        when (dailyForecast) {
-            is ResponseState.Loading -> LoadingIndicator()
 
-            is ResponseState.Success -> {
-                Log.i("TAG", "HomeScreen: success")
-                daily = (dailyForecast as ResponseState.Success).data
-            }
 
-            is ResponseState.Failure -> Failure("Can not Reload Daily  Data")
+    when {
+        weatherState.currentWeather is ResponseState.Loading ||
+                weatherState.hourlyWeather is ResponseState.Loading ||
+                weatherState.dailyWeather is ResponseState.Loading -> {
+            LoadingIndicator()
         }
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxHeight()
-                .padding(innerPadding),
-            //   .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
 
-            weather?.let { weatherData ->
-                // Top Section
-                item {
-                    Log.d("TAG", "HomeScreen: waether compose")
-                    TopSection(weatherData, unitTemp)
-                }
+        weatherState.currentWeather is ResponseState.Failure ||
+                weatherState.hourlyWeather is ResponseState.Failure ||
+                weatherState.dailyWeather is ResponseState.Failure -> {
+                  Failure(stringResource(R.string.error_not_found))
+        }
 
-                // Weather Details
-                item {
-                    WeatherDetails(weatherData,  unitSpeed)
-                }
+        weatherState.currentWeather is ResponseState.Success &&
+                weatherState.hourlyWeather is ResponseState.Success &&
+                weatherState.dailyWeather is ResponseState.Success -> {
 
-                // Hourly Forecast
-                item {
-                    HourlyForecast(hourly, unitTemp)
-                }
-                // Daily Forecast
-                item {
-                    DailyForecast(daily, unitTemp)
+            val currentWeather = (weatherState.currentWeather as ResponseState.Success).data
+            val hourlyWeather = (weatherState.hourlyWeather as ResponseState.Success).data
+            val dailyWeather = (weatherState.dailyWeather as ResponseState.Success).data
+
+            Scaffold(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 32.dp)
+                    .navigationBarsPadding(),
+               containerColor = BabyBlue,
+                topBar = { TopAppBar(stringResource(R.string.home)) }
+
+            ) { innerPadding ->
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .padding(innerPadding)
+                        .padding(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                ) {
+
+                    // Top Section
+                    item {
+                        TopSection(currentWeather, unitTemp)
+                    }
+
+                    // Weather Details
+                    item {
+                        WeatherDetails(currentWeather, unitSpeed)
+                    }
+                    // Hourly Forecast
+                    item {
+                        HourlyForecast(hourlyWeather, unitTemp)
+                    }
+                    // Daily Forecast
+                    item {
+                        DailyForecast(dailyWeather, unitTemp)
+                    }
+
                 }
             }
         }
@@ -251,10 +236,10 @@ fun TopSection(weather: CurrentResponseApi, unitTemp: String) {
         modifier = Modifier
             .fillMaxWidth()
             .background(BabyBlue),
-
         horizontalAlignment = Alignment.CenterHorizontally,
 
         ) {
+
         //location
         Text(
             text = "${weather.name}",
@@ -289,16 +274,6 @@ fun TopSection(weather: CurrentResponseApi, unitTemp: String) {
             )
         }
 
-
-        /*   //icon
-
-            GlideImage(
-
-                contentDescription = "Weather Icon",
-                modifier = Modifier.fillMaxSize(),
-                model = getWeatherIcon(weather.weather?.get(0)?.icon.toString()),
-            )
- */
         Text(
             text = "${weather.weather?.get(0)?.description}",
             fontWeight = FontWeight.SemiBold,
@@ -307,7 +282,7 @@ fun TopSection(weather: CurrentResponseApi, unitTemp: String) {
 
             )
         Text(
-            text = "Clouds: ${formatNumberBasedOnLanguage(weather.clouds?.all.toString())}%",
+            text = stringResource(R.string.clouds) + formatNumberBasedOnLanguage(weather.clouds?.all.toString()),
             fontWeight = FontWeight.SemiBold,
             color = Yellow,
             fontSize = 16.sp,
@@ -344,7 +319,6 @@ fun RequestLocationPermission(
         if (!context.hasLocationPermission()) {
             requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
             requestPermissionLauncher.launch(Manifest.permission.ACCESS_COARSE_LOCATION)
-            //   enableLocationService(context)
         } else {
             onPermissionGranted()
         }

@@ -13,6 +13,26 @@ fun timeZoneConversion(unixTime: Int, pattern: String = "dd MMMM, EEEE"): String
 }
 
 
+fun getWeatherIcon(iconCode: String): Int {
+    return when (iconCode) {
+        "01d" -> R.drawable.day
+        "01n" -> R.drawable.night
+        "02d" -> R.drawable.cloudy_day_1
+        "02n" -> R.drawable.cloudy_night_1
+        "03d", "03n" -> R.drawable.cloudy
+        "04d", "04n" -> R.drawable.cloudy
+        "09d" -> R.drawable.rainy_3
+        "09n" -> R.drawable.rainy_7
+        "10d" -> R.drawable.rainy_1
+        "10n" -> R.drawable.rainy_6
+        "11d", "11n" -> R.drawable.thunder
+        "13d" -> R.drawable.snowy_3
+        "13n" -> R.drawable.snowy_6
+        "50d", "50n" -> R.drawable.mist
+        else -> R.drawable.weather // A fallback icon
+    }
+}
+
 fun getTempUnit(): String {
     val unit = SharedObject.getString("temp", "Kelvin")
     var measure = " K"
@@ -34,24 +54,3 @@ fun getSpeedUnit(): String {
     }
     return measure
 }
-
-fun getWeatherIcon(iconCode: String): Int {
-    return when (iconCode) {
-        "01d" -> R.drawable.day
-        "01n" -> R.drawable.night
-        "02d" -> R.drawable.cloudy_day_1
-        "02n" -> R.drawable.cloudy_night_1
-        "03d", "03n" -> R.drawable.cloudy
-        "04d", "04n" -> R.drawable.cloudy
-        "09d" -> R.drawable.rainy_3
-        "09n" -> R.drawable.rainy_7
-        "10d" -> R.drawable.rainy_1
-        "10n" -> R.drawable.rainy_6
-        "11d", "11n" -> R.drawable.thunder
-        "13d" -> R.drawable.snowy_3
-        "13n" -> R.drawable.snowy_6
-        "50d", "50n" -> R.drawable.mist
-        else -> R.drawable.weather // A fallback icon
-    }
-}
-

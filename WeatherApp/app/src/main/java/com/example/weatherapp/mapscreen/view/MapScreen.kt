@@ -50,6 +50,7 @@ import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
+import kotlin.math.log
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -84,8 +85,9 @@ fun MapScreen(
             cameraPositionState = cameraPositionState,
             properties = MapProperties(mapType = MapType.NORMAL),
             onMapClick = { latLng ->
-                Log.w("TAG", "MapScreen: map clicked at ${latLng.latitude}, ${latLng.longitude}")
+                Log.w("fav", "MapScreen: map clicked at ${latLng.latitude}, ${latLng.longitude}")
                 selectedLocation = latLng
+                Log.w("fav", "MapScreen: selectedLocation== ${selectedLocation?.latitude}, ${selectedLocation?.longitude}")
             }
 
         ) {
@@ -94,6 +96,7 @@ fun MapScreen(
                     state = MarkerState(position = it),
                     title = "Selected Location"
                 )
+                Log.w("fav", "MapScreen: selected in marker ${selectedLocation}", )
             }
         }
 
@@ -137,7 +140,7 @@ fun MapScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable {
-                                viewModel.onPlaceSelected(place.lat,place.lon) { latLng ->
+                                viewModel.onPlaceSelected(place.lat, place.lon) { latLng ->
                                     onLocationSelected(latLng)
                                 }
                             }
@@ -164,10 +167,12 @@ fun MapScreen(
                 onClick = {
                     selectedLocation?.let { location ->
                         Log.w(
-                            "TAG",
+                            "fav",
                             "MapScreen: Confirm button clicked with ${location.latitude}, ${location.longitude}"
                         )
                         onLocationSelected(location)
+
+                        Log.d("fav", "MapScreen: after send t OnLocato ${selectedLocation}")
                     }
                 },
                 shape = CircleShape,

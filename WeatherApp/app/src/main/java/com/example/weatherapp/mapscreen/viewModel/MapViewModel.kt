@@ -59,7 +59,6 @@ class MapViewModel : ViewModel() {
 
                 _searchResults.emit(results)
             } catch (e: Exception) {
-                Log.e("Search", "Error fetching predictions: ${e.message}")
                 _searchResults.emit(emptyList())
             }
         }

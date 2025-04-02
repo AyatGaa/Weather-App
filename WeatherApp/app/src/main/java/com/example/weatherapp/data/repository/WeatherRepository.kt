@@ -4,6 +4,7 @@ import com.example.weatherapp.data.models.ForecastResponseApi
 import com.example.weatherapp.data.models.CityLocation
 import com.example.weatherapp.data.models.CityResponse
 import com.example.weatherapp.data.models.CurrentResponseApi
+import com.example.weatherapp.data.models.HomeEntity
 import com.example.weatherapp.data.models.WeatherAlert
 import kotlinx.coroutines.flow.Flow
 
@@ -51,4 +52,10 @@ interface WeatherRepository {
     suspend fun getAlertByTime(start: Long, end: Long): WeatherAlert?
 
     suspend fun getAlertByID( id:Int):WeatherAlert
+
+
+    //home
+    suspend fun getHomeData(): HomeEntity
+
+    suspend fun insertHomeData(homeEntity: HomeEntity): Long
 }

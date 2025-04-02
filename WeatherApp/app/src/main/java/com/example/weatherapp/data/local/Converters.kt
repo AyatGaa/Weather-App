@@ -4,12 +4,23 @@ import com.example.weatherapp.data.models.ForecastResponseApi
 import androidx.room.TypeConverter
 import com.example.weatherapp.data.models.CityResponse.CityResponseItem
 import com.example.weatherapp.data.models.CurrentResponseApi
- import com.google.gson.Gson
+import com.example.weatherapp.data.models.ForecastItem
+import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
 class Converters {
 
     private val gson = Gson()
+    @TypeConverter
+    fun fromForecastList(forecastList: List<ForecastItem>): String {
+        return gson.toJson(forecastList)
+    }
+
+    @TypeConverter
+    fun toForecastList(json: String): List<ForecastItem> {
+        val type = object : TypeToken<List<ForecastItem>>() {}.type
+        return gson.fromJson(json, type)
+    }
 
     @TypeConverter
     fun fromCityResponseItem(city: CityResponseItem?): String {

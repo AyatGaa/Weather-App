@@ -5,6 +5,7 @@ import com.example.weatherapp.data.local.CityLocationLocalDataSource
 import com.example.weatherapp.data.models.CityLocation
 import com.example.weatherapp.data.models.CityResponse
 import com.example.weatherapp.data.models.CurrentResponseApi
+import com.example.weatherapp.data.models.HomeEntity
 import com.example.weatherapp.data.models.WeatherAlert
 import com.example.weatherapp.data.remote.WeatherRemoteDataSource
 import kotlinx.coroutines.flow.Flow
@@ -87,11 +88,19 @@ class WeatherRepositoryImpl(
     }
 
     override suspend fun getAlertByTime(start: Long, end: Long): WeatherAlert? {
-        return localDataSource.getAlertByTime(start,end)
+        return localDataSource.getAlertByTime(start, end)
     }
 
-    override suspend fun getAlertByID( id: Int): WeatherAlert {
-        return localDataSource.getAlertByID( id)
+    override suspend fun getAlertByID(id: Int): WeatherAlert {
+        return localDataSource.getAlertByID(id)
+    }
+
+    override suspend fun getHomeData(): HomeEntity {
+        return localDataSource.getHomeData()
+    }
+
+    override suspend fun insertHomeData(homeEntity: HomeEntity): Long {
+        return localDataSource.insertHomeData(homeEntity)
     }
 
 }

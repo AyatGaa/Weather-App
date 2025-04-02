@@ -1,10 +1,7 @@
 package com.example.weatherapp.data.local
 
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
 import com.example.weatherapp.data.models.CityLocation
+import com.example.weatherapp.data.models.HomeEntity
 import com.example.weatherapp.data.models.WeatherAlert
 import kotlinx.coroutines.flow.Flow
 
@@ -28,4 +25,9 @@ interface CityLocationLocalDataSource {
 
      suspend fun getAlertByTime(start: Long, end: Long): WeatherAlert?
 
+
+     //home cache
+     suspend fun getHomeData(): HomeEntity
+
+     suspend fun insertHomeData(homeEntity: HomeEntity): Long
 }

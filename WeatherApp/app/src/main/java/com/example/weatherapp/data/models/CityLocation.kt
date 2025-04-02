@@ -11,7 +11,7 @@ import kotlinx.serialization.Serializable
 @TypeConverters(Converters::class)
 data class CityLocation(
     @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
+    var id: Int = 0,
     val cityData: CityResponse.CityResponseItem,
     val lat: Double,
     val lon: Double,

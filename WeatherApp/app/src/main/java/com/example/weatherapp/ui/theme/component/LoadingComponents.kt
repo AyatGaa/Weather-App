@@ -8,6 +8,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.example.weatherapp.ui.theme.DarkBlue2
 import com.example.weatherapp.ui.theme.White
 
 @Composable
@@ -19,6 +20,6 @@ fun LoadingIndicator() {
             .wrapContentSize(Alignment.Center)
             .background(White),
     ) {
-        CircularProgressIndicator()
+        CircularProgressIndicator(color = DarkBlue2)
     }
 }
