@@ -30,11 +30,12 @@ class WeatherRemoteDataSourceImpl(private val apiService: WeatherApiService) :
                     if (response != null) {
                         emit(response)
                     } else {
-                        
+                        Log.w("fav", "currentWeather: Response Null !", )
                     }
 
                 } else {
 
+                        Log.w("fav", "currentWeather: Response Failed !", )
                 }
 
             } catch (e: Exception) {

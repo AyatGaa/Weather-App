@@ -120,11 +120,9 @@ class FavoriteScreenViewModel(private val repo: WeatherRepository) : ViewModel()
 
 
     fun getLocationData(lat: Double, lon: Double) {
-        Log.i("fav", "getLocationData: $lat //  $lon")
-// if (isFetchingLocation) return
-//         isFetchingLocation = true
+ if (isFetchingLocation) return
+         isFetchingLocation = true
         viewModelScope.launch {
-            Log.d("fav", "getLocationData() called for lat: $lat, lon: $lon")
             try {
                 val weather = repo.getCurrentWeather(lat, lon, lang.value, unit.value).first()
                 val forecast = repo.getForecastWeather(lat, lon, lang.value, unit.value).first()

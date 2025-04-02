@@ -1,6 +1,5 @@
 package com.example.weatherapp.navigation
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -100,7 +99,7 @@ fun NavigationBar() {
 fun BottomNavigationBar(navController: NavController) {
     val navStackBackEntry by navController.currentBackStackEntryAsState()
     val currentDestination3 = navStackBackEntry?.destination
-   // NavigationBar()
+    NavigationBar()
     Row(
 
         modifier = Modifier
