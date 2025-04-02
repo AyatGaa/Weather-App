@@ -11,13 +11,11 @@ import com.google.gson.reflect.TypeToken
 class Converters {
 
     private val gson = Gson()
-    // Convert List<ForecastItem> -> String
     @TypeConverter
     fun fromForecastList(forecastList: List<ForecastItem>): String {
         return gson.toJson(forecastList)
     }
 
-    // Convert String -> List<ForecastItem>
     @TypeConverter
     fun toForecastList(json: String): List<ForecastItem> {
         val type = object : TypeToken<List<ForecastItem>>() {}.type

@@ -19,12 +19,4 @@ object SharedObject {
         return sharedPreferences.getString(key, defaultValue) ?: defaultValue
     }
 
-    fun saveDouble(key: String, value: Float) {
-        sharedPreferences.edit().putFloat(key, value).apply()
-    }
-
-    fun getDouble(key: String, defaultValue: Float): Float {
-        return sharedPreferences.getFloat(key, defaultValue) ?: defaultValue
-    }
-
 }

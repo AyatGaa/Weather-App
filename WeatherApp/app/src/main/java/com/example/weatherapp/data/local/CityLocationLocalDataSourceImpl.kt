@@ -7,6 +7,8 @@ import kotlinx.coroutines.flow.Flow
 
 class CityLocationLocalDataSourceImpl(private val dao: CityLocationDao) :
     CityLocationLocalDataSource {
+
+    //favorite
     override suspend fun getFavouriteCityLocations(): Flow<List<CityLocation>> {
         return dao.getFavouriteCityLocations()
     }
@@ -23,6 +25,7 @@ class CityLocationLocalDataSourceImpl(private val dao: CityLocationDao) :
         return dao.deleteCityLocation(cityLocation)
     }
 
+    //alert
     override suspend fun insertAlert(alert: WeatherAlert): Long {
         return dao.insertAlert(alert)
     }
@@ -47,6 +50,7 @@ class CityLocationLocalDataSourceImpl(private val dao: CityLocationDao) :
         return dao.getAlertByTime(start,end)
     }
 
+    //home
     override suspend fun getHomeData(): HomeEntity {
         return dao.getHomeData()
     }

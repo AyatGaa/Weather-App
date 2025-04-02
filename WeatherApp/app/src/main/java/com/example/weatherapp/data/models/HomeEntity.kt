@@ -14,11 +14,3 @@ data class HomeEntity(
     val hourlyWeather: List<ForecastItem>,
     val dailyWeather: List<ForecastItem>
 )
-/**
- * Dao
-    insert home
-    get home
-
-3 tables
-
- */

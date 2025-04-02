@@ -66,6 +66,7 @@ class FavoriteScreenViewModel(private val repo: WeatherRepository) : ViewModel()
             Log.d("INSERT_DEBUG", "getLocationData() called for lat: $lat, lon: $lon")
 
             try {
+                Log.i("fav", "getLocationDetailsForCardOffline: get data off")
                 val cityDb = repo.getCityById(id)
                 val uiState = CityLocation(
                     cityData = cityDb.cityData,
@@ -75,7 +76,8 @@ class FavoriteScreenViewModel(private val repo: WeatherRepository) : ViewModel()
                     forecastWeather = cityDb.forecastWeather,
                     flag = cityDb.flag
                 )
-
+                Log.i("fav", "getLocationDetailsForCardOffline: get data off ${uiState}")
+                _localCityFlow
                 _uiState.value = ResponseState.Success(uiState)
 
             } catch (e: Exception) {
@@ -93,6 +95,7 @@ class FavoriteScreenViewModel(private val repo: WeatherRepository) : ViewModel()
             Log.d("INSERT_DEBUG", "getLocationData() called for lat: $lat, lon: $lon")
 
             try {
+                Log.i("fav", "getLocationDetailsForCardOnline: ${lat} $lon")
                 val city = repo.getCityByLatLon(lat, lon).first()
                 val weather = repo.getCurrentWeather(lat, lon, lang.value, unit.value).first()
                 val forecast = repo.getForecastWeather(lat, lon, lang.value, unit.value).first()
@@ -106,6 +109,7 @@ class FavoriteScreenViewModel(private val repo: WeatherRepository) : ViewModel()
                     flag = " "
                 )
 
+                Log.i("fav", "getLocationDetailsForCardOnline: ${uiState}")
                 _uiState.value = ResponseState.Success(uiState)
                 addFavouriteLocation(uiState)
             } catch (e: Exception) {
@@ -116,14 +120,15 @@ class FavoriteScreenViewModel(private val repo: WeatherRepository) : ViewModel()
 
 
     fun getLocationData(lat: Double, lon: Double) {
-        if (isFetchingLocation) return
-        isFetchingLocation = true
+        Log.i("fav", "getLocationData: $lat //  $lon")
+// if (isFetchingLocation) return
+//         isFetchingLocation = true
         viewModelScope.launch {
-            Log.d("INSERT_DEBUG", "getLocationData() called for lat: $lat, lon: $lon")
+            Log.d("fav", "getLocationData() called for lat: $lat, lon: $lon")
             try {
-                val city = repo.getCityByLatLon(lat, lon).first()
                 val weather = repo.getCurrentWeather(lat, lon, lang.value, unit.value).first()
                 val forecast = repo.getForecastWeather(lat, lon, lang.value, unit.value).first()
+                val city = repo.getCityByLatLon(lat, lon).first()
 
                 val uiState = CityLocation(
                     cityData = city,
@@ -135,7 +140,9 @@ class FavoriteScreenViewModel(private val repo: WeatherRepository) : ViewModel()
                 )
 
                 _uiState.value = ResponseState.Success(uiState)
+                Log.w("Fav", "getLocationData: BEFORe inserting $uiState", )
                 addFavouriteLocation(uiState)
+                Log.w("Fav", "getLocationData: AFTER inserting $uiState", )
 
 
             } catch (e: Exception) {
@@ -149,16 +156,23 @@ class FavoriteScreenViewModel(private val repo: WeatherRepository) : ViewModel()
 
 
     fun addFavouriteLocation(cityLocation: CityLocation) {
-
+        Log.d("DatabaseInsert", "Adding city: ${cityLocation.cityData.name}")
         viewModelScope.launch {
+            Log.d(
+                "INSERT_DEBUG",
+                "addFavouriteLocation() called for lat: ${cityLocation.lat}, lon: ${cityLocation.lon}"
+            )
+
             try {
+                    Log.d("fav", "Insertion result: ")
+
                 val existingCities =
                     repo.getFavouriteCityLocations().first()
                 val exists =
                     existingCities.any { it.lat == cityLocation.lat && it.lon == cityLocation.lon }
                 if (!exists) {
                     val res = repo.insertCityLocation(cityLocation)
-                    Log.d("INSERT_DEBUG", "Insertion result: $res")
+                    Log.d("fav", "Insertion result: $res")
 
                     if (res > 0) {
                         _localCityFlow.update { oldList -> oldList + cityLocation }

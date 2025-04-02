@@ -285,10 +285,7 @@ fun TopSection(weather: CurrentResponseApi, unitTemp: String) {
 
             )
         Text(
-            text = stringResource(
-                R.string.clouds,
-                formatNumberBasedOnLanguage(weather.clouds?.all.toString())
-            ),
+            text = stringResource(R.string.clouds) + formatNumberBasedOnLanguage(weather.clouds?.all.toString()),
             fontWeight = FontWeight.SemiBold,
             color = Yellow,
             fontSize = 16.sp,

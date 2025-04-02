@@ -1,11 +1,12 @@
 package com.example.weatherapp.data.remote
 
-import com.example.weatherapp.data.models.ForecastResponseApi
 import android.util.Log
 import com.example.weatherapp.data.models.CityResponse
 import com.example.weatherapp.data.models.CurrentResponseApi
+import com.example.weatherapp.data.models.ForecastResponseApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlin.math.log
 
 class WeatherRemoteDataSourceImpl(private val apiService: WeatherApiService) :
     WeatherRemoteDataSource {
@@ -23,42 +24,22 @@ class WeatherRemoteDataSourceImpl(private val apiService: WeatherApiService) :
 
                 val latestWeather =
                     apiService.getCurrentWeather(lat, lon, lang, units)
-                //delay(1000)
-                Log.d(
-                    "TAG",
-                    "currentWeather: IN Remote Weather soruce ${
-                        latestWeather.body()?.weather?.get(0)
-                    }"
-                )
 
                 if (latestWeather.isSuccessful) {
                     val response = latestWeather.body()
                     if (response != null) {
-
                         emit(response)
-                        Log.d(
-                            "TAG",
-                            "currentWeather: In isSuccessful and NOt Null Remote Weather soruce ${
-                                latestWeather.body()?.weather?.get(0)
-                            }"
-                        )
                     } else {
-                        Log.d(
-                            "TAG",
-                            "currentWeather: In isSuccessful but NULL  Remote Weather soruce ${
-                                latestWeather.body()?.weather?.get(0)
-                            }"
-                        )
+                        
                     }
 
                 } else {
-                    Log.w("TAG", "currentWeather: FAlid")
+
                 }
 
             } catch (e: Exception) {
-                Log.d(
-                    "TAG", "currentWeather: IN Remote Weather soruce ${e.message}"
-                )
+                Log.d("TAG", "currentWeather: IN Remote Weather Source ${e.message}")
+
             }
 
         }
@@ -74,51 +55,30 @@ class WeatherRemoteDataSourceImpl(private val apiService: WeatherApiService) :
             try {
                 val latestWeather =
                     apiService.getForecastWeather(lat, lon, lang, units)
-                //     delay(1000)
-
-                Log.d(
-                    "TAG",
-                    "forecast: IN Remote Weather soruce ${latestWeather.body()?.list?.get(0)}"
-                )
 
                 if (latestWeather.isSuccessful) {
                     val response = latestWeather.body()
                     if (response != null) {
-
                         emit(response)
-                        Log.d(
-                            "TAG",
-                            "forecast: In isSuccessful and NOt Null Remote Weather soruce ${
-                                latestWeather.body()?.list?.get(0)
-                            }"
-                        )
-
                     } else {
-                        Log.d(
-                            "TAG",
-                            "forecast: In isSuccessful but NULL  Remote Weather soruce ${
-                                latestWeather.body()?.list?.get(0)
-                            }"
-                        )
+                        Log.w("TAG", "forecastWeather: Response is NULL")
                     }
-
                 } else {
-                    Log.w("TAG", "forecast: FAlid")
+                    Log.w("TAG", "forecastWeather: Response Failed")
                 }
 
             } catch (e: Exception) {
-                Log.d(
-                    "TAG", "forecast: IN Remote Weather soruce ${e.message}"
-                )
+                Log.w("TAG", "forecastWeather: Can not fetch data from API")
             }
 
         }
     }
 
-    override suspend fun getCityByLatLon(lat: Double, lon: Double): List<CityResponse.CityResponseItem> {
+    override suspend fun getCityByLatLon(
+        lat: Double,
+        lon: Double
+    ): List<CityResponse.CityResponseItem> {
         return apiService.getLocationDetails(lat, lon)
     }
-
-
 }
 

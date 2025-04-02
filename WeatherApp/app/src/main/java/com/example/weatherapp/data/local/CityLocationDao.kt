@@ -7,7 +7,6 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.weatherapp.data.models.CityLocation
 import com.example.weatherapp.data.models.HomeEntity
-import com.example.weatherapp.data.models.Weather
 import com.example.weatherapp.data.models.WeatherAlert
 import kotlinx.coroutines.flow.Flow
 

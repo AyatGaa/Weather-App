@@ -144,15 +144,20 @@ fun SetupNavHost(
 
             MapScreen(viewModelMap) { locationFromMap ->
                 navController.popBackStack()
+                Log.w(
+                    "fav",
+                    "SetupNavHost: after send to favortie ${locationFromMap.latitude}${locationFromMap.longitude}"
+                )
+
                 navController.navigate(
                     ScreenRoute.Favorites(
                         locationFromMap.latitude.toDouble(),
-                        locationFromMap.longitude
+                        locationFromMap.longitude.toDouble()
                     )
                 )
+
             }
 
-            Log.w("TAG", "SetupNavHost: inMAP Screen")
 
         }
 

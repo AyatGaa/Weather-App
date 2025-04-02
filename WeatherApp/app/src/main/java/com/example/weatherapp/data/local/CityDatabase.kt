@@ -13,7 +13,6 @@ import com.example.weatherapp.data.models.WeatherAlert
 abstract class CityDatabase :RoomDatabase(){
 
     abstract fun getCityDao(): CityLocationDao
-   // abstract fun  getWeatherAlertDao(): CityDatabase
 
     companion object {
         private var instance: CityDatabase? = null
