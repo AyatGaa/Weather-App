@@ -39,6 +39,7 @@ class CityLocationDaoTest {
         ).build()
     dao = cityDatabase.getCityDao()
     }
+
     @After
     fun closeDatabase(){
         cityDatabase.close()
