@@ -9,9 +9,10 @@ import com.example.weatherapp.data.local.Converters
 @TypeConverters(Converters::class)
 data class HomeEntity(
     @PrimaryKey
-    val id:Int = 0,
-    val currentResponseApi: CurrentResponseApi?,
-    val forecastItem: ForecastResponseApi?
+    val id: Int = 0,
+    val currentWeather: CurrentResponseApi,
+    val hourlyWeather: List<ForecastItem>,
+    val dailyWeather: List<ForecastItem>
 )
 /**
  * Dao

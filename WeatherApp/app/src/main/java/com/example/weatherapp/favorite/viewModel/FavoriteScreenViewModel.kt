@@ -151,11 +151,6 @@ class FavoriteScreenViewModel(private val repo: WeatherRepository) : ViewModel()
     fun addFavouriteLocation(cityLocation: CityLocation) {
 
         viewModelScope.launch {
-            Log.d(
-                "INSERT_DEBUG",
-                "addFavouriteLocation() called for lat: ${cityLocation.lat}, lon: ${cityLocation.lon}"
-            )
-
             try {
                 val existingCities =
                     repo.getFavouriteCityLocations().first()

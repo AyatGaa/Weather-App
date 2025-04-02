@@ -13,7 +13,7 @@ import com.example.weatherapp.ui.theme.White
 fun Failure(txt:String){
     Text(
         text =txt,
-        fontSize = 24.sp,
+        fontSize = 22.sp,
         color = Color.Red,
         modifier = Modifier
             .fillMaxSize()

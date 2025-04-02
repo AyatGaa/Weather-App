@@ -36,4 +36,7 @@
     <string name="end">End : %1$s</string>
     <string name="done">Done</string>
     <string name="start_end">Start: %1$s  End: %2$s</string>
+    <string name="error_not_found">Error Not Found!</string>
+    <string name="home">Home</string>
+    <string name="clouds">Clouds: %1$s%</string>
 </resources>

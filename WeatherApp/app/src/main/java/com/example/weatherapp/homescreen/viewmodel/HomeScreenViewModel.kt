@@ -16,14 +16,19 @@ import com.example.weatherapp.data.models.ResponseState
 import com.example.weatherapp.data.repository.WeatherRepository
 import com.example.weatherapp.utils.SharedObject
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
-import kotlin.math.log
 
+data class WeatherState(
+    val currentWeather: ResponseState<CurrentResponseApi> = ResponseState.Loading,
+    val hourlyWeather: ResponseState<List<ForecastItem>> = ResponseState.Loading,
+    val dailyWeather: ResponseState<List<ForecastItem>> = ResponseState.Loading
+)
 
 // here where i send data to compose funs
 @RequiresApi(Build.VERSION_CODES.O)
@@ -39,32 +44,27 @@ class HomeScreenViewModel(private val repo: WeatherRepository) : ViewModel() {
     var mapLon = _mapLon
 
 
-    private val _currentWeatherData =
-        MutableStateFlow<ResponseState<CurrentResponseApi>>(ResponseState.Loading)
-    var currentWeatherData = _currentWeatherData.asStateFlow()
-
-    private val _hourlyWeatherData =
-        MutableStateFlow<ResponseState<List<ForecastItem>>>(ResponseState.Loading)
-    var hourlyWeatherData = _hourlyWeatherData.asStateFlow()
-
-    private val _dailyWeatherData =
-        MutableStateFlow<ResponseState<List<ForecastItem>>>(ResponseState.Loading)
-    var dailyWeatherData = _dailyWeatherData.asStateFlow()
-
-
-    private val _localForecastHomeData = mutableStateOf(ForecastResponseApi(emptyList()))
-
-   private val  _offlineHome = mutableStateOf(HomeEntity(0,null,null))
-
-
     //not used for now
     private val _mutableMessage = MutableSharedFlow<String>()
     val mutableMessage = _mutableMessage.asSharedFlow()
+    private val _weatherState = MutableStateFlow(WeatherState())
+    val weatherState = _weatherState.asStateFlow()
 
 
-    fun getCurrentSetting() {
+    private fun updateWeatherState(
+        currentWeather: ResponseState<CurrentResponseApi>? = null,
+        hourlyWeather: ResponseState<List<ForecastItem>>? = null,
+        dailyWeather: ResponseState<List<ForecastItem>>? = null
+    ) {
+        _weatherState.value = _weatherState.value.copy(
+            currentWeather = currentWeather ?: _weatherState.value.currentWeather,
+            hourlyWeather = hourlyWeather ?: _weatherState.value.hourlyWeather,
+            dailyWeather = dailyWeather ?: _weatherState.value.dailyWeather
+        )
+    }
+
+    private fun getCurrentSetting() {
         viewModelScope.launch {
-            val langRes = SharedObject.getString("lang", "en")
             val unitRes = SharedObject.getString("temp", "Standard")
             val locRes = SharedObject.getString("loc", "GPS")
 
@@ -89,111 +89,100 @@ class HomeScreenViewModel(private val repo: WeatherRepository) : ViewModel() {
       * Metric => Celsius => meter/sec
       * Imperial => Fahrenheit => mile/hour
       * */
-    var weather = mutableStateOf<CurrentResponseApi?>(null)
 
-    fun getFromDataBase():HomeEntity {
-        var result :HomeEntity = HomeEntity(0,null,null)
-        viewModelScope.launch {
-            try {
-                result = repo.getHomeData()
-            } catch (ex: Exception) {
-                Log.i("TAG", "updateDatabase: $ex")
-            }
-        }
-        return result
-    }
 
-    fun updateDatabase() {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                if (weather.value == null || _localForecastHomeData.value.list.isEmpty()) {
-                    Log.e("Database", "updateDatabase: Weather or Forecast data is NULL. Skipping insert.")
-                    return@launch
+        private fun updateDatabase() {
+            viewModelScope.launch(Dispatchers.IO) {
+                try {
+                    val state = _weatherState.value
+
+                    if (state.currentWeather is ResponseState.Success &&
+                        state.hourlyWeather is ResponseState.Success &&
+                        state.dailyWeather is ResponseState.Success
+                    ) {
+                        val homeEntity = HomeEntity(
+                            0,
+                            state.currentWeather.data,
+                            state.hourlyWeather.data,
+                            state.dailyWeather.data
+                        )
+
+                        repo.insertHomeData(homeEntity)
+                    } else {
+                       _mutableMessage.emit("Cache Failed!")
+                    }
+
+                } catch (ex: Exception) {
+                    _mutableMessage.emit("Something Went Wrong with DB!")
                 }
-
-                val homeEntity = HomeEntity(0, weather.value!!, _localForecastHomeData.value)
-                repo.insertHomeData(homeEntity)
-                Log.d("Database", "Data Inserted Successfully: $homeEntity")
-
-            } catch (ex: Exception) {
-                Log.e("Database", "updateDatabase Error: ${ex.message}")
             }
         }
-    }
 
-
-
-    fun loadOnlineData(lat: Double, lon: Double, lang: String, units: String) {
-        viewModelScope.launch {
-            try {
-
-                repo.getForecastWeather(lat, lon, lang, units).collect {
-
+        fun getHomeWeatherFromDatabase() {
+            viewModelScope.launch(Dispatchers.IO) {
+                val homeData = repo.getHomeData()
+                homeData.let {
+                    updateWeatherState(
+                        currentWeather = ResponseState.Success(it.currentWeather),
+                        hourlyWeather = ResponseState.Success(it.hourlyWeather),
+                        dailyWeather = ResponseState.Success(it.dailyWeather)
+                    )
                 }
-
-            } catch (e: Exception) {
-
             }
         }
-
-
-    }
-
-
-    fun loadCurrentWeather(lat: Double, lon: Double, lang: String, units: String) {
-        viewModelScope.launch {
-            try {
-                getCurrentSetting()
-                val result = repo.getCurrentWeather(lat, lon, lang, units)
-                result.catch { ex ->
-                    _currentWeatherData.value = ResponseState.Failure(ex)
-                    _mutableMessage.emit("API Error ${ex.message}")
-                }.collect {
-                    _currentWeatherData.value = ResponseState.Success(it)
-                    _mutableMessage.emit("Done")
-                    updateDatabase()
+        fun loadCurrentWeather(lat: Double, lon: Double, lang: String, units: String) {
+            viewModelScope.launch {
+                try {
+                    getCurrentSetting()
+                    val result = repo.getCurrentWeather(lat, lon, lang, units)
+                    result.catch { ex ->
+                        updateWeatherState(currentWeather = ResponseState.Failure(ex))
+                        _mutableMessage.emit("API Error ${ex.message}")
+                        getHomeWeatherFromDatabase()
+                    }.collect { weather ->
+                        updateWeatherState(currentWeather = ResponseState.Success(weather))
+                        _mutableMessage.emit("Done")
+                        updateDatabase()
+                    }
+                } catch (ex: Exception) {
+                    updateWeatherState(currentWeather = ResponseState.Failure(ex))
+                    _mutableMessage.emit("Something Went Wrong, Try Again Later!")
                 }
-
-            } catch (ex: Exception) {
-                _currentWeatherData.value = ResponseState.Failure(ex)
-                _mutableMessage.emit("Something Went Wrong, Try Again Later !")
             }
         }
-    }
-
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun loadForecastWeather(lat: Double, lon: Double, lang: String, units: String) {
         viewModelScope.launch {
+
             getCurrentSetting()
+
             val result = repo.getForecastWeather(lat, lon, lang, units)
+
             result.catch { ex ->
 
-                _dailyWeatherData.value = ResponseState.Failure(ex)
-                _hourlyWeatherData.value = ResponseState.Failure(ex)
+                updateWeatherState(hourlyWeather = ResponseState.Failure(ex), dailyWeather = ResponseState.Failure(ex))
                 _mutableMessage.emit("API Error ${ex.message}")
+                getHomeWeatherFromDatabase()
 
             }.collect { forecast ->
-                _localForecastHomeData.value = forecast
-                val hourly = forecast.list.take(8)
-                val daily = forecast.list.groupBy {
-                    it.timestamp.let { ts ->
-                        java.time.Instant.ofEpochSecond(ts)
-                            .atZone(java.time.ZoneOffset.UTC)
-                            .toLocalDate()
-                    }
-                }.map { (_, forecasts) ->
-                    forecasts.first()
-                }
 
-                _hourlyWeatherData.value = ResponseState.Success(hourly)
-                _dailyWeatherData.value = ResponseState.Success(daily)
+                val hourly = forecast.list.take(8)
+
+                val daily = forecast.list.groupBy {
+                    java.time.Instant.ofEpochSecond(it.timestamp)
+                        .atZone(java.time.ZoneOffset.UTC)
+                        .toLocalDate()
+                }.map { (_, forecasts) -> forecasts.first() }
+
+                updateWeatherState(
+                    hourlyWeather = ResponseState.Success(hourly),
+                    dailyWeather = ResponseState.Success(daily)
+                )
                 updateDatabase()
             }
         }
     }
-
-
 }
 
 

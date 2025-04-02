@@ -9,7 +9,7 @@ import com.example.weatherapp.data.models.HomeEntity
 import com.example.weatherapp.data.models.WeatherAlert
 
 
-@Database(entities = [CityLocation::class, WeatherAlert::class, HomeEntity::class], version = 2 ,exportSchema = false)
+@Database(entities = [CityLocation::class, WeatherAlert::class, HomeEntity::class], version = 1 ,exportSchema = false)
 abstract class CityDatabase :RoomDatabase(){
 
     abstract fun getCityDao(): CityLocationDao
