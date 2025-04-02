@@ -5,10 +5,11 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.weatherapp.data.models.CityLocation
+import com.example.weatherapp.data.models.HomeEntity
 import com.example.weatherapp.data.models.WeatherAlert
 
 
-@Database(entities = [CityLocation::class, WeatherAlert::class], version = 1 ,exportSchema = false)
+@Database(entities = [CityLocation::class, WeatherAlert::class, HomeEntity::class], version = 2 ,exportSchema = false)
 abstract class CityDatabase :RoomDatabase(){
 
     abstract fun getCityDao(): CityLocationDao

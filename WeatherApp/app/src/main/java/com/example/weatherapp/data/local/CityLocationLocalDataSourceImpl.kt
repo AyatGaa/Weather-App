@@ -1,6 +1,7 @@
 package com.example.weatherapp.data.local
 
 import com.example.weatherapp.data.models.CityLocation
+import com.example.weatherapp.data.models.HomeEntity
 import com.example.weatherapp.data.models.WeatherAlert
 import kotlinx.coroutines.flow.Flow
 
@@ -44,6 +45,14 @@ class CityLocationLocalDataSourceImpl(private val dao: CityLocationDao) :
 
     override suspend fun getAlertByTime(start: Long, end: Long): WeatherAlert? {
         return dao.getAlertByTime(start,end)
+    }
+
+    override suspend fun getHomeData(): HomeEntity {
+        return dao.getHomeData()
+    }
+
+    override suspend fun insertHomeData(homeEntity: HomeEntity): Long {
+        return dao.insertHomeData(homeEntity)
     }
 
 }

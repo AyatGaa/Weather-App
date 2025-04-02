@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat.startActivities
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.weatherapp.data.models.CurrentResponseApi
+import com.example.weatherapp.data.models.HomeEntity
 import com.example.weatherapp.data.models.ResponseState
 import com.example.weatherapp.homescreen.view.uicomponent.DailyForecast
 import com.example.weatherapp.homescreen.view.uicomponent.Failure
@@ -74,6 +75,7 @@ fun HomeScreen(viewModel: HomeScreenViewModel) {
     val hourlyForecast by viewModel.hourlyWeatherData.collectAsStateWithLifecycle()
     val dailyForecast by viewModel.dailyWeatherData.collectAsStateWithLifecycle()
 
+
     val lang by viewModel.lang
     val units by viewModel.unit
 
@@ -82,12 +84,19 @@ fun HomeScreen(viewModel: HomeScreenViewModel) {
 
     val locationClient: LocationClient =
         DefaultLocationClient(context, LocationServices.getFusedLocationProviderClient(context))
-
+    var weather by remember { mutableStateOf<CurrentResponseApi?>(null) }
+    var hourly by remember { mutableStateOf<List<ForecastItem>?>(null) }
+    var daily by remember { mutableStateOf<List<ForecastItem>?>(null) }
+    var  offlineData  by remember { mutableStateOf<HomeEntity?>(null) }
     var unitTemp by remember { mutableStateOf("") }
     var unitSpeed by remember { mutableStateOf("") }
 
     LaunchedEffect(lang) {
-
+      viewModel.updateDatabase()
+        offlineData = viewModel.getFromDataBase()
+        Log.w("home", "HomeScreen: ${offlineData?.id}", )
+        Log.w("home", "HomeScreen: ${offlineData?.currentResponseApi}", )
+        Log.w("home", "HomeScreen: ${offlineData?.forecastItem}", )
         val storedTemp = SharedObject.getString("temp", "Kelvin")
         val storedSpeed = SharedObject.getString("speed", "Meter/Sec (m/sec)")
 
@@ -166,9 +175,7 @@ fun HomeScreen(viewModel: HomeScreenViewModel) {
     }
 
 
-    var weather by remember { mutableStateOf<CurrentResponseApi?>(null) }
-    var hourly by remember { mutableStateOf<List<ForecastItem>?>(null) }
-    var daily by remember { mutableStateOf<List<ForecastItem>?>(null) }
+
 
 
     Scaffold(
@@ -188,7 +195,10 @@ fun HomeScreen(viewModel: HomeScreenViewModel) {
                 weather = (uiState as ResponseState.Success).data
             }
 
-            is ResponseState.Failure -> Failure("Can not Reload Data")
+            is ResponseState.Failure ->{
+              weather = offlineData?.currentResponseApi
+            }
+            //Failure("Can not Reload Data")
         }
         when (hourlyForecast) {
             is ResponseState.Loading -> LoadingIndicator()
@@ -198,6 +208,7 @@ fun HomeScreen(viewModel: HomeScreenViewModel) {
             }
 
             is ResponseState.Failure -> {
+                hourly = offlineData?.forecastItem?.list
                 Failure("Can not Reload Hourly Data")
             }
         }
@@ -209,7 +220,11 @@ fun HomeScreen(viewModel: HomeScreenViewModel) {
                 daily = (dailyForecast as ResponseState.Success).data
             }
 
-            is ResponseState.Failure -> Failure("Can not Reload Daily  Data")
+            is ResponseState.Failure ->{
+
+                daily = offlineData?.forecastItem?.list
+            }
+            //Failure("Can not Reload Daily  Data")
         }
         LazyColumn(
             modifier = Modifier

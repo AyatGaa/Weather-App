@@ -157,8 +157,7 @@ class AlertViewModel(private val repo: WeatherRepository) : ViewModel() {
     fun getAllAlerts() {
         viewModelScope.launch {
             try {
-                Log.i("TAG", "getAllAlerts: ")
-                repo.getAllWeatherAlert()
+                 repo.getAllWeatherAlert()
                     .catch {
                         _mutableDatabaseMessage.emit("Can not get data from db")
                     }.collectLatest {
