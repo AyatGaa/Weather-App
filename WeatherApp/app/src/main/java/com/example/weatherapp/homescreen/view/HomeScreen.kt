@@ -87,12 +87,9 @@ fun HomeScreen(viewModel: HomeScreenViewModel) {
 
     val weatherState by viewModel.weatherState.collectAsStateWithLifecycle()
 
-    LaunchedEffect(true) {
-        viewModel.getHomeWeatherFromDatabase()
-    }
 
     LaunchedEffect(lang) {
-       // viewModel.updateDatabase()
+        viewModel.getHomeWeatherFromDatabase()
 
         //for setting check
         val storedTemp = SharedObject.getString("temp", "Kelvin")

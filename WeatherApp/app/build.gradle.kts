@@ -74,6 +74,7 @@ dependencies {
 
     //Glide
     implementation("com.github.bumptech.glide:compose:1.0.0-beta01")
+    androidTestImplementation(project(":app"))
 
     val nav_version = "2.8.8"
     implementation("androidx.navigation:navigation-compose:$nav_version")
@@ -100,6 +101,14 @@ dependencies {
 
     //worker
     implementation("androidx.work:work-runtime-ktx:2.7.1")
+
+    //Testing mockk
+    testImplementation ("io.mockk:mockk-android:1.13.17")
+    testImplementation ("io.mockk:mockk-agent:1.13.17")
+    testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+    testImplementation ("androidx.arch.core:core-testing:2.2.0")
+    testImplementation("app.cash.turbine:turbine:1.0.0")
+    androidTestImplementation ("androidx.test.espresso:espresso-core:3.2.0-alpha02")
 
 //places
     implementation("com.google.android.libraries.places:places:3.5.0")

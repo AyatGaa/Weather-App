@@ -60,13 +60,10 @@ class MainActivity : ComponentActivity() {
             installSplashScreen()
                 .apply {
                     actionBar?.hide()
-
                     navController = rememberNavController()
-
                     setKeepOnScreenCondition {
                         viewModel.isLoading.value
                     }
-
                 }
             val isConnected by viewModelConnectivity.isConnected.collectAsStateWithLifecycle()
 
