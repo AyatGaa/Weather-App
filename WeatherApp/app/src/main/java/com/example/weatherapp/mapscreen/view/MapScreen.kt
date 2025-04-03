@@ -166,13 +166,8 @@ fun MapScreen(
 
                 onClick = {
                     selectedLocation?.let { location ->
-                        Log.w(
-                            "fav",
-                            "MapScreen: Confirm button clicked with ${location.latitude}, ${location.longitude}"
-                        )
                         onLocationSelected(location)
 
-                        Log.d("fav", "MapScreen: after send t OnLocato ${selectedLocation}")
                     }
                 },
                 shape = CircleShape,

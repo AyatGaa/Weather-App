@@ -44,7 +44,7 @@ class HomeScreenViewModel(private val repo: WeatherRepository) : ViewModel() {
     var mapLon = _mapLon
 
 
-    //not used for now
+
     private val _mutableMessage = MutableSharedFlow<String>()
     val mutableMessage = _mutableMessage.asSharedFlow()
     private val _weatherState = MutableStateFlow(WeatherState())

@@ -81,7 +81,6 @@ fun UnitsSection() {
         SharedObject.saveString("temp", selectedTemp)
         SharedObject.saveString("speed", selectedSpeed)
 
-        Toast.makeText(context, "Temp: $selectedTemp, Speed: $selectedSpeed", Toast.LENGTH_SHORT).show()
     }
 
 

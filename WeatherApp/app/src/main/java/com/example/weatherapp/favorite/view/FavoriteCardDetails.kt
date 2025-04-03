@@ -84,7 +84,7 @@ fun FavoriteCardDetail(viewModel: FavoriteScreenViewModel, lat: Double, lon: Dou
             Scaffold(
                 modifier = Modifier
                     .fillMaxSize()
-                    .statusBarsPadding()
+                    .padding(top = 32.dp, bottom = 32.dp)
                     .navigationBarsPadding(),
                 containerColor = BabyBlue,
                 topBar = { TopAppBar("Home") }
@@ -94,8 +94,7 @@ fun FavoriteCardDetail(viewModel: FavoriteScreenViewModel, lat: Double, lon: Dou
                     modifier = Modifier
                         .fillMaxHeight()
                         .padding(innerPadding)
-                        .statusBarsPadding()
-                        .navigationBarsPadding(),
+                        .padding(8.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
 
