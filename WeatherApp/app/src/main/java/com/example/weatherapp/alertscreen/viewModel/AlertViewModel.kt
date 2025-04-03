@@ -56,7 +56,8 @@ class AlertViewModel(private val repo: WeatherRepository) : ViewModel() {
                 "notificationId" to notificationId,
                 "alertData" to alertJson,
                 "des" to weather.weather?.get(0)?.description,
-                "id" to alert.id
+                "id" to alert.id,
+                "name" to weather.name
             )
 
             val now = System.currentTimeMillis()

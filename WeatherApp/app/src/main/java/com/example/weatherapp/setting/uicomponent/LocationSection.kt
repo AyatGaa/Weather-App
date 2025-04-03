@@ -89,13 +89,6 @@ fun LocationSection() {
                             if (selectedLoc == context.getString(R.string.map)) {
                                 showMapDialog = true
                             }
-
-                            Toast.makeText(
-                                context,
-                                "Location set to " + selectedLoc,
-                                Toast.LENGTH_SHORT
-                            ).show()
-
                         },
                         role = Role.RadioButton
                     )

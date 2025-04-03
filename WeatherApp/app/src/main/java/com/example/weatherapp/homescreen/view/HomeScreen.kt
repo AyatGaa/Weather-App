@@ -191,7 +191,7 @@ fun HomeScreen(viewModel: HomeScreenViewModel) {
             Scaffold(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(top = 32.dp)
+                    .padding(top = 32.dp, bottom = 32.dp)
                     .navigationBarsPadding(),
                containerColor = BabyBlue,
                 topBar = { TopAppBar(stringResource(R.string.home)) }

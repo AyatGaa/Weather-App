@@ -59,11 +59,6 @@ fun LanguageSection() {
                         onClick = {
                             selectedLang = text
                             SharedObject.saveString("lang", getLanguage(selectedLang))
-                            Toast.makeText(
-                                context,
-                                "Language set to $selectedLang",
-                                Toast.LENGTH_SHORT
-                            ).show()
                             restartActivity(context)
                         },
                         role = Role.RadioButton

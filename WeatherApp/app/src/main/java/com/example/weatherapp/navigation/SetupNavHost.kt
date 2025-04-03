@@ -73,7 +73,6 @@ fun SetupNavHost(
             val viewModelFavorite: FavoriteScreenViewModel = viewModel(factory = favoriteFactory)
             val profile = it.toRoute<ScreenRoute.FavoriteCardDetails>()
 
-            Log.d("TAG", "SetupNavHost DETAILSS: LatLong PROFILE ${profile.id}")
 
             FavoriteCardDetail(viewModelFavorite, profile.lat, profile.lon, profile.id)
         }
@@ -94,7 +93,6 @@ fun SetupNavHost(
             val viewModelFavorite: FavoriteScreenViewModel = viewModel(factory = favoriteFactory)
 
             val profile = it.toRoute<ScreenRoute.Favorites>()
-            Log.d("TAG", "SetupNavHost FAVVV: LatLong PROFILE ${profile.lat},,${profile.lon}")
 
             val latLng = LatLng(profile.lat, profile.lon)
 
@@ -144,10 +142,6 @@ fun SetupNavHost(
 
             MapScreen(viewModelMap) { locationFromMap ->
                 navController.popBackStack()
-                Log.w(
-                    "fav",
-                    "SetupNavHost: after send to favortie ${locationFromMap.latitude}${locationFromMap.longitude}"
-                )
 
                 navController.navigate(
                     ScreenRoute.Favorites(
@@ -164,25 +158,3 @@ fun SetupNavHost(
 
     }
 }
-/*
-composable<ScreenRoutes.FavLocScreen> {
-    val favoritesViewModel: FavViewModel = viewModel(
-        factory = remember {
-            FavViewModelFactory(
-                RepoImpl(
-                    RemoteDataSourceImpl(RetrofitHelper.service),
-                    LocalDataSourceImpl(
-                        WeatherDataBase.getInstance(context).getWeatherDao()
-                    ),
-                )
-            )
-        }
-    )
-    FavLocUI(
-        navigateToFavDetails = { lon, lat ->
-            navController.navigate(ScreenRoutes.FavDetailsScreen(lon, lat))
-        },
-        favoritesViewModel,
-        navigateToMap = { navController.navigate(ScreenRoutes.MapScreenFromFavorites) }
-    )
-}*/
