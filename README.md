@@ -1,43 +1,42 @@
-
 # 🌧️ Weather App
 
-## 📌 Overview
-This is a **Weather Application** built using **Kotlin** and **Jetpack Compose**. The app follows **Clean Architecture** and **MVVM** design pattern, integrating **Retrofit** for network calls and **Room Database** for local storage. The app provides real-time weather updates, alerts, and favorite locations using the **OpenWeather API**.
+## 📌 Overview  
+**Weather App** is a modern Android application built with **Kotlin** and **Jetpack Compose**, following **Clean Architecture** and the **MVVM** design pattern. It provides real-time weather updates, custom alerts, and allows users to manage their favorite locations using the **OpenWeather API**. The app also supports offline access with local caching through **Room Database**.
 
 ---
-## 🎯 Features
 
-#### ⚙️ **1. Settings Screen**
+## 🎯 Features  
 
-#### 🏠 **2. Home Screen**
-
-#### ⏰ **3. Weather Alerts Screen**
-
-#### ❤️ **4. Favorite Locations Screen**
-
+- ⚙️ **Settings Screen**: Configure app preferences including units, language, and notifications.  
+- 🏠 **Home Screen**: Displays real-time weather data for the current location.  
+- ⏰ **Weather Alerts**: Set custom weather alerts with notifications or alarm sounds.  
+- ❤️ **Favorite Locations**: Add and manage your favorite places for quick access.  
+- 📶 **Offline Support**: View saved data without an internet connection.  
 
 ---
-### Project Snapshot
 
+## 🛠️ Tech Stack  
+
+| Layer             | Technology Used                  |
+|------------------|----------------------------------|
+| Language          | Kotlin                           |
+| UI                | Jetpack Compose                  |
+| Network           | Retrofit                         |
+| Local Storage     | Room Database                    |
+| Async Programming | Kotlin Coroutines                |
+| Architecture      | MVVM + Clean Architecture        |
+| Testing           | JUnit, Mockito                   |
+
+---
+
+## 📸 Project Snapshot  
 ![Image](https://github.com/user-attachments/assets/3a19048a-1f67-4838-b878-620cb45ea267)
----
-
-## 🛠️ Tech Stack
-🚀 **Kotlin**  
-🖌️ **Jetpack Compose** (UI)  
-🌐 **Retrofit** (API Calls)  
-💾 **Room Database** (Local Storage)  
-⚡ **coroutines** (Reactive Programming)  
-🏗️ **MVVM** (Architecture)  
 
 ---
 
-## 🔗 API Reference
-- Uses **OpenWeather API**: [🌍 OpenWeather API](https://api.openweathermap.org/data/2.5/forecast)
-
-
-
+## 🔗 API Reference  
+- 🌍 **OpenWeather API**: [Visit API Docs](https://api.openweathermap.org)
 ---
 
-🤝 **Contributions are welcome!** Feel free to submit a pull request or open an issue for improvements. 🚀
-
+## 🤝 Contributions  
+Contributions are welcome! Feel free to open an issue or submit a pull request with enhancements, fixes, or new features. Let's build better weather experiences together! 🚀
