@@ -1,5 +1,6 @@
 package com.example.weatherapp.alertscreen.view
 
+import NoAlertsIllustration
 import android.app.TimePickerDialog
 import android.util.Log
 import androidx.compose.foundation.background
@@ -178,7 +179,8 @@ fun Alert(
                 }
             }
         } else {
-            Log.i("TAG", "Favourite: no doaa")
+            NoAlertsIllustration()
+
         }
 
 
@@ -255,7 +257,6 @@ fun Alert(
             confirmButton = {
                 Button(onClick = {
 
-                    Log.i("TAG", "Alert: on done click")
                     val addedAlert = WeatherAlert(
                         id = System.currentTimeMillis().toInt(),
                         startDate = startTime.value,

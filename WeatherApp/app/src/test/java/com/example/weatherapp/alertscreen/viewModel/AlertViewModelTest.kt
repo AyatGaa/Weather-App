@@ -67,7 +67,7 @@ class AlertViewModelTest {
             endDate = 2000L,
             cityName = "Test City"
         )
-        coEvery { (repo.deleteAlert(mockAlert)) } returns 1  // Simulating successful DB deletion
+        coEvery { (repo.deleteAlert(mockAlert)) } returns 1  //as it suuccessful
 
         // When
         alertViewModel.deleteAlert(mockAlert)

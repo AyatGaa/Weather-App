@@ -42,14 +42,11 @@ class NotificationWorker(
             )
         )
 
-        Log.d("TAG", "Work triggered")
 
-         val alertJson = inputData.getString("alertData") ?: "{}"
+        val alertJson = inputData.getString("alertData") ?: "{}"
         val gson = Gson()
         val alert: WeatherAlert = gson.fromJson(alertJson, WeatherAlert::class.java)
-            val id = repo.getAlertByTime(alert.startDate,alert.endDate)
-        Log.d("TAG", "Deserialized Alert: $alert")
-        Log.d("TAG", "Deserialized Alert: $id")
+        //  val id = repo.getAlertByTime(alert.startDate,alert.endDate)
 
 
         val notificationId = inputData.getInt("notificationId", System.currentTimeMillis().toInt())
@@ -58,7 +55,7 @@ class NotificationWorker(
         val alertId = inputData.getInt("id", -1)
         val name = inputData.getString("name")
 
-         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 channelId,
                 "Weather Alerts",
@@ -70,7 +67,7 @@ class NotificationWorker(
         }
         val cancelIntent = Intent(applicationContext, NotificationReceiver::class.java).apply {
             action = "CANCEL_NOTIFICATION"
-            putExtra("alertId",alertId)
+            putExtra("alertId", alertId)
             putExtra("notificationId", notificationId)
         }
 
@@ -80,7 +77,6 @@ class NotificationWorker(
             cancelIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
-
 
 
         val notification = NotificationCompat.Builder(applicationContext, channelId)
@@ -123,7 +119,7 @@ class NotificationReceiver : BroadcastReceiver() {
             val notificationId = intent.getIntExtra("notificationId", -1)
             Log.d("TAG", "Received cancel for Alert ID: $alertId")
 
-             val notificationManager =
+            val notificationManager =
                 context?.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.cancel(notificationId)
         }

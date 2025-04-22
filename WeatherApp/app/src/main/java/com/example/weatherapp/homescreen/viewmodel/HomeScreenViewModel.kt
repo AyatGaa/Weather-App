@@ -118,7 +118,7 @@ class HomeScreenViewModel(private val repo: WeatherRepository) : ViewModel() {
             }
         }
 
-        fun getHomeWeatherFromDatabase() {
+        private fun getHomeWeatherFromDatabase() {
             viewModelScope.launch(Dispatchers.IO) {
                 val homeData = repo.getHomeData()
                 homeData.let {

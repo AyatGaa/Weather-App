@@ -1,12 +1,10 @@
 package com.example.weatherapp.homescreen.view
 
-import com.example.weatherapp.data.models.ForecastItem
 import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.provider.Settings
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -41,7 +39,6 @@ import androidx.core.content.ContextCompat.startActivities
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.weatherapp.R
 import com.example.weatherapp.data.models.CurrentResponseApi
-import com.example.weatherapp.data.models.HomeEntity
 import com.example.weatherapp.data.models.ResponseState
 import com.example.weatherapp.homescreen.view.uicomponent.DailyForecast
 import com.example.weatherapp.homescreen.view.uicomponent.Failure
@@ -56,7 +53,6 @@ import com.example.weatherapp.ui.theme.component.TopAppBar
 import com.example.weatherapp.utils.SharedObject
 import com.example.weatherapp.utils.formatNumberBasedOnLanguage
 import com.example.weatherapp.utils.getSettingType
-import com.example.weatherapp.utils.getTempUnit
 import com.example.weatherapp.utils.getUnitSymbol
 import com.example.weatherapp.utils.location.DefaultLocationClient
 import com.example.weatherapp.utils.location.LocationClient
@@ -89,8 +85,6 @@ fun HomeScreen(viewModel: HomeScreenViewModel) {
 
 
     LaunchedEffect(lang) {
-        viewModel.getHomeWeatherFromDatabase()
-
         //for setting check
         val storedTemp = SharedObject.getString("temp", "Kelvin")
         val storedSpeed = SharedObject.getString("speed", "Meter/Sec (m/sec)")
@@ -107,9 +101,13 @@ fun HomeScreen(viewModel: HomeScreenViewModel) {
             scope.launch {
                 locationClient.getCurrentLocation()
                     .collect { location ->
-                        if (SharedObject.getString("loc", "GPS") == context.getString(R.string.map) ) {
-                             viewModel.loadForecastWeather(lat, lon, lang, units)
-                              viewModel.loadCurrentWeather(lat, lon, lang, units)
+                        if (SharedObject.getString(
+                                "loc",
+                                "GPS"
+                            ) == context.getString(R.string.map)
+                        ) {
+                            viewModel.loadForecastWeather(lat, lon, lang, units)
+                            viewModel.loadCurrentWeather(lat, lon, lang, units)
                         } else {
                             viewModel.loadForecastWeather(
                                 location.latitude,
@@ -134,37 +132,37 @@ fun HomeScreen(viewModel: HomeScreenViewModel) {
     )
 
 
-        LaunchedEffect(lang) {
-            try {
-                locationClient.getCurrentLocation()
-                    .catch { e ->
-                        Toast.makeText(context, "Turn On location Please", Toast.LENGTH_LONG).show()
-                        enableLocationService(context)
-                    }
-                    .collect { location ->
-                        if (SharedObject.getString("loc", "GPS") ==  context.getString(R.string.map)) {
-                            viewModel.loadForecastWeather(lat, lon, lang, units)
-                            viewModel.loadCurrentWeather(lat, lon, lang, units)
-                        } else {
-                            viewModel.loadForecastWeather(
-                                location.latitude,
-                                location.longitude,
-                                lang,
-                                units
-                            )
-                            viewModel.loadCurrentWeather(
-                                location.latitude,
-                                location.longitude,
-                                lang,
-                                units
-                            )
+    LaunchedEffect(lang) {
+        try {
+            locationClient.getCurrentLocation()
+                .catch { e ->
+                    Toast.makeText(context, "Turn On location Please", Toast.LENGTH_LONG).show()
+                    enableLocationService(context)
+                }
+                .collect { location ->
+                    if (SharedObject.getString("loc", "GPS") == context.getString(R.string.map)) {
+                        viewModel.loadForecastWeather(lat, lon, lang, units)
+                        viewModel.loadCurrentWeather(lat, lon, lang, units)
+                    } else {
+                        viewModel.loadForecastWeather(
+                            location.latitude,
+                            location.longitude,
+                            lang,
+                            units
+                        )
+                        viewModel.loadCurrentWeather(
+                            location.latitude,
+                            location.longitude,
+                            lang,
+                            units
+                        )
 
-                        }
                     }
-            } catch (e: Exception) {
-                Log.i("TAG", "HomeScreenEX: Can no get location")
-            }
+                }
+        } catch (e: Exception) {
+
         }
+    }
 
 
     when {
@@ -177,7 +175,7 @@ fun HomeScreen(viewModel: HomeScreenViewModel) {
         weatherState.currentWeather is ResponseState.Failure ||
                 weatherState.hourlyWeather is ResponseState.Failure ||
                 weatherState.dailyWeather is ResponseState.Failure -> {
-                  Failure(stringResource(R.string.error_not_found))
+            Failure(stringResource(R.string.error_not_found))
         }
 
         weatherState.currentWeather is ResponseState.Success &&
@@ -193,7 +191,7 @@ fun HomeScreen(viewModel: HomeScreenViewModel) {
                     .fillMaxSize()
                     .padding(top = 32.dp, bottom = 32.dp)
                     .navigationBarsPadding(),
-               containerColor = BabyBlue,
+                containerColor = BabyBlue,
                 topBar = { TopAppBar(stringResource(R.string.home)) }
 
             ) { innerPadding ->
