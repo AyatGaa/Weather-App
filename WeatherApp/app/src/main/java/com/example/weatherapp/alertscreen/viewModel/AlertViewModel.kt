@@ -39,7 +39,7 @@ class AlertViewModel(private val repo: WeatherRepository) : ViewModel() {
     val uiState = _uiState.asStateFlow()
 
 
-    fun scheduleNotification(context: Context, triggerTimeMillis: Long, alert: WeatherAlert) {
+    private fun scheduleNotification(context: Context, triggerTimeMillis: Long, alert: WeatherAlert) {
         viewModelScope.launch {
 
 
@@ -69,7 +69,6 @@ class AlertViewModel(private val repo: WeatherRepository) : ViewModel() {
                     .setInitialDelay(delay, TimeUnit.MILLISECONDS)
                     .build()
 
-                Log.w("TAG", "scheduleNotification: im here in scheduleNotification()")
 
                 WorkManager.getInstance(context).enqueue(workRequest)
             } else {
@@ -89,10 +88,7 @@ class AlertViewModel(private val repo: WeatherRepository) : ViewModel() {
     fun onTimeSelected(context: Context, start: Long, alert: WeatherAlert) {
 
         viewModelScope.launch {
-
             scheduleNotification(context, start, alert)
-
-            Log.w("TAG", "onTimeSelected: Alert from selcted ${alert.id}")
         }
 
     }
@@ -106,7 +102,6 @@ class AlertViewModel(private val repo: WeatherRepository) : ViewModel() {
                 ).first()
                 alert.cityName = city.name ?: "city"
 
-                Log.i("TAG", "addAlert:  ")
                 val result = repo.insertAlert(alert)
 
                 if (result > 0) {
@@ -128,7 +123,6 @@ class AlertViewModel(private val repo: WeatherRepository) : ViewModel() {
     fun deleteAlert(alert: WeatherAlert) {
         viewModelScope.launch {
             try {
-                Log.d("TAG", "deleteAlert: ")
                 val result = repo.deleteAlert(alert)
 
                 if (result > 0) {

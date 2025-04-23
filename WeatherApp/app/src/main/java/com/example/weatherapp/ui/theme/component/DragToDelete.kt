@@ -38,7 +38,7 @@ fun <T> SwipeToDeleteContainer(
 ) {
     val offsetX = remember { Animatable(0f) }
     val coroutineScope = rememberCoroutineScope()
-    val dismissThreshold = 300f
+    val dismissThreshold = 200f
 
     LaunchedEffect(item) {
         offsetX.snapTo(0f)
@@ -59,10 +59,10 @@ fun <T> SwipeToDeleteContainer(
                             coroutineScope.launch {
                                 if (offsetX.value < -dismissThreshold) {
                                     offsetX.animateTo(-1000f, tween(300))
-                                    delay(300)
+                                    delay(200)
                                     onDelete(item)
                                 } else {
-                                    offsetX.animateTo(0f, tween(300))
+                                    offsetX.animateTo(0f, tween(200))
                                 }
                             }
                         }

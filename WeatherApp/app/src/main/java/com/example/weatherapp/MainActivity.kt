@@ -2,6 +2,8 @@ package com.example.weatherapp
 
 import android.os.Build
 import android.os.Bundle
+import android.provider.CalendarContract
+import android.provider.CalendarContract.Colors
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -12,6 +14,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
@@ -27,6 +30,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.weatherapp.navigation.BottomNavigationBar
 import com.example.weatherapp.navigation.SetupNavHost
+import com.example.weatherapp.ui.theme.BabyBlue
 import com.example.weatherapp.utils.SharedObject
 import com.example.weatherapp.utils.connection.ConnectivityObserverImpl
 import com.example.weatherapp.utils.connection.ConnectivityViewModel
@@ -68,11 +72,12 @@ class MainActivity : ComponentActivity() {
             val isConnected by viewModelConnectivity.isConnected.collectAsStateWithLifecycle()
 
             Scaffold(
+
                 topBar = {
                     if (!isConnected) {
                         Row(
                             modifier = Modifier
-                                .padding(top = 16.dp, bottom = 4.dp)
+                                .padding(top = 32.dp, bottom = 4.dp)
                                 .fillMaxWidth()
                                 .background(Color.Red)
                                 .padding(6.dp),
@@ -89,7 +94,8 @@ class MainActivity : ComponentActivity() {
                 },
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(bottom = 32.dp),
+                    .padding(bottom = 32.dp)
+                    .background(color = BabyBlue),
                 bottomBar = {
                     BottomNavigationBar(
                         navController
@@ -97,11 +103,10 @@ class MainActivity : ComponentActivity() {
                 }
             ) { pad ->
                 actionBar?.hide()
-
-
                 Row(
                     modifier = Modifier
                         .fillMaxSize()
+                        .background(color = BabyBlue)
                 ) {
                     SetupNavHost(navController)
                 }

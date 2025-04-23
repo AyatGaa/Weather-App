@@ -1,6 +1,5 @@
 package com.example.weatherapp.mapscreen.view
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -50,7 +49,6 @@ import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
-import kotlin.math.log
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -85,9 +83,7 @@ fun MapScreen(
             cameraPositionState = cameraPositionState,
             properties = MapProperties(mapType = MapType.NORMAL),
             onMapClick = { latLng ->
-                Log.w("fav", "MapScreen: map clicked at ${latLng.latitude}, ${latLng.longitude}")
                 selectedLocation = latLng
-                Log.w("fav", "MapScreen: selectedLocation== ${selectedLocation?.latitude}, ${selectedLocation?.longitude}")
             }
 
         ) {
@@ -96,7 +92,6 @@ fun MapScreen(
                     state = MarkerState(position = it),
                     title = "Selected Location"
                 )
-                Log.w("fav", "MapScreen: selected in marker ${selectedLocation}", )
             }
         }
 
